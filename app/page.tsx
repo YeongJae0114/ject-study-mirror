@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <>
-      <div className="text-display-2 font-bold">디자인 시스템</div>
+      <div className="text-display-2 font-bold">디자인 시스템 REFIT</div>
 
       <button
         className={`

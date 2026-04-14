@@ -34,6 +34,11 @@ const config: Config = {
       // Typography
       fontSize: typography.fontSize,
       fontWeight: typography.fontWeight,
+      
+      fontFamily: {
+        pretendard: ["var(--font-pretendard)", "sans-serif"],
+        alata: ["var(--font-alata)", "sans-serif"],
+      },
     },
   },
   plugins: [],
