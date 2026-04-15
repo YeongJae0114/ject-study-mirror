@@ -13,24 +13,23 @@ const config: Config = {
     extend: {
       colors: {
         // Colors
-        primary: colors.primary,
+        white: colors.white,
+        purple: colors.purple,
         neutral: colors.neutral,
         "cool-neutral": colors.coolNeutral,
         pink: colors.pink,
         lime: colors.lime,
         red: colors.red,
-
-        // Alpha
-        "black-alpha": colors.blackAlpha,
-
+        
         // Semantic
         text: semantic.text,
         bg: semantic.bg,
-        btn: semantic.btn,
+        object: semantic.object,
         border: semantic.border,
+        error: semantic.error,
+        "black-alpha": semantic.blackAlpha,
+        shadow: semantic.shadow,
       },
-      // Shadow
-      shadow: semantic.shadow,
       // Typography
       fontSize: typography.fontSize,
       fontWeight: typography.fontWeight,

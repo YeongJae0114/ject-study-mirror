@@ -1,5 +1,6 @@
 export const colors = {
-  primary: {
+  white: '#FFFFFF',
+  purple: {
     50: '#F2EEFF',
     100: '#E5DDFF',
     200: '#CBBCFF',
@@ -72,11 +73,5 @@ export const colors = {
     700: '#B73739',
     800: '#932C2E',
     900: '#6F2122',
-  },
-  blackAlpha: {
-    50: 'rgba(26, 26, 30, 0.05)',
-    200: 'rgba(26, 26, 30, 0.2)',
-    500: 'rgba(26, 26, 30, 0.5)',
-    700: 'rgba(26, 26, 30, 0.7)',
   },
 } as const
