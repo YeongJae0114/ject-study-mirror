@@ -18,9 +18,11 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
-    }
+      "@/*": ["src/*"]
+    },
+    "ignoreDeprecations": "6.0" // baseUrl 설정 deprecated 경고 무시
   },
   "include": [
     "next-env.d.ts",
