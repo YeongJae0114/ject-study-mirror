@@ -6,12 +6,23 @@ import AuthLayout from '@/components/auth/AuthLayout';
 import ProfileAvatarInput from '@/components/auth/ProfileAvatarInput';
 import AuthTextField from '@/components/auth/AuthTextField';
 import AuthButton from '@/components/auth/AuthButton';
+import { useAuthSignupStore } from '@/stores/authSignupStore';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [nickname, setNickname] = useState('');
-  const [bio, setBio] = useState('');
-  const [profileImage, setProfileImage] = useState<File | null>(null);
+  // const [nickname, setNickname] = useState('');
+  // const [bio, setBio] = useState('');
+  // const [profileImage, setProfileImage] = useState<File | null>(null);
+  
+  const {
+    nickname,
+    bio,
+    profileImage,
+    setNickname,
+    setBio,
+    setProfileImage,
+  } = useAuthSignupStore();
+  
   const [errors, setErrors] = useState<{ nickname?: string; bio?: string }>({});
 
   const validateForm = () => {

@@ -1,26 +1,40 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthLayout from '@/components/auth/AuthLayout';
 import RoleSelect from '@/components/auth/RoleSelect';
 import AuthButton from '@/components/auth/AuthButton';
+import { useAuthSignupStore } from '@/stores/authSignupStore';
+
 
 export default function RolePage() {
   const router = useRouter();
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
-  const handleRoleSelect = (roleId: string) => {
-    setSelectedRole(roleId);
-  };
+    const {
+    nickname,
+    bio,
+    profileImage,
+    role,
+    setRole,
+  } = useAuthSignupStore();
+  
+  // const [selectedRole, setSelectedRole] = useState<string | null>(null);
+
+  // const handleRoleSelect = (roleId: string) => {
+  //   setSelectedRole(roleId);
+  // };
 
   const handleComplete = () => {
-    if (selectedRole) {
-      // TODO: 역할 선택 저장 및 회원가입 완료 로직
-      console.log('선택된 역할:', selectedRole);
-      // 회원가입 완료 후 메인 페이지로 이동
-      router.push('/');
-    }
+    if (!role) return;
+
+    console.log('회원가입 온보딩 데이터:', {
+      nickname,
+      bio,
+      profileImage,
+      role,
+    });
+
+    router.push('/');
   };
 
   const handleBack = () => {
@@ -38,13 +52,13 @@ export default function RolePage() {
     >
       <div className="space-y-6">
         <RoleSelect
-          selectedRole={selectedRole}
-          onRoleSelect={handleRoleSelect}
+          selectedRole={role}
+          onRoleSelect={setRole}
         />
 
         <AuthButton
           onClick={handleComplete}
-          disabled={!selectedRole}
+          disabled={!role}
         >
           서비스 시작하기
         </AuthButton>
