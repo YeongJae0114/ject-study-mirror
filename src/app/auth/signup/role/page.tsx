@@ -1,10 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import AuthLayout from "@/src/components/auth/AuthLayout";
-import RoleSelect from "@/src/components/auth/RoleSelect";
-import AuthButton from "@/src/components/auth/AuthButton";
-import { useAuthSignupStore } from "@/src/stores/authSignupStore";
+import AuthLayout from "@/components/auth/AuthLayout";
+import RoleSelect from "@/components/auth/RoleSelect";
+import AuthButton from "@/components/auth/AuthButton";
+import { useAuthSignupStore } from "@/stores/authSignupStore";
 
 export default function RolePage() {
   const router = useRouter();

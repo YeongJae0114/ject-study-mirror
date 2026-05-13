@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import AuthLayout from "@/src/components/auth/AuthLayout";
-import AuthSocialButtons from "@/src/components/auth/AuthSocialButtons";
+import AuthLayout from "@/components/auth/AuthLayout";
+import AuthSocialButtons from "@/components/auth/AuthSocialButtons";
 
 export default function LoginPage() {
   const router = useRouter();

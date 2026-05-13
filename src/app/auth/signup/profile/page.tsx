@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import AuthLayout from "@/src/components/auth/AuthLayout";
-import ProfileAvatarInput from "@/src/components/auth/ProfileAvatarInput";
-import AuthTextField from "@/src/components/auth/AuthTextField";
-import AuthButton from "@/src/components/auth/AuthButton";
-import { useAuthSignupStore } from "@/src/stores/authSignupStore";
+import AuthLayout from "@/components/auth/AuthLayout";
+import ProfileAvatarInput from "@/components/auth/ProfileAvatarInput";
+import AuthTextField from "@/components/auth/AuthTextField";
+import AuthButton from "@/components/auth/AuthButton";
+import { useAuthSignupStore } from "@/stores/authSignupStore";
 
 export default function ProfilePage() {
   const router = useRouter();
