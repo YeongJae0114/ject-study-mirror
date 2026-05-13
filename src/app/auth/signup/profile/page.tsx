@@ -1,43 +1,37 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import AuthLayout from '@/components/auth/AuthLayout';
-import ProfileAvatarInput from '@/components/auth/ProfileAvatarInput';
-import AuthTextField from '@/components/auth/AuthTextField';
-import AuthButton from '@/components/auth/AuthButton';
-import { useAuthSignupStore } from '@/stores/authSignupStore';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import AuthLayout from "@/src/components/auth/AuthLayout";
+import ProfileAvatarInput from "@/src/components/auth/ProfileAvatarInput";
+import AuthTextField from "@/src/components/auth/AuthTextField";
+import AuthButton from "@/src/components/auth/AuthButton";
+import { useAuthSignupStore } from "@/src/stores/authSignupStore";
 
 export default function ProfilePage() {
   const router = useRouter();
   // const [nickname, setNickname] = useState('');
   // const [bio, setBio] = useState('');
   // const [profileImage, setProfileImage] = useState<File | null>(null);
-  
-  const {
-    nickname,
-    bio,
-    profileImage,
-    setNickname,
-    setBio,
-    setProfileImage,
-  } = useAuthSignupStore();
-  
+
+  const { nickname, bio, profileImage, setNickname, setBio, setProfileImage } =
+    useAuthSignupStore();
+
   const [errors, setErrors] = useState<{ nickname?: string; bio?: string }>({});
 
   const validateForm = () => {
     const newErrors: { nickname?: string; bio?: string } = {};
 
     if (!nickname.trim()) {
-      newErrors.nickname = '닉네임을 입력해주세요.';
+      newErrors.nickname = "닉네임을 입력해주세요.";
     } else if (nickname.length < 2) {
-      newErrors.nickname = '닉네임은 2자 이상 입력해주세요.';
+      newErrors.nickname = "닉네임은 2자 이상 입력해주세요.";
     } else if (nickname.length > 10) {
-      newErrors.nickname = '닉네임은 최대 10자까지 입력해주세요.';
+      newErrors.nickname = "닉네임은 최대 10자까지 입력해주세요.";
     }
 
     if (bio.length > 100) {
-      newErrors.bio = '자기소개는 최대 100자까지 입력해주세요.';
+      newErrors.bio = "자기소개는 최대 100자까지 입력해주세요.";
     }
 
     setErrors(newErrors);
@@ -47,8 +41,8 @@ export default function ProfilePage() {
   const handleNext = () => {
     if (validateForm()) {
       // TODO: 프로필 정보 저장 로직
-      console.log('프로필 정보:', { nickname, bio, profileImage });
-      router.push('/auth/signup/role');
+      console.log("프로필 정보:", { nickname, bio, profileImage });
+      router.push("/auth/signup/role");
     }
   };
 
@@ -56,7 +50,8 @@ export default function ProfilePage() {
     router.back();
   };
 
-  const isFormValid = nickname.trim().length >= 2 && nickname.length <= 10 && bio.length <= 100;
+  const isFormValid =
+    nickname.trim().length >= 2 && nickname.length <= 10 && bio.length <= 100;
 
   return (
     <AuthLayout
@@ -90,10 +85,7 @@ export default function ProfilePage() {
           maxLength={100}
         />
 
-        <AuthButton
-          onClick={handleNext}
-          disabled={!isFormValid}
-        >
+        <AuthButton onClick={handleNext} disabled={!isFormValid}>
           다음으로
         </AuthButton>
       </div>
