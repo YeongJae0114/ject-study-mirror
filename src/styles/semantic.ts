@@ -1,4 +1,4 @@
-import { colors } from "@/styles/color";
+import { colors } from "./color";
 
 export const semantic = {
   text: {
