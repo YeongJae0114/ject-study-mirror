@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
-import { typography } from "./styles/typography";
-import { colors } from "./styles/color";
-import { semantic } from "./styles/semantic";
+import { typography } from "./src/styles/typography";
+import { colors } from "./src/styles/color";
+import { semantic } from "./src/styles/semantic";
 
 const config: Config = {
   content: [
@@ -20,7 +20,7 @@ const config: Config = {
         pink: colors.pink,
         lime: colors.lime,
         red: colors.red,
-        
+
         // Semantic
         text: semantic.text,
         bg: semantic.bg,
@@ -33,7 +33,7 @@ const config: Config = {
       // Typography
       fontSize: typography.fontSize,
       fontWeight: typography.fontWeight,
-      
+
       fontFamily: {
         pretendard: ["var(--font-pretendard)", "sans-serif"],
         alata: ["var(--font-alata)", "sans-serif"],

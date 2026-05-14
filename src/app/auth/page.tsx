@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import AuthLayout from '@/components/auth/AuthLayout';
-import AuthSocialButtons from '@/components/auth/AuthSocialButtons';
+import { useRouter } from "next/navigation";
+import AuthLayout from "@/components/auth/AuthLayout";
+import AuthSocialButtons from "@/components/auth/AuthSocialButtons";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -11,11 +11,11 @@ export default function LoginPage() {
     // TODO: 소셜 로그인 로직 구현
     console.log(`${provider} 로그인`);
     // 로그인 성공 시 프로필 설정으로 이동
-    router.push('/auth/signup/profile');
+    router.push("/auth/signup/profile");
   };
 
   const handleClose = () => {
-    router.push('/');
+    router.push("/");
   };
 
   return (
@@ -28,9 +28,9 @@ export default function LoginPage() {
       showLogo
     >
       <AuthSocialButtons
-        onGoogleLogin={() => handleSocialLogin('Google')}
-        onNaverLogin={() => handleSocialLogin('Naver')}
-        onKakaoLogin={() => handleSocialLogin('Kakao')}
+        onGoogleLogin={() => handleSocialLogin("Google")}
+        onNaverLogin={() => handleSocialLogin("Naver")}
+        onKakaoLogin={() => handleSocialLogin("Kakao")}
       />
     </AuthLayout>
   );
