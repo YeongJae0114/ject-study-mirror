@@ -38,7 +38,7 @@ export default function Dropdown({
         onClick={() => setIsOpen((prev) => !prev)}
         className={`
           flex h-12.5 w-full items-center justify-between
-          rounded-[8px] border bg-white px-4
+          rounded-lg border bg-white px-4
           transition-colors border-border-primary
 
         `}
@@ -64,7 +64,7 @@ export default function Dropdown({
         <div
           className="
             absolute top-22 z-20 w-full
-            rounded-[12px] border border-border-primary
+            rounded-xl border border-border-primary
             bg-white p-2
           "
         >

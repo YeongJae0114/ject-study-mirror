@@ -173,7 +173,7 @@ export default function RegionBottomSheet({
                         </span>
 
                         {isSelected && (
-                          <div className="flex h-5 w-5 items-center justify-center rounded-[2px] bg-object-primary">
+                          <div className="flex h-5 w-5 items-center justify-center rounded-xs bg-object-primary">
                             <Check size={16} className="text-white" />
                           </div>
                         )}

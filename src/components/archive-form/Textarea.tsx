@@ -58,7 +58,7 @@ export default function TextArea({
             outline-none
             placeholder:text-text-input
             resize-none
-            h-[124px] overflow-y-auto
+            h-31 overflow-y-auto
           "
           {...props}
         />
