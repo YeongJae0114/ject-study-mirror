@@ -11,6 +11,8 @@ import Textarea from "@/components/archive-form/Textarea";
 import SizeInput from "@/components/archive-form/SizeInput";
 import Label from "@/components/archive-form/Label";
 import RegionSelect from "@/components/archive-form/RegionSelect";
+import ImageUploader from "@/components/archive-form/ImageUploader";
+import { useImageStore } from "@/stores/useImageStore";
 
 function FieldWrapper({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-3">{children}</div>;
@@ -22,6 +24,9 @@ export default function ArtCreatePage() {
   const [depth, setDepth] = useState("");
   const [height, setHeight] = useState("");
 
+  const images = useImageStore((state) => state.images);
+  const clearImages = useImageStore((state) => state.clearImages);
+
   return (
     <main className="min-h-screen bg-white">
       {/* Header */}
@@ -29,6 +34,16 @@ export default function ArtCreatePage() {
 
       {/* Content */}
       <section className="flex flex-col gap-8 px-5 py-6 pb-32">
+        {/* 사진 업로드 */}
+        <FieldWrapper>
+          <Label required>사진 업로드</Label>
+          <ImageUploader />
+          {/* <div className="w-18 h-18 bg-bg-primary-darker rounded-sm flex flex-col justify-center items-center">
+            <img src="/camera-icon.svg" alt="camera" />
+            <div className="text-caption font-regular">0/10</div>
+          </div> */}
+        </FieldWrapper>
+
         {/* 작품 유형 */}
         <FieldWrapper>
           <Dropdown
@@ -94,6 +109,13 @@ export default function ArtCreatePage() {
           <Textarea placeholder="주의 사항 설명" maxLength={500} />
         </FieldWrapper>
       </section>
+
+      {/* Bottom Button */}
+      <div className="fixed bottom-9 left-0 right-0 border-t border-border-primary bg-white px-5 py-4">
+        <button className="h-12.5 w-full rounded-lg text-body-1 font-medium">
+          추가하기
+        </button>
+      </div>
     </main>
   );
 }
