@@ -38,10 +38,6 @@ export default function ArtCreatePage() {
         <FieldWrapper>
           <Label required>사진 업로드</Label>
           <ImageUploader />
-          {/* <div className="w-18 h-18 bg-bg-primary-darker rounded-sm flex flex-col justify-center items-center">
-            <img src="/camera-icon.svg" alt="camera" />
-            <div className="text-caption font-regular">0/10</div>
-          </div> */}
         </FieldWrapper>
 
         {/* 작품 유형 */}
