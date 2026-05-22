@@ -13,9 +13,10 @@ import Label from "@/components/archive-form/Label";
 import RegionSelect from "@/components/archive-form/RegionSelect";
 import ImageUploader from "@/components/archive-form/ImageUploader";
 import { useImageStore } from "@/stores/useImageStore";
+import ArtTooltip from "@/components/archive-form/ArtToolTip";
 
 function FieldWrapper({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-col gap-3">{children}</div>;
+  return <div className="flex flex-col gap-2">{children}</div>;
 }
 
 export default function ArtCreatePage() {
@@ -23,6 +24,8 @@ export default function ArtCreatePage() {
   const [width, setWidth] = useState("");
   const [depth, setDepth] = useState("");
   const [height, setHeight] = useState("");
+
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
   const images = useImageStore((state) => state.images);
   const clearImages = useImageStore((state) => state.clearImages);
@@ -33,7 +36,7 @@ export default function ArtCreatePage() {
       <Header title="작품 추가" showBack={true} />
 
       {/* Content */}
-      <section className="flex flex-col gap-8 px-5 py-6 pb-32">
+      <section className="flex flex-col gap-6 px-5 py-6 pb-32">
         {/* 사진 업로드 */}
         <FieldWrapper>
           <Label required>사진 업로드</Label>
@@ -42,8 +45,23 @@ export default function ArtCreatePage() {
 
         {/* 작품 유형 */}
         <FieldWrapper>
+          <div className="flex justify-between">
+            <Label required>작품 유형</Label>
+            <div className="relative">
+              <img
+                src="/info-icon.svg"
+                alt="작품 유형"
+                className="cursor-pointer mr-2"
+                onClick={() => setIsTooltipOpen(!isTooltipOpen)}
+              />
+
+              <ArtTooltip
+                isOpen={isTooltipOpen}
+                onClose={() => setIsTooltipOpen(false)}
+              />
+            </div>
+          </div>
           <Dropdown
-            label="작품 유형"
             required
             placeholder="작품 유형을 선택해주세요."
             options={ART_TYPES}
