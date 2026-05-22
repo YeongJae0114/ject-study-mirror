@@ -63,9 +63,8 @@ export default function Dropdown({
       {isOpen && (
         <div
           className="
-            absolute top-22 z-20 w-full
-            rounded-xl border border-border-primary
-            bg-white p-2
+            absolute top-13.5 z-20 p-3 w-full
+            rounded-xl border border-border-primary bg-white
           "
         >
           {options.map((option) => {
@@ -81,7 +80,7 @@ export default function Dropdown({
                 }}
                 className={`
                   flex w-full flex-col
-                  rounded-xl px-4 py-3 text-left
+                  rounded-lg px-3 py-3 text-left
                   transition-colors
                   ${
                     isSelected
@@ -102,17 +101,6 @@ export default function Dropdown({
                 >
                   {option.label}
                 </span>
-
-                {option.description && (
-                  <span
-                    className="
-                      mt-1 text-caption
-                      text-coolNeutral-600
-                    "
-                  >
-                    {option.description}
-                  </span>
-                )}
               </button>
             );
           })}

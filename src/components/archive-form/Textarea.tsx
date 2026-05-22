@@ -65,7 +65,7 @@ export default function TextArea({
 
         {/* Count */}
         {includeCountArea && (
-          <div className="px-4 pt-1.5 pb-3 flex justify-end">
+          <div className="px-4 pt-1.5 pb-2 flex justify-end">
             <span className="text-caption text-coolNeutral-600">
               {value.length}/{maxLength}
             </span>
