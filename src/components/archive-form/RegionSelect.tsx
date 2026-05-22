@@ -110,6 +110,12 @@ export default function RegionBottomSheet({
             bg-bg-primary outline-none
           "
           >
+            {/* 스크린 리더기 (vaul 라이브러리 권장 사항) */}
+            <Drawer.Title className="sr-only">지역 선택</Drawer.Title>
+            <Drawer.Description className="sr-only">
+              원하는 지역을 목록에서 선택해주세요.
+            </Drawer.Description>
+
             {/* Handle */}
             <div className="flex justify-center">
               <div className="h-1.25 w-9 rounded-full bg-black" />
