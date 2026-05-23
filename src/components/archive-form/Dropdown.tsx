@@ -15,6 +15,8 @@ interface DropdownProps {
   message?: string;
   placeholder?: string;
   options: DropdownOption[];
+  value: string;
+  onChange: (value: string) => void;
 }
 
 export default function Dropdown({
@@ -23,30 +25,29 @@ export default function Dropdown({
   message,
   placeholder,
   options,
+  value,
+  onChange,
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
-
-  const [selectedValue, setSelectedValue] = useState("");
 
   return (
     <div className="relative flex w-full flex-col gap-3">
       {/* Label */}
       {label && <Label required={required}>{label}</Label>}
+
       {/* Dropdown Button */}
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`
-          flex h-12.5 w-full items-center justify-between
-          rounded-lg border bg-white px-4
+        className="
+          flex h-12.5 w-full items-center justify-between rounded-lg border bg-white px-4
           transition-colors border-border-primary
-
-        `}
+        "
       >
         <span
-          className={`text-body-1 ${selectedValue ? "text-text-primary medium" : "text-text-input regular"}`}
+          className={`text-body-1 ${value ? "text-text-primary medium" : "text-text-input regular"}`}
         >
-          {selectedValue || placeholder}
+          {value || placeholder}
         </span>
 
         <ChevronDown
@@ -68,14 +69,14 @@ export default function Dropdown({
           "
         >
           {options.map((option) => {
-            const isSelected = selectedValue === option.label;
+            const isSelected = value === option.label;
 
             return (
               <button
                 key={option.label}
                 type="button"
                 onClick={() => {
-                  setSelectedValue(option.label);
+                  onChange(option.label);
                   setIsOpen(false);
                 }}
                 className={`

@@ -3,8 +3,10 @@
 import { useState, type ChangeEvent, type TextareaHTMLAttributes } from "react";
 
 import Label from "./Label";
-
-interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextAreaProps extends Omit<
+  TextareaHTMLAttributes<HTMLTextAreaElement>,
+  "onChange"
+> {
   label?: string;
   required?: boolean;
   message?: string;
@@ -12,6 +14,8 @@ interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   maxLength?: number;
   includeCountArea?: boolean;
   scrollable?: boolean;
+  value: string;
+  onChange: (value: string) => void;
 }
 
 export default function TextArea({
@@ -22,13 +26,14 @@ export default function TextArea({
   maxLength = 500,
   includeCountArea = true,
   scrollable = false,
+  value,
+  onChange,
   ...props
 }: TextAreaProps) {
-  const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setValue(e.target.value);
+    onChange(e.target.value);
   };
 
   return (

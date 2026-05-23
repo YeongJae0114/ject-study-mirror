@@ -3,17 +3,17 @@
 import { useState } from "react";
 import { ART_TYPES } from "@/constants/art";
 
-import Header from "../../../components/common/Header";
-import Input from "@/components/archive-form/Input";
-import Dropdown from "@/components/archive-form/Dropdown";
-import Textarea from "@/components/archive-form/Textarea";
-import SizeInput from "@/components/archive-form/SizeInput";
+import Header from "@/components/common/Header";
 import Label from "@/components/archive-form/Label";
-import RegionSelect from "@/components/archive-form/RegionSelect";
 import ImageUploader from "@/components/archive-form/ImageUploader";
 import { useImageStore } from "@/stores/useImageStore";
+import Input from "@/components/archive-form/Input";
+import Dropdown from "@/components/archive-form/Dropdown";
 import ArtTooltip from "@/components/archive-form/ArtToolTip";
+import Textarea from "@/components/archive-form/Textarea";
 import DatePicker from "@/components/archive-form/DayPicker";
+import RegionSelect from "@/components/archive-form/RegionSelect";
+import SizeInput from "@/components/archive-form/SizeInput";
 import ToggleButton from "@/components/archive-form/ToggleButton";
 
 function FieldWrapper({ children }: { children: React.ReactNode }) {
@@ -21,19 +21,32 @@ function FieldWrapper({ children }: { children: React.ReactNode }) {
 }
 
 export default function ArtCreatePage() {
+  const images = useImageStore((state) => state.images);
+  const clearImages = useImageStore((state) => state.clearImages);
+
+  const [artType, setArtType] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
+  const [date, setDate] = useState<Date>();
+
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
+
   const [width, setWidth] = useState("");
   const [depth, setDepth] = useState("");
   const [height, setHeight] = useState("");
 
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
-  const [date, setDate] = useState<Date>();
-
-  const images = useImageStore((state) => state.images);
-  const clearImages = useImageStore((state) => state.clearImages);
+  const [notes, setNotes] = useState("");
 
   const [isPublic, setIsPublic] = useState(false);
+
+  const isFormValid =
+    images.length > 0 &&
+    artType !== "" &&
+    title.trim() !== "" &&
+    description.trim() !== "";
 
   return (
     <main className="min-h-screen bg-white">
@@ -70,6 +83,8 @@ export default function ArtCreatePage() {
             required
             placeholder="작품 유형을 선택해주세요."
             options={ART_TYPES}
+            value={artType}
+            onChange={setArtType}
           />
         </FieldWrapper>
 
@@ -81,19 +96,25 @@ export default function ArtCreatePage() {
             placeholder="작품명을 작성해주세요."
             deleteButton
             maxLength={10}
+            value={title}
+            onChange={setTitle}
           />
         </FieldWrapper>
 
         {/* 작품 설명 */}
         <FieldWrapper>
           <Label required>작품 설명</Label>
-          <Textarea placeholder="작품 설명을 작성해주세요." maxLength={500} />
+          <Textarea
+            placeholder="작품 설명을 작성해주세요."
+            maxLength={500}
+            value={description}
+            onChange={setDescription}
+          />
         </FieldWrapper>
 
         {/* 제작일 */}
         <FieldWrapper>
           <Label>작품 제작일</Label>
-
           <DatePicker label="작품 제작일" value={date} onChange={setDate} />
         </FieldWrapper>
 
@@ -119,7 +140,12 @@ export default function ArtCreatePage() {
         {/* 주의사항 */}
         <FieldWrapper>
           <Label>주의 사항</Label>
-          <Textarea placeholder="주의 사항 설명" maxLength={500} />
+          <Textarea
+            placeholder="주의 사항 설명"
+            maxLength={500}
+            value={notes}
+            onChange={setNotes}
+          />
         </FieldWrapper>
 
         {/* 피드 내 공개 */}
@@ -133,7 +159,14 @@ export default function ArtCreatePage() {
 
       {/* Bottom Button () */}
       <div className="fixed bottom-4 left-0 right-0 h-24.5 border-t border-border-primary bg-white px-5 py-4">
-        <button className="h-12.5 w-full rounded-lg text-body-1 font-medium text-text-disabled bg-object-disabled">
+        <button
+          disabled={!isFormValid}
+          className={`h-12.5 w-full rounded-lg text-body-1 font-medium transition-colors ${
+            isFormValid
+              ? "bg-object-primary text-text-invert cursor-pointer"
+              : "bg-object-disabled text-text-disabled cursor-not-allowed"
+          }`}
+        >
           추가하기
         </button>
       </div>

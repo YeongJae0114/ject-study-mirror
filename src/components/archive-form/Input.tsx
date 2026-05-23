@@ -1,14 +1,19 @@
 "use client";
 
 import { X, AlertCircle } from "lucide-react";
-import { useState, type ChangeEvent, type InputHTMLAttributes } from "react";
+import { type ChangeEvent, type InputHTMLAttributes } from "react";
 import Label from "./Label";
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "onChange"
+> {
   label?: string;
   message?: string;
   deleteButton?: boolean;
   onlyNumber?: boolean;
+  value: string;
+  onChange: (value: string) => void;
 }
 
 export default function Input({
@@ -19,11 +24,12 @@ export default function Input({
   deleteButton = false,
   maxLength,
   onlyNumber = false,
+  value,
+  onChange,
 }: InputProps) {
-  const [value, setValue] = useState("");
-  const [writing, setWriting] = useState(false);
-
+  const writing = value.length > 0;
   const isError = maxLength !== undefined && value.length > maxLength;
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     let currentValue = e.target.value;
 
@@ -31,13 +37,11 @@ export default function Input({
       currentValue = currentValue.replace(/[^0-9]/g, "");
     }
 
-    setValue(currentValue);
-    setWriting(currentValue.length > 0);
+    onChange(currentValue);
   };
 
   const handleClear = () => {
-    setValue("");
-    setWriting(false);
+    onChange("");
   };
 
   return (
