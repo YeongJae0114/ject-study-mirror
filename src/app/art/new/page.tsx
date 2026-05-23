@@ -14,6 +14,7 @@ import RegionSelect from "@/components/archive-form/RegionSelect";
 import ImageUploader from "@/components/archive-form/ImageUploader";
 import { useImageStore } from "@/stores/useImageStore";
 import ArtTooltip from "@/components/archive-form/ArtToolTip";
+import DatePicker from "@/components/archive-form/DayPicker";
 
 function FieldWrapper({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-2">{children}</div>;
@@ -26,6 +27,8 @@ export default function ArtCreatePage() {
   const [height, setHeight] = useState("");
 
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+
+  const [date, setDate] = useState<Date>();
 
   const images = useImageStore((state) => state.images);
   const clearImages = useImageStore((state) => state.clearImages);
@@ -89,13 +92,7 @@ export default function ArtCreatePage() {
         <FieldWrapper>
           <Label>작품 제작일</Label>
 
-          <div className="relative">
-            <Input placeholder="YYYY.MM.DD" />
-
-            <button className="absolute right-4 top-1/2 -translate-y-1/2">
-              <CalendarDays size={20} />
-            </button>
-          </div>
+          <DatePicker label="작품 제작일" value={date} onChange={setDate} />
         </FieldWrapper>
 
         {/* 희망 전시 지역 */}
