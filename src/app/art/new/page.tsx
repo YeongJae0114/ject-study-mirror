@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarDays } from "lucide-react";
 import { ART_TYPES } from "@/constants/art";
 
 import Header from "../../../components/common/Header";
@@ -15,6 +14,7 @@ import ImageUploader from "@/components/archive-form/ImageUploader";
 import { useImageStore } from "@/stores/useImageStore";
 import ArtTooltip from "@/components/archive-form/ArtToolTip";
 import DatePicker from "@/components/archive-form/DayPicker";
+import ToggleButton from "@/components/archive-form/ToggleButton";
 
 function FieldWrapper({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-2">{children}</div>;
@@ -32,6 +32,8 @@ export default function ArtCreatePage() {
 
   const images = useImageStore((state) => state.images);
   const clearImages = useImageStore((state) => state.clearImages);
+
+  const [isPublic, setIsPublic] = useState(false);
 
   return (
     <main className="min-h-screen bg-white">
@@ -119,11 +121,19 @@ export default function ArtCreatePage() {
           <Label>주의 사항</Label>
           <Textarea placeholder="주의 사항 설명" maxLength={500} />
         </FieldWrapper>
+
+        {/* 피드 내 공개 */}
+        <FieldWrapper>
+          <div className="flex justify-between items-center py-3">
+            <Label>피드 내 공개</Label>
+            <ToggleButton value={isPublic} onChange={setIsPublic} />
+          </div>
+        </FieldWrapper>
       </section>
 
-      {/* Bottom Button */}
-      <div className="fixed bottom-9 left-0 right-0 border-t border-border-primary bg-white px-5 py-4">
-        <button className="h-12.5 w-full rounded-lg text-body-1 font-medium">
+      {/* Bottom Button () */}
+      <div className="fixed bottom-4 left-0 right-0 h-24.5 border-t border-border-primary bg-white px-5 py-4">
+        <button className="h-12.5 w-full rounded-lg text-body-1 font-medium text-text-disabled bg-object-disabled">
           추가하기
         </button>
       </div>
