@@ -1,6 +1,6 @@
 "use client";
 
-import { X, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { type ChangeEvent, type InputHTMLAttributes } from "react";
 import Label from "./Label";
 
@@ -50,7 +50,7 @@ export default function Input({
       <div
         className={`
           flex h-12.5 w-full items-center
-          rounded-[8px] border bg-white px-4 transition-colors
+          rounded-lg border bg-white px-4 transition-colors
           ${
             isError
               ? "border-error-default"
@@ -74,7 +74,7 @@ export default function Input({
 
         {isError && (
           <div>
-            <AlertCircle size={18} className="fill-red-500 text-white" />
+            <AlertCircle size={24} className="fill-red-500 text-white" />
           </div>
         )}
 
@@ -84,15 +84,13 @@ export default function Input({
             onClick={handleClear}
             className="flex items-center justify-center"
           >
-            <div className="flex items-center justify-center bg-coolNeutral-800">
-              <X size={14} />
-            </div>
+            <img src="/cancel-icon.svg" alt="취소" className="w-6 h-6" />
           </button>
         )}
       </div>
 
       {isError ? (
-        <p className="text-caption text-red-500">
+        <p className="text-caption text-error-default">
           작품명은 최대 {maxLength}자까지 작성해주세요.
         </p>
       ) : (
