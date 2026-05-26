@@ -46,7 +46,9 @@ export default function ArtCreatePage() {
     images.length > 0 &&
     artType !== "" &&
     title.trim() !== "" &&
-    description.trim() !== "";
+    description.trim() !== "" &&
+    description.length <= 500 &&
+    notes.length <= 500;
 
   return (
     <main className="min-h-screen bg-white">

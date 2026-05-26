@@ -36,6 +36,8 @@ export default function TextArea({
     onChange(e.target.value);
   };
 
+  const isError = value.length > maxLength;
+
   return (
     <div className="flex w-full flex-col gap-2">
       {/* Label */}
@@ -44,10 +46,14 @@ export default function TextArea({
       {/* Textarea */}
       <div
         className={`
-          w-full rounded-lg border bg-white
-          flex flex-col
-          transition-colors
-          ${focused ? "border-border-secondary" : "border-border-primary"}
+          w-full rounded-lg border bg-white flex flex-col transition-colors
+          ${
+            isError
+              ? "border-error-default"
+              : focused
+                ? "border-border-secondary"
+                : "border-border-primary"
+          }
         `}
       >
         <textarea
@@ -56,7 +62,6 @@ export default function TextArea({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           placeholder={placeholder}
-          maxLength={maxLength}
           className="
             w-full bg-transparent px-4 pt-3 pb-2
             text-body-1 text-coolNeutral-900
@@ -80,6 +85,13 @@ export default function TextArea({
 
       {/* Message */}
       {message && <p className="text-body-2 text-coolNeutral-700">{message}</p>}
+
+      {/* Error */}
+      {isError && (
+        <p className="text-caption font-regular text-error-default">
+          최대 {maxLength}자까지 작성해주세요.
+        </p>
+      )}
     </div>
   );
 }
