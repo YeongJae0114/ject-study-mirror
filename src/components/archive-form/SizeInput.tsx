@@ -7,9 +7,9 @@ interface SizeInputProps {
   depth?: string;
   height?: string;
 
-  onWidthChange?: (value: string) => void;
-  onDepthChange?: (value: string) => void;
-  onHeightChange?: (value: string) => void;
+  onWidthChange: (value: string) => void;
+  onDepthChange: (value: string) => void;
+  onHeightChange: (value: string) => void;
 }
 
 export default function SizeInput({
@@ -25,11 +25,11 @@ export default function SizeInput({
       {/* 가로 */}
       <div className="flex-1 min-w-0">
         <Input
-          value={width}
+          value={width ?? ""}
           placeholder="가로"
           onlyNumber
           inputMode="numeric"
-          onChange={(e) => onWidthChange?.(e.target.value)}
+          onChange={onWidthChange}
         />
       </div>
 
@@ -38,11 +38,11 @@ export default function SizeInput({
       {/* 세로 */}
       <div className="flex-1 min-w-0">
         <Input
-          value={depth}
+          value={depth ?? ""}
           placeholder="세로"
           onlyNumber
           inputMode="numeric"
-          onChange={(e) => onDepthChange?.(e.target.value)}
+          onChange={onDepthChange}
         />
       </div>
 
@@ -51,11 +51,11 @@ export default function SizeInput({
       {/* 높이 */}
       <div className="flex-1 min-w-0">
         <Input
-          value={height}
+          value={height ?? ""}
           placeholder="높이"
           onlyNumber
           inputMode="numeric"
-          onChange={(e) => onHeightChange?.(e.target.value)}
+          onChange={onHeightChange}
         />
       </div>
     </div>
