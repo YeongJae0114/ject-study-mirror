@@ -22,7 +22,7 @@ export default function Header({
       <header
         className="
           fixed top-0 left-0 right-0 z-1
-          mx-auto flex h-15 w-full max-w-150 min-w-[320px]
+          mx-auto flex h-15 w-full min-w-[320px]
           items-center justify-between
           bg-bg-primary px-4 border-b border-b-border-primary
         "
