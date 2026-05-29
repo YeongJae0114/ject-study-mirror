@@ -11,10 +11,9 @@ import Input from '@/components/archive-form/Input';
 import Dropdown from '@/components/archive-form/Dropdown';
 import ArtTooltip from '@/components/archive-form/ArtToolTip';
 import Textarea from '@/components/archive-form/Textarea';
-import DatePicker from '@/components/archive-form/DayPicker';
-import RegionSelect from '@/components/archive-form/RegionSelect';
 import SizeInput from '@/components/archive-form/SizeInput';
 import ToggleButton from '@/components/archive-form/ToggleButton';
+import AddressSearch from '@/components/archive-form/AddressSearch';
 
 function FieldWrapper({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-2">{children}</div>;
@@ -28,9 +27,7 @@ export default function ArtCreatePage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
-  const [date, setDate] = useState<Date>();
-
-  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
+  const [address, setAddress] = useState('');
 
   const [width, setWidth] = useState('');
   const [depth, setDepth] = useState('');
@@ -98,6 +95,12 @@ export default function ArtCreatePage() {
             value={title}
             onChange={setTitle}
           />
+        </FieldWrapper>
+
+        {/* 공간 주소 */}
+        <FieldWrapper>
+          <Label>공간 주소</Label>
+          <AddressSearch value={address} onChange={setAddress} />{' '}
         </FieldWrapper>
 
         {/* 공간 설명 */}
