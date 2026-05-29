@@ -1,7 +1,8 @@
 import type { Config } from "tailwindcss";
-import { typography } from "./src/styles/typography";
+
 import { colors } from "./src/styles/color";
 import { semantic } from "./src/styles/semantic";
+import { typography } from "./src/styles/typography";
 
 const config: Config = {
   content: [

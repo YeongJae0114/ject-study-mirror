@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+
+import AuthButton from "@/components/auth/AuthButton";
 import AuthLayout from "@/components/auth/AuthLayout";
 import RoleSelect from "@/components/auth/RoleSelect";
-import AuthButton from "@/components/auth/AuthButton";
 import { useAuthSignupStore } from "@/stores/authSignupStore";
 
 export default function RolePage() {
@@ -37,9 +38,7 @@ export default function RolePage() {
   return (
     <AuthLayout
       title="역할 선택하기"
-      description={
-        "원하시는 역할을 선택해주세요\n역할에 따라 맞춤형 기능이 제공됩니다"
-      }
+      description={"원하시는 역할을 선택해주세요\n역할에 따라 맞춤형 기능이 제공됩니다"}
       background="primary-darker"
       showBackButton
       onBack={handleBack}

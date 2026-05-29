@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 interface AuthSignupState {
   nickname: string;
@@ -13,21 +13,21 @@ interface AuthSignupState {
   reset: () => void;
 }
 
-export const useAuthSignupStore = create<AuthSignupState>((set) => ({
-  nickname: '',
-  bio: '',
+export const useAuthSignupStore = create<AuthSignupState>(set => ({
+  nickname: "",
+  bio: "",
   role: null,
   profileImage: null,
 
-  setNickname: (nickname) => set({ nickname }),
-  setBio: (bio) => set({ bio }),
-  setRole: (role) => set({ role }),
-  setProfileImage: (file) => set({ profileImage: file }),
+  setNickname: nickname => set({ nickname }),
+  setBio: bio => set({ bio }),
+  setRole: role => set({ role }),
+  setProfileImage: file => set({ profileImage: file }),
 
   reset: () =>
     set({
-      nickname: '',
-      bio: '',
+      nickname: "",
+      bio: "",
       role: null,
       profileImage: null,
     }),
