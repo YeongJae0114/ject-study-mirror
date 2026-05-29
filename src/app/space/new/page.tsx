@@ -111,18 +111,6 @@ export default function ArtCreatePage() {
           />
         </FieldWrapper>
 
-        {/* 제작일 */}
-        <FieldWrapper>
-          <Label>작품 제작일</Label>
-          <DatePicker label="작품 제작일" value={date} onChange={setDate} />
-        </FieldWrapper>
-
-        {/* 희망 전시 지역 */}
-        <FieldWrapper>
-          <Label>희망 전시 지역</Label>
-          <RegionSelect value={selectedRegions} onChange={setSelectedRegions} />
-        </FieldWrapper>
-
         {/* 공간 크기 */}
         <FieldWrapper>
           <Label>제공 가능 공간 크기 (cm)</Label>
