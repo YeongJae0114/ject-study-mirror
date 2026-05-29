@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 
 import { format } from "date-fns";
+import { ko } from "date-fns/locale";
 import { CalendarDays } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 
 import "react-day-picker/dist/style.css";
-import { ko } from "date-fns/locale";
 
 interface Props {
   label?: string;
