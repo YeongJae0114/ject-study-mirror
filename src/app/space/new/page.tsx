@@ -1,0 +1,174 @@
+'use client';
+
+import { useState } from 'react';
+import { ART_TYPES } from '@/constants/art';
+
+import Header from '@/components/common/Header';
+import Label from '@/components/archive-form/Label';
+import ImageUploader from '@/components/archive-form/ImageUploader';
+import { useImageStore } from '@/stores/useImageStore';
+import Input from '@/components/archive-form/Input';
+import Dropdown from '@/components/archive-form/Dropdown';
+import ArtTooltip from '@/components/archive-form/ArtToolTip';
+import Textarea from '@/components/archive-form/Textarea';
+import DatePicker from '@/components/archive-form/DayPicker';
+import RegionSelect from '@/components/archive-form/RegionSelect';
+import SizeInput from '@/components/archive-form/SizeInput';
+import ToggleButton from '@/components/archive-form/ToggleButton';
+
+function FieldWrapper({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-col gap-2">{children}</div>;
+}
+
+export default function ArtCreatePage() {
+  const images = useImageStore(state => state.images);
+  const clearImages = useImageStore(state => state.clearImages);
+
+  const [artType, setArtType] = useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+
+  const [date, setDate] = useState<Date>();
+
+  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
+
+  const [width, setWidth] = useState('');
+  const [depth, setDepth] = useState('');
+  const [height, setHeight] = useState('');
+
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+
+  const [notes, setNotes] = useState('');
+
+  const [isPublic, setIsPublic] = useState(false);
+
+  const isFormValid =
+    images.length > 0 &&
+    artType !== '' &&
+    title.trim() !== '' &&
+    description.trim() !== '' &&
+    description.length <= 500 &&
+    notes.length <= 500;
+
+  return (
+    <main className="min-h-screen bg-white">
+      {/* Header */}
+      <Header title="공간 추가" showBack={true} />
+
+      {/* Content */}
+      <section className="flex flex-col gap-6 px-5 py-6 pb-32">
+        {/* 사진 업로드 */}
+        <FieldWrapper>
+          <Label required>사진 업로드</Label>
+          <ImageUploader />
+        </FieldWrapper>
+
+        {/* 공간 유형 */}
+        <FieldWrapper>
+          <div className="flex justify-between">
+            <Label required>공간 유형</Label>
+            <div className="relative">
+              <img
+                src="/info-icon.svg"
+                alt="공간 유형"
+                className="mr-2 cursor-pointer"
+                onClick={() => setIsTooltipOpen(!isTooltipOpen)}
+              />
+
+              <ArtTooltip isOpen={isTooltipOpen} onClose={() => setIsTooltipOpen(false)} />
+            </div>
+          </div>
+          <Dropdown
+            required
+            placeholder="공간 유형을 선택해주세요."
+            options={ART_TYPES}
+            value={artType}
+            onChange={setArtType}
+          />
+        </FieldWrapper>
+
+        {/* 공간명 */}
+        <FieldWrapper>
+          <Label required>공간명 (최대 10자)</Label>
+          <Input
+            required
+            placeholder="공간명을 작성해주세요."
+            deleteButton
+            maxLength={10}
+            value={title}
+            onChange={setTitle}
+          />
+        </FieldWrapper>
+
+        {/* 공간 설명 */}
+        <FieldWrapper>
+          <Label required>작품 설명</Label>
+          <Textarea
+            placeholder="공간 설명을 작성해주세요."
+            maxLength={500}
+            value={description}
+            onChange={setDescription}
+          />
+        </FieldWrapper>
+
+        {/* 제작일 */}
+        <FieldWrapper>
+          <Label>작품 제작일</Label>
+          <DatePicker label="작품 제작일" value={date} onChange={setDate} />
+        </FieldWrapper>
+
+        {/* 희망 전시 지역 */}
+        <FieldWrapper>
+          <Label>희망 전시 지역</Label>
+          <RegionSelect value={selectedRegions} onChange={setSelectedRegions} />
+        </FieldWrapper>
+
+        {/* 공간 크기 */}
+        <FieldWrapper>
+          <Label>제공 가능 공간 크기 (cm)</Label>
+          <SizeInput
+            width={width}
+            depth={depth}
+            height={height}
+            onWidthChange={setWidth}
+            onDepthChange={setDepth}
+            onHeightChange={setHeight}
+          />
+        </FieldWrapper>
+
+        {/* 주의사항 */}
+        <FieldWrapper>
+          <Label>주의 사항</Label>
+          <Textarea
+            placeholder="주의 사항 설명"
+            maxLength={500}
+            value={notes}
+            onChange={setNotes}
+          />
+        </FieldWrapper>
+
+        {/* 피드 내 공개 */}
+        <FieldWrapper>
+          <div className="flex items-center justify-between py-3">
+            <Label>피드 내 공개</Label>
+            <ToggleButton value={isPublic} onChange={setIsPublic} />
+          </div>
+        </FieldWrapper>
+      </section>
+
+      {/* Bottom Button () */}
+      <div className="border-border-primary fixed right-0 bottom-4 left-0 h-24.5 border-t bg-white px-5 py-4">
+        <button
+          disabled={!isFormValid}
+          className={`text-body-1 h-12.5 w-full rounded-lg font-medium transition-colors ${
+            isFormValid
+              ? 'bg-object-primary text-text-invert cursor-pointer'
+              : 'bg-object-disabled text-text-disabled cursor-not-allowed'
+          }`}
+        >
+          추가하기
+        </button>
+      </div>
+    </main>
+  );
+}
