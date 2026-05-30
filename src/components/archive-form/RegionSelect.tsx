@@ -1,19 +1,18 @@
 "use client";
 
-import { SEOUL_REGIONS } from "@/constants/region";
-import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
+
+import { Check, ChevronDown } from "lucide-react";
 import { Drawer } from "vaul";
+
+import { SEOUL_REGIONS } from "@/constants/region";
 
 interface RegionBottomSheetProps {
   value: string[];
   onChange: (regions: string[]) => void;
 }
 
-export default function RegionBottomSheet({
-  value,
-  onChange,
-}: RegionBottomSheetProps) {
+export default function RegionBottomSheet({ value, onChange }: RegionBottomSheetProps) {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"seoul" | "other">("seoul");
   const tabs = [
@@ -42,15 +41,13 @@ export default function RegionBottomSheet({
     const hasAllSelected = value.includes("서울 전체");
 
     // 서울 전체 제거
-    let nextRegions = hasAllSelected
-      ? value.filter((item) => item !== "서울 전체")
-      : [...value];
+    let nextRegions = hasAllSelected ? value.filter(item => item !== "서울 전체") : [...value];
 
     const isSelected = nextRegions.includes(region);
 
     // 선택 해제, 추가
     if (isSelected) {
-      nextRegions = nextRegions.filter((item) => item !== region);
+      nextRegions = nextRegions.filter(item => item !== region);
     } else {
       nextRegions.push(region);
     }
@@ -72,29 +69,22 @@ export default function RegionBottomSheet({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`
-          flex h-12.5 w-full px-4 rounded-lg border border-border-primary
-          items-center justify-between  transition-colors
-        `}
+        className={`border-border-primary flex h-12.5 w-full items-center justify-between rounded-lg border px-4 transition-colors`}
       >
-        <span
-          className={`text-body-1 ${displayText ? "text-text-primary" : "text-text-input"}`}
-        >
+        <span className={`text-body-1 ${displayText ? "text-text-primary" : "text-text-input"}`}>
           {displayText || "지역을 선택해주세요."}
         </span>
 
         <ChevronDown
           size={20}
-          className={`text-object-secondary transition-transform
-            ${open ? "rotate-180" : ""}
-          `}
+          className={`text-object-secondary transition-transform ${open ? "rotate-180" : ""} `}
         />
       </button>
 
       {/* Bottom Sheet */}
       <Drawer.Root
         open={open}
-        onOpenChange={(isOpen) => {
+        onOpenChange={isOpen => {
           setOpen(isOpen);
         }}
       >
@@ -102,14 +92,7 @@ export default function RegionBottomSheet({
           <Drawer.Overlay className="fixed inset-0 z-40 bg-black/20" />
 
           {/* Content */}
-          <Drawer.Content
-            className="
-            fixed bottom-0 left-0 right-0 z-50
-            mx-auto flex h-[70vh] w-full px-5 pt-3
-            flex-col rounded-t-3xl
-            bg-bg-primary outline-none
-          "
-          >
+          <Drawer.Content className="bg-bg-primary fixed right-0 bottom-0 left-0 z-50 mx-auto flex h-[70vh] w-full flex-col rounded-t-3xl px-5 pt-3 outline-none">
             {/* 스크린 리더기 (vaul 라이브러리 권장 사항) */}
             <Drawer.Title className="sr-only">지역 선택</Drawer.Title>
             <Drawer.Description className="sr-only">
@@ -122,26 +105,22 @@ export default function RegionBottomSheet({
             </div>
 
             {/* Header */}
-            <h2 className="text-heading-2 font-semibold pt-3 text-text-primary">
-              지역 설정하기
-            </h2>
+            <h2 className="text-heading-2 text-text-primary pt-3 font-semibold">지역 설정하기</h2>
 
             {/* Tab */}
-            <div className="mt-5 flex border-b border-border-primary">
-              {tabs.map((tab) => {
+            <div className="border-border-primary mt-5 flex border-b">
+              {tabs.map(tab => {
                 const isActive = activeTab === tab.key;
 
                 return (
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`flex-1 border-b-2 pb-3 text-body-1 font-medium transition-colors
-                    ${
+                    className={`text-body-1 flex-1 border-b-2 pb-3 font-medium transition-colors ${
                       isActive
                         ? "border-border-secondary text-text-primary-brand"
-                        : "border-transparent text-text-secondary"
-                    }
-                  `}
+                        : "text-text-secondary border-transparent"
+                    } `}
                   >
                     {tab.label}
                   </button>
@@ -153,33 +132,27 @@ export default function RegionBottomSheet({
             <div className="flex-1 overflow-y-auto pt-4">
               {activeTab === "seoul" ? (
                 <div className="flex flex-col gap-2">
-                  {SEOUL_REGIONS.map((region) => {
+                  {SEOUL_REGIONS.map(region => {
                     const isSelected = value.includes(region);
 
                     return (
                       <button
                         key={region}
                         onClick={() => toggleRegion(region)}
-                        className={`
-                        flex items-center justify-between
-                        rounded-lg p-3 text-body-1 transition-colors
-                        ${isSelected ? "bg-object-primary-light" : "bg-white"}
-                      `}
+                        className={`text-body-1 flex items-center justify-between rounded-lg p-3 transition-colors ${isSelected ? "bg-object-primary-light" : "bg-white"} `}
                       >
                         <span
-                          className={`text-body-1
-                        ${
-                          isSelected
-                            ? "font-semibold text-text-primary-brand"
-                            : "font-medium text-text-secondary"
-                        }
-                      `}
+                          className={`text-body-1 ${
+                            isSelected
+                              ? "text-text-primary-brand font-semibold"
+                              : "text-text-secondary font-medium"
+                          } `}
                         >
                           {region}
                         </span>
 
                         {isSelected && (
-                          <div className="flex h-5 w-5 items-center justify-center rounded-xs bg-object-primary">
+                          <div className="bg-object-primary flex h-5 w-5 items-center justify-center rounded-xs">
                             <Check size={16} className="text-white" />
                           </div>
                         )}
@@ -189,12 +162,8 @@ export default function RegionBottomSheet({
                 </div>
               ) : (
                 <div className="flex h-full flex-col items-center justify-center gap-6">
-                  <img
-                    src="/empty-icon.svg"
-                    alt="empty"
-                    className="h-20 w-20"
-                  />
-                  <p className="text-body-1 font-medium text-text-disabled">
+                  <img src="/empty-icon.svg" alt="empty" className="h-20 w-20" />
+                  <p className="text-body-1 text-text-disabled font-medium">
                     아쉽지만 지금은 일부 지역에서만 운영 중이에요.
                   </p>
                 </div>
@@ -206,13 +175,11 @@ export default function RegionBottomSheet({
               <button
                 onClick={() => setOpen(false)}
                 disabled={activeTab === "other"}
-                className={`h-12.5 w-full rounded-lg text-body-1 font-medium transition-colors
-                ${
+                className={`text-body-1 h-12.5 w-full rounded-lg font-medium transition-colors ${
                   activeTab === "other"
                     ? "bg-object-disabled text-text-disabled"
                     : "bg-bg-secondary text-text-invert"
-                }
-              `}
+                } `}
               >
                 완료
               </button>

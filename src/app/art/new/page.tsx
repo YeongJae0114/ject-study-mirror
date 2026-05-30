@@ -1,28 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { ART_TYPES } from "@/constants/art";
 
-import Header from "@/components/common/Header";
-import Label from "@/components/archive-form/Label";
-import ImageUploader from "@/components/archive-form/ImageUploader";
-import { useImageStore } from "@/stores/useImageStore";
-import Input from "@/components/archive-form/Input";
-import Dropdown from "@/components/archive-form/Dropdown";
 import ArtTooltip from "@/components/archive-form/ArtToolTip";
-import Textarea from "@/components/archive-form/Textarea";
 import DatePicker from "@/components/archive-form/DayPicker";
+import Dropdown from "@/components/archive-form/Dropdown";
+import ImageUploader from "@/components/archive-form/ImageUploader";
+import Input from "@/components/archive-form/Input";
+import Label from "@/components/archive-form/Label";
 import RegionSelect from "@/components/archive-form/RegionSelect";
 import SizeInput from "@/components/archive-form/SizeInput";
+import Textarea from "@/components/archive-form/Textarea";
 import ToggleButton from "@/components/archive-form/ToggleButton";
+import Header from "@/components/common/Header";
+import { ART_TYPES } from "@/constants/art";
+import { useImageStore } from "@/stores/useImageStore";
 
 function FieldWrapper({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-2">{children}</div>;
 }
 
 export default function ArtCreatePage() {
-  const images = useImageStore((state) => state.images);
-  const clearImages = useImageStore((state) => state.clearImages);
+  const images = useImageStore(state => state.images);
+  const clearImages = useImageStore(state => state.clearImages);
 
   const [artType, setArtType] = useState("");
   const [title, setTitle] = useState("");
@@ -71,14 +71,11 @@ export default function ArtCreatePage() {
               <img
                 src="/info-icon.svg"
                 alt="작품 유형"
-                className="cursor-pointer mr-2"
+                className="mr-2 cursor-pointer"
                 onClick={() => setIsTooltipOpen(!isTooltipOpen)}
               />
 
-              <ArtTooltip
-                isOpen={isTooltipOpen}
-                onClose={() => setIsTooltipOpen(false)}
-              />
+              <ArtTooltip isOpen={isTooltipOpen} onClose={() => setIsTooltipOpen(false)} />
             </div>
           </div>
           <Dropdown
@@ -152,7 +149,7 @@ export default function ArtCreatePage() {
 
         {/* 피드 내 공개 */}
         <FieldWrapper>
-          <div className="flex justify-between items-center py-3">
+          <div className="flex items-center justify-between py-3">
             <Label>피드 내 공개</Label>
             <ToggleButton value={isPublic} onChange={setIsPublic} />
           </div>
@@ -160,10 +157,10 @@ export default function ArtCreatePage() {
       </section>
 
       {/* Bottom Button () */}
-      <div className="fixed bottom-4 left-0 right-0 h-24.5 border-t border-border-primary bg-white px-5 py-4">
+      <div className="border-border-primary fixed right-0 bottom-4 left-0 h-24.5 border-t bg-white px-5 py-4">
         <button
           disabled={!isFormValid}
-          className={`h-12.5 w-full rounded-lg text-body-1 font-medium transition-colors ${
+          className={`text-body-1 h-12.5 w-full rounded-lg font-medium transition-colors ${
             isFormValid
               ? "bg-object-primary text-text-invert cursor-pointer"
               : "bg-object-disabled text-text-disabled cursor-not-allowed"

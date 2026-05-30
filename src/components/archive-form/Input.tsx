@@ -1,10 +1,12 @@
-'use client';
+"use client";
 
-import { AlertCircle } from 'lucide-react';
-import { type ChangeEvent, type InputHTMLAttributes } from 'react';
-import Label from './Label';
+import { type ChangeEvent, type InputHTMLAttributes } from "react";
 
-interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+import { AlertCircle } from "lucide-react";
+
+import Label from "./Label";
+
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "onChange"> {
   label?: string;
   message?: string;
   deleteButton?: boolean;
@@ -31,14 +33,14 @@ export default function Input({
     let currentValue = e.target.value;
 
     if (onlyNumber) {
-      currentValue = currentValue.replace(/[^0-9]/g, '');
+      currentValue = currentValue.replace(/[^0-9]/g, "");
     }
 
     onChange(currentValue);
   };
 
   const handleClear = () => {
-    onChange('');
+    onChange("");
   };
 
   return (
@@ -47,8 +49,8 @@ export default function Input({
       <div
         className={`flex h-12.5 w-full items-center rounded-lg border bg-white px-4 transition-colors ${
           isError
-            ? 'border-error-default'
-            : 'border-border-primary focus-within:border-border-secondary'
+            ? "border-error-default"
+            : "border-border-primary focus-within:border-border-secondary"
         } `}
       >
         {/* Label */}

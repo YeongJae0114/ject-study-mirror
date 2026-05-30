@@ -23,7 +23,7 @@ export default function SizeInput({
   return (
     <div className="flex w-full items-center gap-2">
       {/* 가로 */}
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <Input
           value={width ?? ""}
           placeholder="가로"
@@ -36,7 +36,7 @@ export default function SizeInput({
       <span className="text-coolNeutral-600">×</span>
 
       {/* 세로 */}
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <Input
           value={depth ?? ""}
           placeholder="세로"
@@ -49,7 +49,7 @@ export default function SizeInput({
       <span className="text-coolNeutral-600">×</span>
 
       {/* 높이 */}
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <Input
           value={height ?? ""}
           placeholder="높이"

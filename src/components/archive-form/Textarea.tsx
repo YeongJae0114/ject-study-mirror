@@ -3,10 +3,7 @@
 import { useState, type ChangeEvent, type TextareaHTMLAttributes } from "react";
 
 import Label from "./Label";
-interface TextAreaProps extends Omit<
-  TextareaHTMLAttributes<HTMLTextAreaElement>,
-  "onChange"
-> {
+interface TextAreaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "onChange"> {
   label?: string;
   required?: boolean;
   message?: string;
@@ -45,16 +42,13 @@ export default function TextArea({
 
       {/* Textarea */}
       <div
-        className={`
-          w-full rounded-lg border bg-white flex flex-col transition-colors
-          ${
-            isError
-              ? "border-error-default"
-              : focused
-                ? "border-border-secondary"
-                : "border-border-primary"
-          }
-        `}
+        className={`flex w-full flex-col rounded-lg border bg-white transition-colors ${
+          isError
+            ? "border-error-default"
+            : focused
+              ? "border-border-secondary"
+              : "border-border-primary"
+        } `}
       >
         <textarea
           value={value}
@@ -62,20 +56,13 @@ export default function TextArea({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           placeholder={placeholder}
-          className="
-            w-full bg-transparent px-4 pt-3 pb-2
-            text-body-1 text-coolNeutral-900
-            outline-none
-            placeholder:text-text-input
-            resize-none
-            h-31 overflow-y-auto
-          "
+          className="text-body-1 text-coolNeutral-900 placeholder:text-text-input h-31 w-full resize-none overflow-y-auto bg-transparent px-4 pt-3 pb-2 outline-none"
           {...props}
         />
 
         {/* Count */}
         {includeCountArea && (
-          <div className="px-4 pt-1.5 pb-2 flex justify-end">
+          <div className="flex justify-end px-4 pt-1.5 pb-2">
             <span className="text-caption text-coolNeutral-600">
               {value.length}/{maxLength}
             </span>
