@@ -1,13 +1,10 @@
-"use client";
+'use client';
 
-import { AlertCircle } from "lucide-react";
-import { type ChangeEvent, type InputHTMLAttributes } from "react";
-import Label from "./Label";
+import { AlertCircle } from 'lucide-react';
+import { type ChangeEvent, type InputHTMLAttributes } from 'react';
+import Label from './Label';
 
-interface InputProps extends Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "onChange"
-> {
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   label?: string;
   message?: string;
   deleteButton?: boolean;
@@ -34,29 +31,25 @@ export default function Input({
     let currentValue = e.target.value;
 
     if (onlyNumber) {
-      currentValue = currentValue.replace(/[^0-9]/g, "");
+      currentValue = currentValue.replace(/[^0-9]/g, '');
     }
 
     onChange(currentValue);
   };
 
   const handleClear = () => {
-    onChange("");
+    onChange('');
   };
 
   return (
     <div className="flex w-full flex-col gap-3">
       {/* Input Wrapper */}
       <div
-        className={`
-          flex h-12.5 w-full items-center
-          rounded-lg border bg-white px-4 transition-colors
-          ${
-            isError
-              ? "border-error-default"
-              : "border-border-primary focus-within:border-border-secondary"
-          }
-        `}
+        className={`flex h-12.5 w-full items-center rounded-lg border bg-white px-4 transition-colors ${
+          isError
+            ? 'border-error-default'
+            : 'border-border-primary focus-within:border-border-secondary'
+        } `}
       >
         {/* Label */}
         {label && <Label required={required}>{label}</Label>}
@@ -64,12 +57,7 @@ export default function Input({
           value={value}
           onChange={handleChange}
           placeholder={placeholder}
-          className="
-            flex-1 bg-transparent
-            text-body-1 text-coolNeutral-900
-            outline-none
-            placeholder:text-text-input
-          "
+          className="text-body-1 text-coolNeutral-900 placeholder:text-text-input flex-1 bg-transparent outline-none"
         />
 
         {isError && (
@@ -79,20 +67,14 @@ export default function Input({
         )}
 
         {deleteButton && !isError && writing && (
-          <button
-            type="button"
-            onClick={handleClear}
-            className="flex items-center justify-center"
-          >
-            <img src="/cancel-icon.svg" alt="취소" className="w-6 h-6" />
+          <button type="button" onClick={handleClear} className="flex items-center justify-center">
+            <img src="/cancel-icon.svg" alt="취소" className="h-6 w-6" />
           </button>
         )}
       </div>
 
       {isError ? (
-        <p className="text-caption text-error-default">
-          작품명은 최대 {maxLength}자까지 작성해주세요.
-        </p>
+        <p className="text-caption text-error-default">최대 {maxLength}자까지 작성해주세요.</p>
       ) : (
         message && <p className="text-body-2 text-coolNeutral-700">{message}</p>
       )}

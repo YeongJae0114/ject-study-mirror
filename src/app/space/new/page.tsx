@@ -43,6 +43,7 @@ export default function ArtCreatePage() {
     images.length > 0 &&
     artType !== '' &&
     title.trim() !== '' &&
+    address &&
     description.trim() !== '' &&
     description.length <= 500 &&
     notes.length <= 500;
@@ -99,13 +100,13 @@ export default function ArtCreatePage() {
 
         {/* 공간 주소 */}
         <FieldWrapper>
-          <Label>공간 주소</Label>
-          <AddressSearch value={address} onChange={setAddress} />{' '}
+          <Label required>공간 주소</Label>
+          <AddressSearch value={address} onChange={setAddress} />
         </FieldWrapper>
 
         {/* 공간 설명 */}
         <FieldWrapper>
-          <Label required>작품 설명</Label>
+          <Label required>공간 설명</Label>
           <Textarea
             placeholder="공간 설명을 작성해주세요."
             maxLength={500}
