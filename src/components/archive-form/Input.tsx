@@ -76,9 +76,7 @@ export default function Input({
       </div>
 
       {isError ? (
-        <p className="text-caption text-error-default">
-          작품명은 최대 {maxLength}자까지 작성해주세요.
-        </p>
+        <p className="text-caption text-error-default">최대 {maxLength}자까지 작성해주세요.</p>
       ) : (
         message && <p className="text-body-2 text-coolNeutral-700">{message}</p>
       )}
