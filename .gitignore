@@ -44,3 +44,8 @@ next-env.d.ts
 public/sw.js
 public/sw 2.js
 public/workbox-*.js
+
+# 작업 산출물·하네스·IDE (커밋 제외)
+/_workspace/
+/.claude/
+/.idea/
