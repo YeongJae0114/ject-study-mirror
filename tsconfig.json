@@ -22,7 +22,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "ignoreDeprecations": "6.0" // baseUrl 설정 deprecated 경고 무시
+    "ignoreDeprecations": "6.0" // baseUrl deprecated 경고 무시 (TS 6.x)
   },
   "include": [
     "next-env.d.ts",
