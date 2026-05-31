@@ -15,12 +15,18 @@ import ToggleButton from "@/components/archive-form/ToggleButton";
 import Header from "@/components/common/Header";
 import { ART_TYPES } from "@/constants/art";
 import { useImageStore } from "@/stores/useImageStore";
+import { useUploadImage } from "@/hooks/useImageUploader";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { createArtwork } from "@/services/artworks";
 
 function FieldWrapper({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-2">{children}</div>;
 }
 
 export default function ArtCreatePage() {
+  const router = useRouter();
+
   const images = useImageStore(state => state.images);
   const clearImages = useImageStore(state => state.clearImages);
 
@@ -50,6 +56,42 @@ export default function ArtCreatePage() {
     description.length <= 500 &&
     notes.length <= 500;
 
+  const { mutateAsync: uploadImage } = useUploadImage();
+  const { mutateAsync: createArtworkMutation } = useMutation({
+    mutationFn: createArtwork,
+  });
+
+  const handleSubmit = async () => {
+    try {
+      const uploadedImages = await Promise.all(images.map(image => uploadImage(image.file)));
+
+      await createArtworkMutation({
+        title,
+        artworkType: artType,
+        description,
+        caution: notes,
+
+        sizeType: "STANDARD",
+
+        widthCm: Number(width),
+        heightCm: Number(height),
+        depthCm: Number(depth),
+
+        createdDate: date?.toISOString().split("T")[0],
+
+        imageIds: uploadedImages.map(image => image.imageId),
+
+        thumbnailIndex: 0,
+
+        availableRegions: selectedRegions,
+      });
+
+      clearImages();
+      router.push("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <main className="min-h-screen bg-white">
       {/* Header */}
@@ -160,6 +202,7 @@ export default function ArtCreatePage() {
       <div className="border-border-primary fixed right-0 bottom-4 left-0 h-24.5 border-t bg-white px-5 py-4">
         <button
           disabled={!isFormValid}
+          onClick={handleSubmit}
           className={`text-body-1 h-12.5 w-full rounded-lg font-medium transition-colors ${
             isFormValid
               ? "bg-object-primary text-text-invert cursor-pointer"
