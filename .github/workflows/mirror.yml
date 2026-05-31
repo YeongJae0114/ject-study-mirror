@@ -1,0 +1,21 @@
+name: Mirror to Personal Repo for Vercel Free
+
+on:
+  push:
+    branches: ["develop"] # 배포 기준으로 쓰는 브랜치명
+
+jobs:
+  git-mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Mirror to Personal Repo
+        uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url: "https://github.com/YeongJae0114/ject-study-mirror.git"
+          auth_username: "YeongJae0114"
+          auth_password: ${{ secrets.MIRROR_TOKEN }}
