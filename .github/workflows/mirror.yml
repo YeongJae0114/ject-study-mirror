@@ -2,7 +2,7 @@ name: Mirror to Personal Repo for Vercel Free
 
 on:
   push:
-    branches: ["develop"]
+    branches: ["feat/17-vercel-mirror-v2"] # 배포 기준으로 쓰는 브랜치명
 
 jobs:
   git-mirror:
@@ -11,12 +11,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # 전체 커밋 히스토리를 가져와야 미러링이 가능합니다.
 
-      # HTTPS와 토큰을 잘 지원하는 플러그인으로 변경
       - name: Mirror to Personal Repo
-        uses: s0/git-publish-action@v1
         env:
-          REPOSITORY_URL: "https://github.com/YeongJae0114/ject-study-mirror.git"
-          BRANCH_NAME: "develop" # 미러링할 브랜치명
-          GITHUB_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          # 개인 레포 주소에서 https:// 생략하고 github.com/... 형태로 작성
+          TARGET_REPO: "github.com/YeongJae0114/ject-study-mirror.git"
+          # 레포지토리 쓰기 권한이 있는 세크리트 토큰
+          TOKEN: ${{ secrets.MIRROR_TOKEN }}
+        run: |
+          # 1. 깃 유저 정보 설정 (미러링 푸시를 위함)
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          REMOTE_URL="https://${TOKEN}@${TARGET_REPO}"
+          git push --force "${REMOTE_URL}" feat/17-vercel-mirror-v2
