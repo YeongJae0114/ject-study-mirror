@@ -8,9 +8,8 @@ import AuthSocialButtons from "@/components/auth/AuthSocialButtons";
 export default function LoginPage() {
   const router = useRouter();
 
-  const handleSocialLogin = (provider: string) => {
+  const handleSocialLogin = () => {
     // TODO: 소셜 로그인 로직 구현
-    console.log(`${provider} 로그인`);
     // 로그인 성공 시 프로필 설정으로 이동
     router.push("/auth/signup/profile");
   };
@@ -29,9 +28,9 @@ export default function LoginPage() {
       showLogo
     >
       <AuthSocialButtons
-        onGoogleLogin={() => handleSocialLogin("Google")}
-        onNaverLogin={() => handleSocialLogin("Naver")}
-        onKakaoLogin={() => handleSocialLogin("Kakao")}
+        onGoogleLogin={handleSocialLogin}
+        onNaverLogin={handleSocialLogin}
+        onKakaoLogin={handleSocialLogin}
       />
     </AuthLayout>
   );

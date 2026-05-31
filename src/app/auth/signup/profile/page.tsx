@@ -16,8 +16,7 @@ export default function ProfilePage() {
   // const [bio, setBio] = useState('');
   // const [profileImage, setProfileImage] = useState<File | null>(null);
 
-  const { nickname, bio, profileImage, setNickname, setBio, setProfileImage } =
-    useAuthSignupStore();
+  const { nickname, bio, setNickname, setBio, setProfileImage } = useAuthSignupStore();
 
   const [errors, setErrors] = useState<{ nickname?: string; bio?: string }>({});
 
@@ -43,7 +42,6 @@ export default function ProfilePage() {
   const handleNext = () => {
     if (validateForm()) {
       // TODO: 프로필 정보 저장 로직
-      console.log("프로필 정보:", { nickname, bio, profileImage });
       router.push("/auth/signup/role");
     }
   };

@@ -10,7 +10,7 @@ import { useAuthSignupStore } from "@/stores/authSignupStore";
 export default function RolePage() {
   const router = useRouter();
 
-  const { nickname, bio, profileImage, role, setRole } = useAuthSignupStore();
+  const { role, setRole } = useAuthSignupStore();
 
   // const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
@@ -20,13 +20,6 @@ export default function RolePage() {
 
   const handleComplete = () => {
     if (!role) return;
-
-    console.log("회원가입 온보딩 데이터:", {
-      nickname,
-      bio,
-      profileImage,
-      role,
-    });
 
     router.push("/");
   };
