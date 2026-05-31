@@ -1,5 +1,6 @@
-import React from 'react';
-import Image from 'next/image';
+import React from "react";
+
+import Image from "next/image";
 
 interface AuthLayoutProps {
   title: string;
@@ -9,8 +10,8 @@ interface AuthLayoutProps {
   showCloseButton?: boolean;
   onClose?: () => void;
   showLogo?: boolean;
-  background?: 'primary' | 'primary-darker';
-  variant?: 'brand' | 'form';
+  background?: "primary" | "primary-darker";
+  variant?: "brand" | "form";
   children: React.ReactNode;
 }
 
@@ -22,13 +23,13 @@ export default function AuthLayout({
   showCloseButton = false,
   onClose,
   showLogo = false,
-  background = 'primary',
-  variant = 'form',
+  background = "primary",
+  variant = "form",
   children,
 }: AuthLayoutProps) {
-  const isBrandLayout = variant === 'brand';
-  const backgroundClass = 
-    background === 'primary-darker' ? 'bg-bg-primary-darker' : 'bg-bg-primary';
+  const isBrandLayout = variant === "brand";
+  const backgroundClass =
+    background === "primary-darker" ? "bg-bg-primary-darker" : "bg-bg-primary";
 
   return (
     <div
@@ -41,51 +42,36 @@ export default function AuthLayout({
       {showCloseButton && (
         <button
           onClick={onClose}
-          className="absolute right-5 top-12 p-2 text-text-primary"
+          className="text-text-primary absolute top-12 right-5 p-2"
           type="button"
           aria-label="닫기"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M18 6L6 18"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-            <path
-              d="M6 6L18 18"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
+            <path d="M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </button>
       )}
 
       <div className="mx-auto w-full max-w-97.5">
         {showBackButton && (
-        <button
+          <button
             onClick={onBack}
-            className="mt-12 p-0 text-text-primary"
+            className="text-text-primary mt-12 p-0"
             type="button"
             aria-label="뒤로가기"
-        >
+          >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path
-                d="M19 12H5"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-            />
-            <path
+              <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path
                 d="M12 5L5 12L12 19"
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-            />
+              />
             </svg>
-        </button>
+          </button>
         )}
 
         {isBrandLayout ? (
@@ -101,15 +87,13 @@ export default function AuthLayout({
                   priority
                 />
               ) : (
-                <h1 className="mb-2 font-alata text-display-1 font-medium text-text-primary-brand">
+                <h1 className="font-alata text-display-1 text-text-primary-brand mb-2 font-medium">
                   {title}
                 </h1>
               )}
 
               {description && (
-                <p className="text-heading-2 font-medium text-text-primary-brand">
-                  {description}
-                </p>
+                <p className="text-heading-2 text-text-primary-brand font-medium">{description}</p>
               )}
             </div>
 
@@ -118,12 +102,10 @@ export default function AuthLayout({
         ) : (
           <div className="pt-8">
             <div className="mb-18">
-              <h1 className="text-heading-1 font-semibold text-text-primary">
-                {title}
-              </h1>
+              <h1 className="text-heading-1 text-text-primary font-semibold">{title}</h1>
 
               {description && (
-                <p className="mt-1 whitespace-pre-line text-body-2 font-medium text-text-secondary">
+                <p className="text-body-2 text-text-secondary mt-1 font-medium whitespace-pre-line">
                   {description}
                 </p>
               )}

@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+
 import { useRouter } from "next/navigation";
-import AuthLayout from "@/components/auth/AuthLayout";
-import ProfileAvatarInput from "@/components/auth/ProfileAvatarInput";
-import AuthTextField from "@/components/auth/AuthTextField";
+
 import AuthButton from "@/components/auth/AuthButton";
+import AuthLayout from "@/components/auth/AuthLayout";
+import AuthTextField from "@/components/auth/AuthTextField";
+import ProfileAvatarInput from "@/components/auth/ProfileAvatarInput";
 import { useAuthSignupStore } from "@/stores/authSignupStore";
 
 export default function ProfilePage() {
@@ -50,8 +52,7 @@ export default function ProfilePage() {
     router.back();
   };
 
-  const isFormValid =
-    nickname.trim().length >= 2 && nickname.length <= 10 && bio.length <= 100;
+  const isFormValid = nickname.trim().length >= 2 && nickname.length <= 10 && bio.length <= 100;
 
   return (
     <AuthLayout

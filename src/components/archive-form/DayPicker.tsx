@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+
+import { format } from "date-fns";
+import { ko } from "date-fns/locale";
 import { CalendarDays } from "lucide-react";
 import { DayPicker } from "react-day-picker";
-import { format } from "date-fns";
 
 import "react-day-picker/dist/style.css";
-import { ko } from "date-fns/locale";
 
 interface Props {
   label?: string;
@@ -22,10 +23,7 @@ export default function DatePicker({ value, onChange }: Props) {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(event.target as Node)
-      ) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
         setOpen(false);
       }
     }
@@ -44,20 +42,20 @@ export default function DatePicker({ value, onChange }: Props) {
           readOnly
           value={value ? format(value, "yyyy.MM.dd") : ""}
           placeholder="YYYY.MM.DD"
-          className="w-full rounded-lg border px-4 h-12.5 focus:outline-none border-border-primary focus-within:border-border-secondary"
+          className="border-border-primary focus-within:border-border-secondary h-12.5 w-full rounded-lg border px-4 focus:outline-none"
         />
 
         <button
           type="button"
-          onClick={() => setOpen((prev) => !prev)}
-          className="absolute right-4 top-1/2 -translate-y-1/2"
+          onClick={() => setOpen(prev => !prev)}
+          className="absolute top-1/2 right-4 -translate-y-1/2"
         >
           <CalendarDays size={20} />
         </button>
       </div>
 
       {open && (
-        <div className="absolute right-0 z-50 mt-2 rounded-2xl border border-border-primary bg-white p-3">
+        <div className="border-border-primary absolute right-0 z-50 mt-2 rounded-2xl border bg-white p-3">
           <DayPicker
             mode="single"
             classNames={{
@@ -69,7 +67,7 @@ export default function DatePicker({ value, onChange }: Props) {
             }}
             selected={value}
             locale={ko}
-            onSelect={(date) => {
+            onSelect={date => {
               onChange?.(date);
               setOpen(false);
             }}
