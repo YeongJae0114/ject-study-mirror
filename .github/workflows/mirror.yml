@@ -2,7 +2,7 @@ name: Mirror to Personal Repo for Vercel Free
 
 on:
   push:
-    branches: ["feat/17-vercel-mirror-v2"] # 배포 기준으로 쓰는 브랜치명
+    branches: ["feat/17-vercel-mirror-v2"]
 
 jobs:
   git-mirror:
@@ -11,18 +11,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # 전체 커밋 히스토리를 가져와야 미러링이 가능합니다.
+          fetch-depth: 0
+          # ⭐ [핵심 1] checkout 액션이 기본 봇 토큰을 로컬 기기에 저장하지 않도록 설정
+          persist-credentials: false 
 
       - name: Mirror to Personal Repo
-        env:
-          # 개인 레포 주소에서 https:// 생략하고 github.com/... 형태로 작성
-          TARGET_REPO: "github.com/YeongJae0114/ject-study-mirror.git"
-          # 레포지토리 쓰기 권한이 있는 세크리트 토큰
-          TOKEN: ${{ secrets.MIRROR_TOKEN }}
         run: |
-          # 1. 깃 유저 정보 설정 (미러링 푸시를 위함)
+          # 1. 깃 유저 정보 설정
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          REMOTE_URL="https://${TOKEN}@${TARGET_REPO}"
+          # ⭐ [핵심 2] 혹시 남아있을지 모르는 기존 인증 헤더를 강제로 삭제
+          git config --local --unset-all http.https://github.com/.extraheader || true
+          
+          # 3. 변수 및 URL 설정
+          TARGET_REPO="github.com/YeongJae0114/ject-study-mirror.git"
+          REMOTE_URL="https://${{ secrets.MIRROR_TOKEN }}@${TARGET_REPO}"
+          
+          # 4. 강제 푸시 (내 개인 토큰 주소로 명확하게 푸시)
           git push --force "${REMOTE_URL}" feat/17-vercel-mirror-v2
