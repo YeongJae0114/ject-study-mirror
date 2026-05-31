@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Alata } from "next/font/google";
 import localFont from "next/font/local";
+
+import QueryProvider from "@/components/providers/QueryProvider";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -28,7 +31,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${pretendard.className} ${alata.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   );
 }
