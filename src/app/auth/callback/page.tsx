@@ -50,6 +50,9 @@ export default function AuthCallbackPage() {
               providers: res.registeredProviders,
             });
             break;
+          default:
+            // 예상치 못한 loginStatus — 무한 로딩 방지, 에러 페이지로 폴백
+            router.replace("/auth/error?error.code=UNKNOWN_LOGIN_STATUS");
         }
       })
       .catch((err) => {

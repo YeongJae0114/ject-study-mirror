@@ -15,13 +15,10 @@ export default function AuthErrorPage() {
   const [message, setMessage] = useState("로그인에 실패했어요.");
 
   useEffect(() => {
-    // 실패 콜백은 쿼리 키에 점(.)이 들어간다: error.code, error.message
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("error.code");
-    const serverMessage = params.get("error.message");
-    setMessage(
-      (code && ERROR_MESSAGES[code]) ?? serverMessage ?? "로그인에 실패했어요.",
-    );
+    // error.message(쿼리 값)는 신뢰할 수 없어 표시하지 않는다.
+    // 매핑된 code만 안내하고, 빈/미매핑 code는 일반 메시지로 폴백(|| 로 빈 문자열도 처리).
+    const code = new URLSearchParams(window.location.search).get("error.code");
+    setMessage((code && ERROR_MESSAGES[code]) || "로그인에 실패했어요.");
   }, []);
 
   return (
