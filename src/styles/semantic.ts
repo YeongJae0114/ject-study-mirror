@@ -23,6 +23,7 @@ export const semantic = {
     "primary-pressed": colors.purple[700],
     "primary-pressed-light": colors.purple[300],
     secondary: colors.coolNeutral[800],
+    "secondary-light": colors.coolNeutral[200],
     disabled: colors.coolNeutral[100],
     "disabled-dark": colors.coolNeutral[300],
     tertiary: colors.pink[500],
