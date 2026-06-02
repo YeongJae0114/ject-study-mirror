@@ -24,17 +24,18 @@ export default function ConfirmModal({
   if (!open) return null;
 
   const isDanger = tone === "danger";
+  const iconToneClass = isDanger
+    ? "bg-object-tertiary-light text-object-tertiary"
+    : "bg-object-primary-light text-object-primary";
+  const confirmToneClass =
+    "bg-object-primary hover:bg-object-primary-hover active:bg-object-primary-pressed";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-5">
+    <div className="bg-black-alpha-500 fixed inset-0 z-50 flex items-center justify-center px-5">
       <div className="bg-bg-primary shadow-spread-low w-full max-w-85 rounded-xl px-5 py-6">
         <div className="flex flex-col items-center text-center">
           <div
-            className={`mb-4 flex h-12 w-12 items-center justify-center rounded-full ${
-              isDanger
-                ? "bg-error-light text-error-default"
-                : "bg-object-primary-light text-object-primary"
-            }`}
+            className={`mb-4 flex h-12 w-12 items-center justify-center rounded-full ${iconToneClass}`}
           >
             <AlertCircle size={24} />
           </div>
@@ -55,9 +56,7 @@ export default function ConfirmModal({
             type="button"
             onClick={onConfirm}
             disabled={isConfirmLoading}
-            className={`text-body-1 text-text-invert h-12 rounded-lg font-medium disabled:cursor-not-allowed disabled:opacity-60 ${
-              isDanger ? "bg-error-default" : "bg-object-primary"
-            }`}
+            className={`text-body-1 text-text-invert h-12 rounded-lg font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${confirmToneClass}`}
           >
             {isConfirmLoading ? "처리 중" : confirmText}
           </button>

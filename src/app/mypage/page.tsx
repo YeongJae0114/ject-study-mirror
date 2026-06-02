@@ -10,9 +10,7 @@ import {
   Images,
   LockKeyhole,
   MessageCircle,
-  Settings,
   SquareUserRound,
-  UserRound,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,7 +26,7 @@ interface BadgeProps {
 
 interface SectionHeaderProps {
   title: string;
-  showMore?: boolean;
+  moreHref?: string;
 }
 
 interface ExhibitionItemProps {
@@ -62,7 +60,7 @@ const ROLE_LABEL: Record<string, string> = {
 };
 
 const getRoleLabel = (role?: string) => {
-  if (!role) return null;
+  if (!role || role === "PENDING") return null;
   return ROLE_LABEL[role] ?? role;
 };
 
@@ -81,14 +79,14 @@ function Badge({ children, size = "medium" }: BadgeProps) {
 function MypageHeader() {
   return (
     <>
-      <header className="bg-bg-primary fixed top-0 left-1/2 z-10 flex h-14 w-full max-w-97.5 -translate-x-1/2 items-center justify-between px-5">
+      <header className="bg-bg-primary fixed top-0 right-0 left-0 z-10 flex h-14 w-full items-center justify-between px-5">
         <h1 className="text-headline-1 text-text-primary font-semibold">마이페이지</h1>
         <Link
           href="/mypage/settings"
           aria-label="설정으로 이동"
           className="text-text-primary flex size-6 items-center justify-center"
         >
-          <Settings size={24} />
+          <Image src="/icon-trailing-1.svg" alt="" width={24} height={24} />
         </Link>
       </header>
       <div className="h-14" />
@@ -118,8 +116,8 @@ function ProfileSummary({
   return (
     <section className="flex flex-col items-center px-5 pt-8">
       <div className="flex h-39 w-full flex-col items-center gap-4">
-        <div className="bg-bg-primary-darker border-border-primary relative flex size-20 items-center justify-center overflow-hidden rounded-full border">
-          {profile?.profileImageUrl ? (
+        {profile?.profileImageUrl ? (
+          <div className="relative size-20 overflow-hidden rounded-full">
             <Image
               src={profile.profileImageUrl}
               alt=""
@@ -127,10 +125,10 @@ function ProfileSummary({
               sizes="80px"
               className="object-cover"
             />
-          ) : (
-            <UserRound size={42} className="text-text-disabled" strokeWidth={1.7} />
-          )}
-        </div>
+          </div>
+        ) : (
+          <Image src="/profile.svg" alt="" width={80} height={80} className="size-20" />
+        )}
 
         <div className="flex h-15 w-full flex-col items-center justify-center gap-[5px]">
           {profile?.roleLabel && <Badge>{profile.roleLabel}</Badge>}
@@ -149,18 +147,19 @@ function ProfileSummary({
   );
 }
 
-function SectionHeader({ title, showMore = false }: SectionHeaderProps) {
+function SectionHeader({ title, moreHref }: SectionHeaderProps) {
   return (
     <div className="flex h-7.5 w-full items-center justify-between">
       <h2 className="text-heading-2 text-text-primary font-medium">{title}</h2>
-      {showMore && (
-        <button
-          type="button"
+      {moreHref && (
+        <Link
+          href={moreHref}
+          aria-label={`${title} 전체보기`}
           className="text-label text-text-secondary flex h-7.5 items-center font-medium"
         >
           전체보기
           <ChevronRight size={16} />
-        </button>
+        </Link>
       )}
     </div>
   );
@@ -253,7 +252,7 @@ function BottomNavigationItem({ label, icon: Icon, selected = false }: BottomNav
 
 function BottomNavigation() {
   return (
-    <nav className="border-border-primary bg-bg-primary fixed bottom-0 left-1/2 z-10 flex w-full max-w-97.5 min-w-[320px] -translate-x-1/2 items-center justify-center gap-1.5 border-t px-3 pb-2">
+    <nav className="border-border-primary bg-bg-primary fixed right-0 bottom-0 left-0 z-10 flex w-full min-w-[320px] items-center justify-center gap-1.5 border-t px-3 pb-2">
       <BottomNavigationItem label="홈" icon={Home} />
       <BottomNavigationItem label="전시 현황" icon={Images} />
       <BottomNavigationItem label="채팅" icon={MessageCircle} />
@@ -275,15 +274,17 @@ export default function MypagePage() {
   const profile: MypageProfile | null =
     meQuery.data || nicknamePolicyQuery.data
       ? {
-          nickname: nicknamePolicyQuery.data?.nickname ?? "",
+          nickname: nicknamePolicyQuery.data?.nickname ?? meQuery.data?.nickname ?? "",
+          introduction: meQuery.data?.bio ?? null,
           roleLabel: getRoleLabel(meQuery.data?.role),
+          snsUrl: meQuery.data?.snsUrl ?? null,
         }
       : null;
   const { exhibitions, artworks } = EMPTY_MYPAGE_DATA;
   const isProfileLoading = meQuery.isLoading || nicknamePolicyQuery.isLoading;
 
   return (
-    <main className="bg-bg-primary mx-auto min-h-dvh w-full max-w-97.5 pb-24">
+    <main className="bg-bg-primary min-h-dvh w-full pb-24">
       <MypageHeader />
 
       <ProfileSummary profile={profile} isLoading={isProfileLoading} />
@@ -322,8 +323,22 @@ export default function MypagePage() {
           </div>
         </section>
 
+        <section className="flex flex-col gap-4">
+          <SectionHeader title="피드" moreHref="/mypage/feed" />
+
+          {artworks.length > 0 ? (
+            <div className="grid grid-cols-2 gap-x-3.5 gap-y-3.5">
+              {artworks.map(artwork => (
+                <ArtworkCard key={artwork.id} artwork={artwork} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState message="등록된 피드가 없습니다." />
+          )}
+        </section>
+
         <section className="flex flex-col gap-2">
-          <SectionHeader title="활동 정보" showMore />
+          <SectionHeader title="활동 정보" moreHref="/mypage/activities" />
 
           {exhibitions.length > 0 ? (
             <div className="flex flex-col gap-4 py-4">
@@ -337,20 +352,6 @@ export default function MypagePage() {
             </div>
           ) : (
             <EmptyState message="등록된 활동 정보가 없습니다." />
-          )}
-        </section>
-
-        <section className="flex flex-col gap-4">
-          <SectionHeader title="피드" showMore />
-
-          {artworks.length > 0 ? (
-            <div className="grid grid-cols-2 gap-x-3.5 gap-y-3.5">
-              {artworks.map(artwork => (
-                <ArtworkCard key={artwork.id} artwork={artwork} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState message="등록된 피드가 없습니다." />
           )}
         </section>
       </div>

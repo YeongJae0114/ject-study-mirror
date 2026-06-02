@@ -64,7 +64,7 @@ export default function MyPageSettingsPage() {
     <main className="bg-bg-primary min-h-dvh">
       <Header title="설정" showBack showBorder={false} />
 
-      <section className="mx-auto w-full max-w-97.5 px-5 pt-1">
+      <section className="w-full px-5 pt-1">
         <div className="flex flex-col">
           <SettingMenuItem
             title="회원정보 변경"
