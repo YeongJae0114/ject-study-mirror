@@ -2,7 +2,8 @@
 
 import { useEffect, useState, type ChangeEvent } from "react";
 
-import { Camera, UserRound, X } from "lucide-react";
+import { X } from "lucide-react";
+import Image from "next/image";
 
 interface ProfileImageInputProps {
   onChange: (file: File | null) => void;
@@ -45,23 +46,22 @@ export default function ProfileImageInput({ onChange }: ProfileImageInputProps) 
 
   return (
     <div className="flex justify-center">
-      <div className="relative">
-        <div className="border-border-primary bg-bg-primary-darker flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border">
-          {previewUrl ? (
+      <div className="relative h-20 w-22.5">
+        {previewUrl ? (
+          <div className="border-border-primary bg-bg-primary-darker flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border">
             <div
               role="img"
               aria-label="프로필 이미지"
               className="h-full w-full bg-cover bg-center"
               style={{ backgroundImage: `url(${previewUrl})` }}
             />
-          ) : (
-            <UserRound size={36} className="text-text-disabled" />
-          )}
-        </div>
+          </div>
+        ) : (
+          <Image src="/profile-edit.svg" alt="" width={90} height={80} className="h-20 w-22.5" />
+        )}
 
-        <label className="bg-object-primary text-text-invert shadow-medium absolute right-0 bottom-0 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full">
+        <label className="absolute inset-0 cursor-pointer" aria-label="프로필 이미지 변경">
           <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-          <Camera size={16} />
         </label>
 
         {previewUrl && (
