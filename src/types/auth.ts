@@ -22,5 +22,8 @@ export interface OAuthLoginResult {
 export interface MeResult {
   userId: number;
   email: string;
+  nickname: string | null;
+  bio: string | null;
   role: string;
+  snsUrl: string | null;
 }

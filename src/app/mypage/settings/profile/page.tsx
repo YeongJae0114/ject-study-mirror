@@ -158,7 +158,7 @@ export default function MyPageProfileSettingsPage() {
       <Header title="회원정보 변경" showBack />
 
       <section className="fixed top-15 right-0 bottom-[82px] left-0 overflow-y-auto">
-        <div className="mx-auto flex w-full max-w-107.5 flex-col gap-6 px-5 py-6">
+        <div className="flex w-full flex-col gap-6 px-5 py-6">
           <ProfileImageInput
             onChange={file => {
               updateField("profileImage", file);
@@ -226,7 +226,7 @@ export default function MyPageProfileSettingsPage() {
       </section>
 
       <div className="border-border-primary bg-bg-primary fixed right-0 bottom-0 left-0 border-t px-5 py-4">
-        <div className="mx-auto w-full max-w-107.5">
+        <div className="w-full">
           <button
             type="button"
             onClick={handleSubmit}
