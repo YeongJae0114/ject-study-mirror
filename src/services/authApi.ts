@@ -3,8 +3,7 @@ import type { MeResult, OAuthLoginResult, OAuthProvider } from "@/types/auth";
 
 // OAuth 시작은 전체 페이지 이동(fetch 아님). 백엔드가 302로 소셜 제공자로 보낸다.
 // 프록시를 거치지 않도록 백엔드 절대 origin을 직접 사용한다.
-const AUTH_ORIGIN =
-  process.env.NEXT_PUBLIC_API_ORIGIN ?? "https://api.refitspace.art";
+const AUTH_ORIGIN = process.env.NEXT_PUBLIC_API_ORIGIN ?? "https://api.refitspace.art";
 
 /** 소셜 로그인 시작 — 브라우저를 백엔드 OAuth 진입점으로 이동시킨다. */
 export function startOAuth(provider: OAuthProvider): void {
