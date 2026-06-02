@@ -8,6 +8,7 @@ import Header from "@/components/common/Header";
 import ProfileImageInput from "@/components/mypage/ProfileImageInput";
 import ProfileTextField from "@/components/mypage/ProfileTextField";
 import Toast from "@/components/mypage/Toast";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { ApiError } from "@/services/apiClient";
 import { getMe } from "@/services/authApi";
 import { getNicknamePolicy, updateNickname } from "@/services/userApi";
@@ -47,16 +48,20 @@ const isValidUrl = (value: string) => {
 
 export default function MyPageProfileSettingsPage() {
   const queryClient = useQueryClient();
+  const { isAuthReady, isAuthenticated } = useRequireAuth();
+  const canFetchProfile = isAuthReady && isAuthenticated;
   const [formValues, setFormValues] = useState<ProfileFormValues>(INITIAL_FORM_VALUES);
   const [errors, setErrors] = useState<ProfileFormErrors>({});
   const [isToastOpen, setIsToastOpen] = useState(false);
   const meQuery = useQuery({
     queryKey: ["auth", "me"],
     queryFn: getMe,
+    enabled: canFetchProfile,
   });
   const nicknamePolicyQuery = useQuery({
     queryKey: ["users", "me", "nickname-policy"],
     queryFn: getNicknamePolicy,
+    enabled: canFetchProfile,
   });
   const nicknameMutation = useMutation({
     mutationFn: updateNickname,
@@ -95,6 +100,8 @@ export default function MyPageProfileSettingsPage() {
 
     if (!nickname) {
       nextErrors.nickname = "닉네임을 입력해주세요.";
+    } else if (nickname.length < 2) {
+      nextErrors.nickname = "닉네임은 2자 이상 입력해주세요.";
     } else if (nickname.length > 10) {
       nextErrors.nickname = "닉네임은 최대 10자까지 입력해주세요.";
     } else if (
@@ -134,13 +141,17 @@ export default function MyPageProfileSettingsPage() {
   };
 
   const isSubmitDisabled =
+    !canFetchProfile ||
     meQuery.isLoading ||
     nicknamePolicyQuery.isLoading ||
     nicknameMutation.isPending ||
     !(formValues.nickname ?? nicknamePolicyQuery.data?.nickname ?? "").trim() ||
+    (formValues.nickname ?? nicknamePolicyQuery.data?.nickname ?? "").trim().length < 2 ||
     (formValues.nickname ?? nicknamePolicyQuery.data?.nickname ?? "").length > 10 ||
     formValues.bio.length > 100 ||
     !isValidUrl(formValues.snsUrl);
+
+  if (!canFetchProfile) return null;
 
   return (
     <main className="bg-bg-primary min-h-dvh overflow-hidden">

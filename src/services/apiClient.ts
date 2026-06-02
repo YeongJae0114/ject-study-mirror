@@ -1,107 +1,95 @@
-export interface ApiMeta {
-  requestId: string;
-  timestamp: string;
-}
+/**
+ * 공통 REST fetch 래퍼: auth 통합 지점(session.ts에서 Bearer 토큰 주입), `{ data, meta }`에서 `.data`만 언랩, 비-2xx는 `error.code`로 ApiError throw.
+ * Base URL은 NEXT_PUBLIC_API_BASE. 미설정 시 빈 문자열 → 상대경로로 next dev rewrites 프록시를 타 CORS 회피.
+ */
 
-export interface ApiResponse<T> {
-  data: T;
-  meta: ApiMeta;
-}
+import { getAccessToken } from "@/services/session";
+import type { ApiEnvelope, ApiErrorBody } from "@/types/chat";
 
-interface ApiErrorField {
-  field?: string;
-  message?: string;
-}
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "";
 
-interface ApiErrorBody {
-  error?: {
-    code?: string;
-    message?: string;
-    fields?: ApiErrorField[];
-  };
-}
-
-interface RequestOptions extends Omit<RequestInit, "body"> {
-  body?: unknown;
-  auth?: boolean;
-}
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://api.refitspace.art";
-
-// 기존 로그인 구현에서 사용할 수 있는 토큰 키를 함께 확인합니다.
-const ACCESS_TOKEN_KEYS = ["accessToken", "refit_access_token"];
-
+/** REST 에러. error.code로 분기하고, message는 표시용. */
 export class ApiError extends Error {
-  status: number;
-  code?: string;
-  fields?: ApiErrorField[];
+  readonly code: string;
+  readonly status: number;
+  readonly fields: Array<{ field: string; reason: string }> | null;
 
-  constructor(status: number, message: string, code?: string, fields?: ApiErrorField[]) {
+  constructor(
+    code: string,
+    message: string,
+    status: number,
+    fields: Array<{ field: string; reason: string }> | null = null
+  ) {
     super(message);
     this.name = "ApiError";
-    this.status = status;
     this.code = code;
+    this.status = status;
     this.fields = fields;
   }
 }
 
-export const getAccessToken = () => {
-  if (typeof window === "undefined") return null;
+interface RequestOptions {
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  body?: unknown;
+  /** 쿼리스트링 파라미터. undefined/null 값은 제외된다. */
+  query?: Record<string, string | number | undefined | null>;
+}
 
-  for (const key of ACCESS_TOKEN_KEYS) {
-    const token = window.localStorage.getItem(key);
-    if (token) return token;
+function buildUrl(path: string, query?: RequestOptions["query"]): string {
+  const url = `${API_BASE}${path}`;
+  if (!query) return url;
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value === undefined || value === null) continue;
+    search.append(key, String(value));
   }
+  const qs = search.toString();
+  return qs ? `${url}?${qs}` : url;
+}
 
-  return null;
-};
+/** 성공 시 ApiEnvelope<T>의 `.data` 반환, 실패 시 ApiError throw. */
+async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const { method = "GET", body, query } = options;
 
-export const clearAccessToken = () => {
-  if (typeof window === "undefined") return;
+  const headers: Record<string, string> = {};
+  const token = getAccessToken();
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (body !== undefined) headers["Content-Type"] = "application/json";
 
-  ACCESS_TOKEN_KEYS.forEach(key => {
-    window.localStorage.removeItem(key);
+  const response = await fetch(buildUrl(path, query), {
+    method,
+    headers,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
   });
-};
-
-export const apiClient = async <T>(path: string, options: RequestOptions = {}) => {
-  const { body, headers, auth = true, ...init } = options;
-  const requestHeaders = new Headers(headers);
-
-  if (body !== undefined && !(body instanceof FormData)) {
-    requestHeaders.set("Content-Type", "application/json");
-  }
-
-  if (auth) {
-    const token = getAccessToken();
-    if (token) {
-      requestHeaders.set("Authorization", `Bearer ${token}`);
-    }
-  }
-
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers: requestHeaders,
-    body: body instanceof FormData ? body : body === undefined ? undefined : JSON.stringify(body),
-  });
-
-  if (response.status === 204) return undefined as T;
-
-  const text = await response.text();
-  const payload = text ? (JSON.parse(text) as ApiResponse<T> | ApiErrorBody) : undefined;
 
   if (!response.ok) {
-    const errorPayload = payload as ApiErrorBody | undefined;
-    const apiError = errorPayload?.error;
-
-    throw new ApiError(
-      response.status,
-      apiError?.message ?? "요청 처리 중 오류가 발생했습니다.",
-      apiError?.code,
-      apiError?.fields
-    );
+    let code = "UNKNOWN_ERROR";
+    let message = response.statusText || "요청에 실패했습니다.";
+    let fields: Array<{ field: string; reason: string }> | null = null;
+    try {
+      const errorBody = (await response.json()) as ApiErrorBody;
+      if (errorBody?.error) {
+        code = errorBody.error.code ?? code;
+        message = errorBody.error.message ?? message;
+        fields = errorBody.error.fields ?? null;
+      }
+    } catch {
+      // 본문이 JSON이 아닐 수 있다 — status 기반 기본값 유지.
+    }
+    throw new ApiError(code, message, response.status, fields);
   }
 
-  // Swagger 응답 공통 포맷이 { data, meta }라 화면에서는 data만 사용합니다.
-  return (payload as ApiResponse<T>).data;
+  // 204 등 본문 없는 응답 방어.
+  const text = await response.text();
+  if (!text) return undefined as T;
+  const envelope = JSON.parse(text) as ApiEnvelope<T>;
+  return envelope.data;
+}
+
+export const apiClient = {
+  get: <T>(path: string, query?: RequestOptions["query"]) =>
+    request<T>(path, { method: "GET", query }),
+  post: <T>(path: string, body?: unknown) => request<T>(path, { method: "POST", body }),
+  patch: <T>(path: string, body?: unknown) => request<T>(path, { method: "PATCH", body }),
+  delete: <T>(path: string, body?: unknown) => request<T>(path, { method: "DELETE", body }),
 };

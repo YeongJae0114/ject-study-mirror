@@ -8,7 +8,9 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/common/Header";
 import ConfirmModal from "@/components/mypage/ConfirmModal";
 import SettingMenuItem from "@/components/mypage/SettingMenuItem";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { logout } from "@/services/authApi";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 type ModalType = "logout" | "withdraw" | null;
 
@@ -29,11 +31,14 @@ const MODAL_CONTENT = {
 
 export default function MyPageSettingsPage() {
   const router = useRouter();
+  const { isAuthReady, isAuthenticated } = useRequireAuth();
+  const clearAuth = useAuthStore(state => state.clearAuth);
   const [modalType, setModalType] = useState<ModalType>(null);
   const modalContent = modalType ? MODAL_CONTENT[modalType] : null;
   const logoutMutation = useMutation({
     mutationFn: logout,
     onSettled: () => {
+      clearAuth();
       setModalType(null);
       router.push("/auth");
     },
@@ -52,6 +57,8 @@ export default function MyPageSettingsPage() {
     // 회원탈퇴 API는 현재 구현 범위에 없어 모달 UI만 유지합니다.
     closeModal();
   };
+
+  if (!isAuthReady || !isAuthenticated) return null;
 
   return (
     <main className="bg-bg-primary min-h-dvh">

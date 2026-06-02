@@ -1,0 +1,33 @@
+name: Deploy to Personal Repo Main for Vercel
+
+on:
+  push:
+    # 오거나이제이션의 develop 브랜치에 코드가 반영될 때만 실행됩니다.
+    branches: ["develop"] 
+
+jobs:
+  git-mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false 
+
+      - name: Force Push to Personal Repo Main
+        run: |
+          # 1. Git 유저 정보 설정
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 2. 잔여 인증 정보 제거
+          git config --local --unset-all http.https://github.com/.extraheader || true
+          
+          # 3. 변수 및 URL 설정
+          TARGET_REPO="github.com/YeongJae0114/ject-study-mirror.git"
+          REMOTE_URL="https://${{ secrets.MIRROR_TOKEN }}@${TARGET_REPO}"
+          
+          # 4. 🔥 핵심: 현재 오거나이제이션의 코드를 개인 레포의 'main' 브랜치로 강제 덮어쓰기
+          # [형식] git push --force 원격주소 현재브랜치명:목적지브랜치명
+          git push --force "${REMOTE_URL}" HEAD:main

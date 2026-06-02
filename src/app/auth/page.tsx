@@ -4,15 +4,10 @@ import { useRouter } from "next/navigation";
 
 import AuthLayout from "@/components/auth/AuthLayout";
 import AuthSocialButtons from "@/components/auth/AuthSocialButtons";
+import { startOAuth } from "@/services/authApi";
 
 export default function LoginPage() {
   const router = useRouter();
-
-  const handleSocialLogin = () => {
-    // TODO: 소셜 로그인 로직 구현
-    // 로그인 성공 시 프로필 설정으로 이동
-    router.push("/auth/signup/profile");
-  };
 
   const handleClose = () => {
     router.push("/");
@@ -28,9 +23,8 @@ export default function LoginPage() {
       showLogo
     >
       <AuthSocialButtons
-        onGoogleLogin={handleSocialLogin}
-        onNaverLogin={handleSocialLogin}
-        onKakaoLogin={handleSocialLogin}
+        onGoogleLogin={() => startOAuth("google")}
+        onNaverLogin={() => startOAuth("naver")}
       />
     </AuthLayout>
   );
