@@ -24,6 +24,7 @@ export interface MeResult {
   email: string;
   nickname: string | null;
   bio: string | null;
+  profileImageUrl?: string | null;
   role: string;
   snsUrl: string | null;
 }
