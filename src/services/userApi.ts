@@ -53,4 +53,4 @@ export const updateProfile = (body: UserProfileUpdateRequest) =>
 export const withdrawMe = () => apiClient.delete<{ message: string }>("/api/v1/users/me");
 
 export const completeWelcome = (body: WelcomeRequest) =>
-  apiClient.post<WelcomeResponse>("/api/v1/users/welcome", body);
+  apiClient.put<WelcomeResponse>("/api/v1/users/welcome", body);
