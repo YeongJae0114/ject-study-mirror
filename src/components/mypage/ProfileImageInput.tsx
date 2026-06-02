@@ -6,11 +6,13 @@ import { X } from "lucide-react";
 import Image from "next/image";
 
 interface ProfileImageInputProps {
+  initialImageUrl?: string | null;
   onChange: (file: File | null) => void;
 }
 
-export default function ProfileImageInput({ onChange }: ProfileImageInputProps) {
+export default function ProfileImageInput({ initialImageUrl, onChange }: ProfileImageInputProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const displayUrl = previewUrl ?? initialImageUrl;
 
   useEffect(() => {
     return () => {
@@ -47,13 +49,13 @@ export default function ProfileImageInput({ onChange }: ProfileImageInputProps) 
   return (
     <div className="flex justify-center">
       <div className="relative h-20 w-22.5">
-        {previewUrl ? (
+        {displayUrl ? (
           <div className="border-border-primary bg-bg-primary-darker flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border">
             <div
               role="img"
               aria-label="프로필 이미지"
               className="h-full w-full bg-cover bg-center"
-              style={{ backgroundImage: `url(${previewUrl})` }}
+              style={{ backgroundImage: `url(${displayUrl})` }}
             />
           </div>
         ) : (
@@ -61,7 +63,12 @@ export default function ProfileImageInput({ onChange }: ProfileImageInputProps) 
         )}
 
         <label className="absolute inset-0 cursor-pointer" aria-label="프로필 이미지 변경">
-          <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleFileChange}
+            className="hidden"
+          />
         </label>
 
         {previewUrl && (

@@ -124,6 +124,7 @@ function ProfileSummary({
               fill
               sizes="80px"
               className="object-cover"
+              unoptimized
             />
           </div>
         ) : (
@@ -276,6 +277,7 @@ export default function MypagePage() {
       ? {
           nickname: nicknamePolicyQuery.data?.nickname ?? meQuery.data?.nickname ?? "",
           introduction: meQuery.data?.bio ?? null,
+          profileImageUrl: meQuery.data?.profileImageUrl ?? null,
           roleLabel: getRoleLabel(meQuery.data?.role),
           snsUrl: meQuery.data?.snsUrl ?? null,
         }

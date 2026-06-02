@@ -11,12 +11,13 @@ import Toast from "@/components/mypage/Toast";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { ApiError } from "@/services/apiClient";
 import { getMe } from "@/services/authApi";
-import { getNicknamePolicy, updateNickname } from "@/services/userApi";
+import { issueImageUploadUrl, uploadImageToStorage } from "@/services/imageApi";
+import { getNicknamePolicy, updateProfile } from "@/services/userApi";
 
 interface ProfileFormValues {
   nickname: string | null;
-  bio: string;
-  snsUrl: string;
+  bio: string | null;
+  snsUrl: string | null;
   profileImage: File | null;
 }
 
@@ -28,13 +29,11 @@ interface ProfileFormErrors {
 
 const INITIAL_FORM_VALUES: ProfileFormValues = {
   nickname: null,
-  bio: "",
-  snsUrl: "",
+  bio: null,
+  snsUrl: null,
   profileImage: null,
 };
 
-// 현재 백엔드에 연결된 수정 API는 닉네임만 제공됩니다.
-// 자기소개, SNS, 프로필 이미지는 UI 입력/검증만 유지하고 추후 API 명세에 맞춰 연결합니다.
 const isValidUrl = (value: string) => {
   if (!value.trim()) return true;
 
@@ -63,16 +62,57 @@ export default function MyPageProfileSettingsPage() {
     queryFn: getNicknamePolicy,
     enabled: canFetchProfile,
   });
-  const nicknameMutation = useMutation({
-    mutationFn: updateNickname,
+  const nicknameValue =
+    formValues.nickname ?? nicknamePolicyQuery.data?.nickname ?? meQuery.data?.nickname ?? "";
+  const bioValue = formValues.bio ?? meQuery.data?.bio ?? "";
+  const snsUrlValue = formValues.snsUrl ?? meQuery.data?.snsUrl ?? "";
+  const profileMutation = useMutation({
+    mutationFn: async () => {
+      const nickname = nicknameValue.trim();
+      let profileImageUrl = meQuery.data?.profileImageUrl ?? null;
+
+      if (formValues.profileImage) {
+        const uploadInfo = await issueImageUploadUrl({
+          filename: formValues.profileImage.name,
+          contentType: formValues.profileImage.type,
+          fileSize: formValues.profileImage.size,
+        });
+        const uploadResponse = await uploadImageToStorage(
+          uploadInfo.uploadUrl,
+          formValues.profileImage
+        );
+
+        if (!uploadResponse.ok) {
+          throw new Error("프로필 이미지 업로드 중 오류가 발생했습니다.");
+        }
+
+        profileImageUrl = uploadInfo.imageUrl;
+      }
+
+      return updateProfile({
+        nickname,
+        bio: bioValue.trim(),
+        snsUrl: snsUrlValue.trim(),
+        profileImageUrl,
+      });
+    },
     onSuccess: data => {
-      setFormValues(prev => ({ ...prev, nickname: data.nickname }));
+      setFormValues(prev => ({
+        ...prev,
+        nickname: data.nickname,
+        bio: data.bio ?? "",
+        snsUrl: data.snsUrl ?? "",
+        profileImage: null,
+      }));
+      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
       queryClient.invalidateQueries({ queryKey: ["users", "me", "nickname-policy"] });
       setIsToastOpen(true);
     },
     onError: error => {
       const message =
-        error instanceof ApiError ? error.message : "닉네임 수정 중 오류가 발생했습니다.";
+        error instanceof ApiError || error instanceof Error
+          ? error.message
+          : "회원정보 수정 중 오류가 발생했습니다.";
       setErrors(prev => ({ ...prev, nickname: message }));
     },
   });
@@ -95,8 +135,8 @@ export default function MyPageProfileSettingsPage() {
 
   const validateForm = () => {
     const nextErrors: ProfileFormErrors = {};
-    const nickname = (formValues.nickname ?? nicknamePolicyQuery.data?.nickname ?? "").trim();
-    const currentNickname = nicknamePolicyQuery.data?.nickname ?? "";
+    const nickname = nicknameValue.trim();
+    const currentNickname = nicknamePolicyQuery.data?.nickname ?? meQuery.data?.nickname ?? "";
 
     if (!nickname) {
       nextErrors.nickname = "닉네임을 입력해주세요.";
@@ -113,11 +153,11 @@ export default function MyPageProfileSettingsPage() {
         nicknamePolicyQuery.data.blockedReason ?? "현재 닉네임을 변경할 수 없습니다.";
     }
 
-    if (formValues.bio.length > 100) {
+    if (bioValue.length > 100) {
       nextErrors.bio = "자기소개는 최대 100자까지 입력해주세요.";
     }
 
-    if (!isValidUrl(formValues.snsUrl)) {
+    if (!isValidUrl(snsUrlValue)) {
       nextErrors.snsUrl = "http:// 또는 https://로 시작하는 링크를 입력해주세요.";
     }
 
@@ -128,28 +168,19 @@ export default function MyPageProfileSettingsPage() {
   const handleSubmit = () => {
     if (!validateForm()) return;
 
-    const nickname = (formValues.nickname ?? nicknamePolicyQuery.data?.nickname ?? "").trim();
-    const currentNickname = nicknamePolicyQuery.data?.nickname ?? "";
-
-    if (!currentNickname || nickname === currentNickname) {
-      setIsToastOpen(true);
-      return;
-    }
-
-    // Swagger 기준 PATCH /api/v1/users/me/nickname만 실제 저장 요청을 보냅니다.
-    nicknameMutation.mutate(nickname);
+    profileMutation.mutate();
   };
 
   const isSubmitDisabled =
     !canFetchProfile ||
     meQuery.isLoading ||
     nicknamePolicyQuery.isLoading ||
-    nicknameMutation.isPending ||
-    !(formValues.nickname ?? nicknamePolicyQuery.data?.nickname ?? "").trim() ||
-    (formValues.nickname ?? nicknamePolicyQuery.data?.nickname ?? "").trim().length < 2 ||
-    (formValues.nickname ?? nicknamePolicyQuery.data?.nickname ?? "").length > 10 ||
-    formValues.bio.length > 100 ||
-    !isValidUrl(formValues.snsUrl);
+    profileMutation.isPending ||
+    !nicknameValue.trim() ||
+    nicknameValue.trim().length < 2 ||
+    nicknameValue.length > 10 ||
+    bioValue.length > 100 ||
+    !isValidUrl(snsUrlValue);
 
   if (!canFetchProfile) return null;
 
@@ -160,6 +191,7 @@ export default function MyPageProfileSettingsPage() {
       <section className="fixed top-15 right-0 bottom-[82px] left-0 overflow-y-auto">
         <div className="flex w-full flex-col gap-6 px-5 py-6">
           <ProfileImageInput
+            initialImageUrl={meQuery.data?.profileImageUrl}
             onChange={file => {
               updateField("profileImage", file);
             }}
@@ -175,7 +207,7 @@ export default function MyPageProfileSettingsPage() {
 
             <ProfileTextField
               label="닉네임"
-              value={formValues.nickname ?? nicknamePolicyQuery.data?.nickname ?? ""}
+              value={nicknameValue}
               placeholder="닉네임을 입력해주세요."
               description={
                 nicknamePolicyQuery.data
@@ -195,7 +227,7 @@ export default function MyPageProfileSettingsPage() {
 
             <ProfileTextField
               label="자기소개"
-              value={formValues.bio}
+              value={bioValue}
               placeholder="나를 소개해주세요."
               type="textarea"
               maxLength={100}
@@ -210,7 +242,7 @@ export default function MyPageProfileSettingsPage() {
 
             <ProfileTextField
               label="SNS 링크"
-              value={formValues.snsUrl}
+              value={snsUrlValue}
               placeholder="SNS 링크를 입력해주세요."
               type="url"
               error={errors.snsUrl}
@@ -237,7 +269,7 @@ export default function MyPageProfileSettingsPage() {
                 : "bg-object-primary text-text-invert"
             }`}
           >
-            {nicknameMutation.isPending ? "수정 중" : "수정 완료"}
+            {profileMutation.isPending ? "수정 중" : "수정 완료"}
           </button>
         </div>
       </div>
