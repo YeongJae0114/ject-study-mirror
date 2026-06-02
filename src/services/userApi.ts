@@ -32,3 +32,5 @@ export const getNicknamePolicy = () =>
 
 export const updateProfile = (body: UserProfileUpdateRequest) =>
   apiClient.patch<UserProfileUpdateResponse>("/api/v1/users/me", body);
+
+export const withdrawMe = () => apiClient.delete<{ message: string }>("/api/v1/users/me");

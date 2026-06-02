@@ -10,6 +10,7 @@ import ConfirmModal from "@/components/mypage/ConfirmModal";
 import SettingMenuItem from "@/components/mypage/SettingMenuItem";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { logout } from "@/services/authApi";
+import { withdrawMe } from "@/services/userApi";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 type ModalType = "logout" | "withdraw" | null;
@@ -43,6 +44,14 @@ export default function MyPageSettingsPage() {
       router.push("/auth");
     },
   });
+  const withdrawMutation = useMutation({
+    mutationFn: withdrawMe,
+    onSuccess: () => {
+      clearAuth();
+      setModalType(null);
+      router.push("/auth");
+    },
+  });
 
   const closeModal = () => {
     setModalType(null);
@@ -54,8 +63,9 @@ export default function MyPageSettingsPage() {
       return;
     }
 
-    // 회원탈퇴 API는 현재 구현 범위에 없어 모달 UI만 유지합니다.
-    closeModal();
+    if (modalType === "withdraw") {
+      withdrawMutation.mutate();
+    }
   };
 
   if (!isAuthReady || !isAuthenticated) return null;
@@ -83,7 +93,10 @@ export default function MyPageSettingsPage() {
           description={modalContent.description}
           confirmText={modalContent.confirmText}
           tone={modalContent.tone}
-          isConfirmLoading={modalType === "logout" && logoutMutation.isPending}
+          isConfirmLoading={
+            (modalType === "logout" && logoutMutation.isPending) ||
+            (modalType === "withdraw" && withdrawMutation.isPending)
+          }
           onCancel={closeModal}
           onConfirm={handleConfirm}
         />
