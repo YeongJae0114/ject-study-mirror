@@ -1,5 +1,7 @@
 export type OAuthProvider = "google" | "naver";
 
+export type UserRole = "CREATOR" | "SPACE_PARTNER";
+
 export type LoginStatus =
   | "LOGIN_SUCCESS" // 기존 소셜 계정 로그인 (accessToken 발급)
   | "SIGNUP_REQUIRED" // 신규 사용자 (accessToken 발급, 프로필 작성 필요)

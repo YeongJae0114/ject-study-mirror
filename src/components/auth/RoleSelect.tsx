@@ -2,27 +2,29 @@ import React from "react";
 
 import Image from "next/image";
 
+import type { UserRole } from "@/types/auth";
+
 interface RoleOption {
-  id: string;
+  id: UserRole;
   title: string;
   description: string;
   iconSrc: string;
 }
 
 interface RoleSelectProps {
-  selectedRole: string | null;
-  onRoleSelect: (roleId: string) => void;
+  selectedRole: UserRole | null;
+  onRoleSelect: (roleId: UserRole) => void;
 }
 
 const roles: RoleOption[] = [
   {
-    id: "partner",
+    id: "SPACE_PARTNER",
     title: "공간 파트너",
     description: "전시 공간을 제공해요",
     iconSrc: "/space-icon.svg",
   },
   {
-    id: "creator",
+    id: "CREATOR",
     title: "크리에이터",
     description: "내 작품을 전시해요",
     iconSrc: "/create-icon.svg",

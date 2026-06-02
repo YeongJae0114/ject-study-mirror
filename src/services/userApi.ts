@@ -1,4 +1,5 @@
 import { apiClient } from "@/services/apiClient";
+import type { UserRole } from "@/types/auth";
 
 export interface NicknamePolicyResponse {
   nickname: string;
@@ -29,7 +30,7 @@ export interface UserProfileUpdateResponse {
 export interface WelcomeRequest {
   nickname: string;
   bio: string;
-  role: string;
+  role: UserRole;
   profileImageId: number | null;
 }
 

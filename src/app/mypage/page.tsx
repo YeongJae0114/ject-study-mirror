@@ -53,10 +53,8 @@ const EMPTY_MYPAGE_DATA: MypageData = {
 };
 
 const ROLE_LABEL: Record<string, string> = {
-  creator: "크리에이터",
   CREATOR: "크리에이터",
-  partner: "공간 파트너",
-  PARTNER: "공간 파트너",
+  SPACE_PARTNER: "공간 파트너",
 };
 
 const getRoleLabel = (role?: string) => {
