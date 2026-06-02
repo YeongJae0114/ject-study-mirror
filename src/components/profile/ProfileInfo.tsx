@@ -1,5 +1,5 @@
 import { ProfileInfoProps } from "@/types/profile";
-import { EmptyContent } from "./EmptyContent";
+import { EmptyContent } from "@/components/common/EmptyContent";
 
 export const ProfileInfo = ({ bio, snsLink }: ProfileInfoProps) => {
   const hasBio = Boolean(bio?.trim());

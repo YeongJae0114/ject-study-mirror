@@ -4,7 +4,7 @@ import { Activity } from "@/types/profile";
 import { ProfileActivityItem } from "./ProfileActivityItem";
 import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { EmptyContent } from "./EmptyContent";
+import { EmptyContent } from "@/components/common/EmptyContent";
 
 interface ProfileActivityListProps {
   userId: number;

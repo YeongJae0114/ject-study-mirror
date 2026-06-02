@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { ProfileFeedItem } from "./ProfileFeedItem";
 import { Artwork } from "@/types/profile";
 import { useRouter } from "next/navigation";
-import { EmptyContent } from "./EmptyContent";
+import { EmptyContent } from "@/components/common/EmptyContent";
 
 interface ProfileFeedProps {
   userId: number;
