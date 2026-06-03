@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 
 import Providers from "./providers";
 import "./globals.css";
+import Navbar from "@/components/common/Navbar";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -32,6 +33,7 @@ export default function RootLayout({
     <html lang="en" className={`${pretendard.className} ${alata.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <Providers>{children}</Providers>
+        <Navbar />
       </body>
     </html>
   );
