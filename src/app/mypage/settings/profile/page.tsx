@@ -99,12 +99,10 @@ export default function MyPageProfileSettingsPage() {
       const bio = bioValue.trim();
       const snsUrl = snsUrlValue.trim();
       const shouldUpdateNickname = !isNicknameChangeBlocked && nickname !== currentNickname.trim();
-      const shouldUpdateBio = bio !== currentBio.trim();
-      const shouldUpdateSnsUrl = snsUrl !== currentSnsUrl.trim();
       const profileBody: UserProfileUpdateRequest = {
+        bio,
+        snsUrl: snsUrl || null,
         ...(shouldUpdateNickname ? { nickname } : {}),
-        ...(shouldUpdateBio ? { bio } : {}),
-        ...(shouldUpdateSnsUrl ? { snsUrl: snsUrl || null } : {}),
       };
 
       if (shouldUpdateNickname) {

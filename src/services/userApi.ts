@@ -11,8 +11,8 @@ export interface NicknamePolicyResponse {
 
 export interface UserProfileUpdateRequest {
   nickname?: string;
-  bio?: string;
-  snsUrl?: string | null;
+  bio: string;
+  snsUrl: string | null;
   profileImageUrl?: string;
 }
 

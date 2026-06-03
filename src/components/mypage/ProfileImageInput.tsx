@@ -5,6 +5,8 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
 
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
+
 interface ProfileImageInputProps {
   initialImageUrl?: string | null;
   onChange: (file: File | null) => void;
@@ -12,7 +14,7 @@ interface ProfileImageInputProps {
 
 export default function ProfileImageInput({ initialImageUrl, onChange }: ProfileImageInputProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const displayUrl = previewUrl ?? initialImageUrl;
+  const displayUrl = previewUrl ?? normalizeImageUrl(initialImageUrl);
 
   useEffect(() => {
     return () => {
