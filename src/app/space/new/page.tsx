@@ -1,52 +1,81 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { ART_TYPES } from '@/constants/art';
+import { useState } from "react";
+import { ART_TYPES } from "@/constants/art";
 
-import Header from '@/components/common/Header';
-import Label from '@/components/archive-form/Label';
-import ImageUploader from '@/components/archive-form/ImageUploader';
-import { useImageStore } from '@/stores/useImageStore';
-import Input from '@/components/archive-form/Input';
-import Dropdown from '@/components/archive-form/Dropdown';
-import ArtTooltip from '@/components/archive-form/ArtToolTip';
-import Textarea from '@/components/archive-form/Textarea';
-import SizeInput from '@/components/archive-form/SizeInput';
-import ToggleButton from '@/components/archive-form/ToggleButton';
-import AddressSearch from '@/components/archive-form/AddressSearch';
+import Header from "@/components/common/Header";
+import Label from "@/components/archive-form/Label";
+import ImageUploader from "@/components/archive-form/ImageUploader";
+import { useImageStore } from "@/stores/useImageStore";
+import Input from "@/components/archive-form/Input";
+import Dropdown from "@/components/archive-form/Dropdown";
+import ArtTooltip from "@/components/archive-form/ArtToolTip";
+import Textarea from "@/components/archive-form/Textarea";
+import SizeInput from "@/components/archive-form/SizeInput";
+import ToggleButton from "@/components/archive-form/ToggleButton";
+import AddressSearch from "@/components/archive-form/AddressSearch";
+import { useUploadImage } from "@/hooks/useImageUploader";
+import { useMutation } from "@tanstack/react-query";
+import { createSpace } from "@/services/spaces";
+import { useRouter } from "next/navigation";
 
 function FieldWrapper({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-2">{children}</div>;
 }
 
-export default function ArtCreatePage() {
+export default function SpaceCreatePage() {
+  const router = useRouter();
+
   const images = useImageStore(state => state.images);
   const clearImages = useImageStore(state => state.clearImages);
 
-  const [artType, setArtType] = useState('');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [artType, setArtType] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
-  const [address, setAddress] = useState('');
+  const [address, setAddress] = useState("");
 
-  const [width, setWidth] = useState('');
-  const [depth, setDepth] = useState('');
-  const [height, setHeight] = useState('');
+  const [width, setWidth] = useState("");
+  const [depth, setDepth] = useState("");
+  const [height, setHeight] = useState("");
 
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
-  const [notes, setNotes] = useState('');
+  const [notes, setNotes] = useState("");
 
   const [isPublic, setIsPublic] = useState(false);
 
   const isFormValid =
     images.length > 0 &&
-    artType !== '' &&
-    title.trim() !== '' &&
+    artType !== "" &&
+    title.trim() !== "" &&
     address &&
-    description.trim() !== '' &&
+    description.trim() !== "" &&
     description.length <= 500 &&
     notes.length <= 500;
+
+  const { mutateAsync: uploadImage } = useUploadImage();
+
+  const { mutateAsync: createSpaceMutation } = useMutation({
+    mutationFn: createSpace,
+  });
+
+  const handleSubmit = async () => {
+    try {
+      const uploadedImages = await Promise.all(images.map(image => uploadImage(image.file)));
+
+      await createSpaceMutation({
+        title,
+        description,
+        imageIds: uploadedImages.map(image => image.imageId),
+      });
+
+      clearImages();
+      router.replace("/");
+    } catch (error) {
+      alert("공간 등록에 실패했습니다.");
+    }
+  };
 
   return (
     <main className="min-h-screen bg-white">
@@ -152,10 +181,11 @@ export default function ArtCreatePage() {
       <div className="border-border-primary fixed right-0 bottom-4 left-0 h-24.5 border-t bg-white px-5 py-4">
         <button
           disabled={!isFormValid}
+          onClick={handleSubmit}
           className={`text-body-1 h-12.5 w-full rounded-lg font-medium transition-colors ${
             isFormValid
-              ? 'bg-object-primary text-text-invert cursor-pointer'
-              : 'bg-object-disabled text-text-disabled cursor-not-allowed'
+              ? "bg-object-primary text-text-invert cursor-pointer"
+              : "bg-object-disabled text-text-disabled cursor-not-allowed"
           }`}
         >
           추가하기
