@@ -10,10 +10,10 @@ export interface NicknamePolicyResponse {
 }
 
 export interface UserProfileUpdateRequest {
-  nickname: string;
-  bio: string;
-  snsUrl: string;
-  profileImageUrl?: string | null;
+  nickname?: string;
+  bio?: string;
+  snsUrl?: string | null;
+  profileImageUrl?: string;
 }
 
 export interface UserProfileUpdateResponse {
@@ -21,7 +21,7 @@ export interface UserProfileUpdateResponse {
   email: string;
   nickname: string;
   bio: string;
-  snsUrl: string;
+  snsUrl: string | null;
   profileImageUrl?: string | null;
   nicknameChangeCount: number;
   remainingNicknameChanges: number;
@@ -43,6 +43,10 @@ export interface WelcomeResponse {
   profileImageUrl?: string | null;
 }
 
+export interface NicknameCheckResponse {
+  available: boolean;
+}
+
 // 회원정보 변경 화면에서 닉네임 정책을 조회할 때 사용하는 API입니다.
 export const getNicknamePolicy = () =>
   apiClient.get<NicknamePolicyResponse>("/api/v1/users/me/nickname-policy");
@@ -54,3 +58,6 @@ export const withdrawMe = () => apiClient.delete<{ message: string }>("/api/v1/u
 
 export const completeWelcome = (body: WelcomeRequest) =>
   apiClient.put<WelcomeResponse>("/api/v1/users/welcome", body);
+
+export const checkNickname = (nickname: string) =>
+  apiClient.post<NicknameCheckResponse>("/api/v1/users/check-nickname", { nickname });

@@ -1,5 +1,7 @@
 import React, { useId } from "react";
 
+import Image from "next/image";
+
 interface AuthTextFieldProps {
   label?: string;
   placeholder?: string;
@@ -36,7 +38,7 @@ export default function AuthTextField({
 
   const borderClass = (() => {
     if (disabled) return "border-border-primary";
-    if (fieldStatus === "error") return "border-border-error";
+    if (fieldStatus === "error") return "border-error-default";
     if (fieldStatus === "success") return "border-border-secondary-focus";
     return "border-border-primary focus-within:border-border-secondary-focus";
   })();
@@ -62,7 +64,7 @@ export default function AuthTextField({
         <div
           className={[
             "bg-bg-primary relative w-full rounded-lg border transition-colors",
-            "min-h-[150px] px-4 pt-3 pb-9",
+            "min-h-[150px] px-4 pt-2 pb-9",
             disabled ? "bg-object-disabled text-text-disabled" : "",
             borderClass,
           ].join(" ")}
@@ -77,7 +79,7 @@ export default function AuthTextField({
             maxLength={maxLength}
             disabled={disabled}
             rows={5}
-            className="text-body-1 font-regular text-text-primary placeholder:text-text-input disabled:text-text-disabled h-full min-h-[105px] w-full resize-none bg-transparent outline-none disabled:cursor-not-allowed"
+            className="text-body-1 font-regular text-text-primary placeholder:text-text-input disabled:text-text-disabled h-full min-h-[106px] w-full resize-none overflow-y-auto bg-transparent outline-none disabled:cursor-not-allowed"
           />
 
           {maxLength && (
@@ -136,9 +138,7 @@ export default function AuthTextField({
             )}
 
           {fieldStatus === "error" && !disabled && (
-            <div className="bg-error-default text-text-invert ml-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-full">
-              <span className="text-caption leading-none font-bold">!</span>
-            </div>
+            <Image src="/icon-error.svg" alt="" width={20} height={20} className="ml-2 shrink-0" />
           )}
 
           {fieldStatus === "success" && !disabled && (

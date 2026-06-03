@@ -3,16 +3,23 @@
 import { useEffect, useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 import Header from "@/components/common/Header";
 import ProfileImageInput from "@/components/mypage/ProfileImageInput";
 import ProfileTextField from "@/components/mypage/ProfileTextField";
 import Toast from "@/components/mypage/Toast";
+import { PROFILE_VALIDATION_MESSAGES } from "@/constants/profile";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { ApiError } from "@/services/apiClient";
 import { getMe } from "@/services/authApi";
 import { issueImageUploadUrl, uploadImageToStorage } from "@/services/imageApi";
-import { getNicknamePolicy, updateProfile } from "@/services/userApi";
+import {
+  checkNickname,
+  getNicknamePolicy,
+  updateProfile,
+  type UserProfileUpdateRequest,
+} from "@/services/userApi";
 
 interface ProfileFormValues {
   nickname: string | null;
@@ -46,6 +53,7 @@ const isValidUrl = (value: string) => {
 };
 
 export default function MyPageProfileSettingsPage() {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { isAuthReady, isAuthenticated } = useRequireAuth();
   const canFetchProfile = isAuthReady && isAuthenticated;
@@ -62,14 +70,50 @@ export default function MyPageProfileSettingsPage() {
     queryFn: getNicknamePolicy,
     enabled: canFetchProfile,
   });
-  const nicknameValue =
-    formValues.nickname ?? nicknamePolicyQuery.data?.nickname ?? meQuery.data?.nickname ?? "";
+  const isNicknameLimitExceeded =
+    nicknamePolicyQuery.error instanceof ApiError &&
+    nicknamePolicyQuery.error.code === "LIMIT_EXCEEDED";
+  const currentNickname = nicknamePolicyQuery.data?.nickname ?? meQuery.data?.nickname ?? "";
+  const isNicknameChangeBlocked =
+    nicknamePolicyQuery.data?.canChangeNickname === false || isNicknameLimitExceeded;
+  const nicknameValue = isNicknameChangeBlocked
+    ? currentNickname
+    : (formValues.nickname ?? currentNickname);
+  const nicknameDescription = isNicknameLimitExceeded
+    ? PROFILE_VALIDATION_MESSAGES.NICKNAME_CHANGE_BLOCKED
+    : nicknamePolicyQuery.data
+      ? `남은 닉네임 변경 횟수 ${nicknamePolicyQuery.data.remainingNicknameChanges}회`
+      : undefined;
   const bioValue = formValues.bio ?? meQuery.data?.bio ?? "";
   const snsUrlValue = formValues.snsUrl ?? meQuery.data?.snsUrl ?? "";
+  const currentBio = meQuery.data?.bio ?? "";
+  const currentSnsUrl = meQuery.data?.snsUrl ?? "";
+  const hasProfileChanges =
+    (!isNicknameChangeBlocked && nicknameValue.trim() !== currentNickname.trim()) ||
+    bioValue.trim() !== currentBio.trim() ||
+    snsUrlValue.trim() !== currentSnsUrl.trim() ||
+    Boolean(formValues.profileImage);
   const profileMutation = useMutation({
     mutationFn: async () => {
       const nickname = nicknameValue.trim();
-      let profileImageUrl = meQuery.data?.profileImageUrl ?? null;
+      const bio = bioValue.trim();
+      const snsUrl = snsUrlValue.trim();
+      const shouldUpdateNickname = !isNicknameChangeBlocked && nickname !== currentNickname.trim();
+      const shouldUpdateBio = bio !== currentBio.trim();
+      const shouldUpdateSnsUrl = snsUrl !== currentSnsUrl.trim();
+      const profileBody: UserProfileUpdateRequest = {
+        ...(shouldUpdateNickname ? { nickname } : {}),
+        ...(shouldUpdateBio ? { bio } : {}),
+        ...(shouldUpdateSnsUrl ? { snsUrl: snsUrl || null } : {}),
+      };
+
+      if (shouldUpdateNickname) {
+        const nicknameCheckResult = await checkNickname(nickname);
+
+        if (!nicknameCheckResult.available) {
+          throw new Error(PROFILE_VALIDATION_MESSAGES.NICKNAME_DUPLICATED);
+        }
+      }
 
       if (formValues.profileImage) {
         const uploadInfo = await issueImageUploadUrl({
@@ -86,15 +130,10 @@ export default function MyPageProfileSettingsPage() {
           throw new Error("프로필 이미지 업로드 중 오류가 발생했습니다.");
         }
 
-        profileImageUrl = uploadInfo.imageUrl;
+        profileBody.profileImageUrl = uploadInfo.imageUrl;
       }
 
-      return updateProfile({
-        nickname,
-        bio: bioValue.trim(),
-        snsUrl: snsUrlValue.trim(),
-        profileImageUrl,
-      });
+      return updateProfile(profileBody);
     },
     onSuccess: data => {
       setFormValues(prev => ({
@@ -107,12 +146,13 @@ export default function MyPageProfileSettingsPage() {
       queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
       queryClient.invalidateQueries({ queryKey: ["users", "me", "nickname-policy"] });
       setIsToastOpen(true);
+      router.replace("/mypage");
     },
     onError: error => {
       const message =
         error instanceof ApiError || error instanceof Error
           ? error.message
-          : "회원정보 수정 중 오류가 발생했습니다.";
+          : PROFILE_VALIDATION_MESSAGES.PROFILE_UPDATE_FAILED;
       setErrors(prev => ({ ...prev, nickname: message }));
     },
   });
@@ -136,29 +176,23 @@ export default function MyPageProfileSettingsPage() {
   const validateForm = () => {
     const nextErrors: ProfileFormErrors = {};
     const nickname = nicknameValue.trim();
-    const currentNickname = nicknamePolicyQuery.data?.nickname ?? meQuery.data?.nickname ?? "";
 
-    if (!nickname) {
-      nextErrors.nickname = "닉네임을 입력해주세요.";
-    } else if (nickname.length < 2) {
-      nextErrors.nickname = "닉네임은 2자 이상 입력해주세요.";
-    } else if (nickname.length > 10) {
-      nextErrors.nickname = "닉네임은 최대 10자까지 입력해주세요.";
-    } else if (
-      currentNickname &&
-      nickname !== currentNickname &&
-      nicknamePolicyQuery.data?.canChangeNickname === false
-    ) {
-      nextErrors.nickname =
-        nicknamePolicyQuery.data.blockedReason ?? "현재 닉네임을 변경할 수 없습니다.";
+    if (!isNicknameChangeBlocked) {
+      if (!nickname) {
+        nextErrors.nickname = PROFILE_VALIDATION_MESSAGES.NICKNAME_REQUIRED;
+      } else if (nickname.length < 2) {
+        nextErrors.nickname = PROFILE_VALIDATION_MESSAGES.NICKNAME_MIN_LENGTH;
+      } else if (nickname.length > 10) {
+        nextErrors.nickname = PROFILE_VALIDATION_MESSAGES.NICKNAME_MAX_LENGTH;
+      }
     }
 
     if (bioValue.length > 100) {
-      nextErrors.bio = "자기소개는 최대 100자까지 입력해주세요.";
+      nextErrors.bio = PROFILE_VALIDATION_MESSAGES.BIO_MAX_LENGTH;
     }
 
     if (!isValidUrl(snsUrlValue)) {
-      nextErrors.snsUrl = "http:// 또는 https://로 시작하는 링크를 입력해주세요.";
+      nextErrors.snsUrl = PROFILE_VALIDATION_MESSAGES.SNS_URL_INVALID;
     }
 
     setErrors(nextErrors);
@@ -176,11 +210,9 @@ export default function MyPageProfileSettingsPage() {
     meQuery.isLoading ||
     nicknamePolicyQuery.isLoading ||
     profileMutation.isPending ||
-    !nicknameValue.trim() ||
-    nicknameValue.trim().length < 2 ||
-    nicknameValue.length > 10 ||
-    bioValue.length > 100 ||
-    !isValidUrl(snsUrlValue);
+    meQuery.isError ||
+    (nicknamePolicyQuery.isError && !isNicknameLimitExceeded) ||
+    !hasProfileChanges;
 
   if (!canFetchProfile) return null;
 
@@ -209,13 +241,9 @@ export default function MyPageProfileSettingsPage() {
               label="닉네임"
               value={nicknameValue}
               placeholder="닉네임을 입력해주세요."
-              description={
-                nicknamePolicyQuery.data
-                  ? `남은 닉네임 변경 횟수 ${nicknamePolicyQuery.data.remainingNicknameChanges}회`
-                  : undefined
-              }
-              required
-              maxLength={10}
+              description={nicknameDescription}
+              required={!isNicknameChangeBlocked}
+              disabled={isNicknameChangeBlocked}
               error={errors.nickname}
               onChange={value => {
                 updateField("nickname", value);

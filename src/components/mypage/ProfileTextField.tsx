@@ -55,7 +55,7 @@ export default function ProfileTextField({
             placeholder={placeholder}
             maxLength={maxLength}
             disabled={disabled}
-            className="text-body-1 text-text-primary placeholder:text-text-input disabled:text-text-disabled h-25 w-full resize-none bg-transparent px-4 pt-3 pr-4 pb-2 outline-none disabled:cursor-not-allowed"
+            className="text-body-1 text-text-primary placeholder:text-text-input disabled:text-text-disabled h-31 w-full resize-none overflow-y-auto bg-transparent px-4 pt-2 pr-4 pb-9 outline-none disabled:cursor-not-allowed"
           />
         ) : (
           <input
