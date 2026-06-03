@@ -44,31 +44,33 @@ export default function Navbar() {
     return null;
   }
   return (
-    <nav className="border-border-primary bg-bg-primary fixed right-0 bottom-0 left-1/2 h-16 w-full max-w-97.5 -translate-x-1/2 border-t px-3 pt-1.5 pb-2">
-      <div className="mx-auto flex max-w-3xl gap-1.5">
-        {menus.map(menu => {
-          const isActive = menu.href === "/" ? pathname === "/" : pathname.startsWith(menu.href);
+    <nav className="border-border-primary bg-bg-primary fixed right-0 bottom-0 left-0 border-t">
+      <div className="mx-auto h-16 w-full max-w-97.5 px-3 pt-1.5 pb-2">
+        <div className="flex gap-1.5">
+          {menus.map(menu => {
+            const isActive = menu.href === "/" ? pathname === "/" : pathname.startsWith(menu.href);
 
-          const Icon = menu.icon;
+            const Icon = menu.icon;
 
-          return (
-            <Link
-              key={menu.href}
-              href={menu.href}
-              className="flex flex-1 flex-col items-center justify-center gap-1"
-            >
-              <Icon active={isActive} />
-
-              <span
-                className={`text-caption font-regular ${
-                  isActive ? "text-text-primary" : "text-text-secondary"
-                }`}
+            return (
+              <Link
+                key={menu.href}
+                href={menu.href}
+                className="flex flex-1 flex-col items-center justify-center gap-1"
               >
-                {menu.label}
-              </span>
-            </Link>
-          );
-        })}
+                <Icon active={isActive} />
+
+                <span
+                  className={`text-caption font-regular ${
+                    isActive ? "text-text-primary" : "text-text-secondary"
+                  }`}
+                >
+                  {menu.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );
