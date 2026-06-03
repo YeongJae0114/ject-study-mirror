@@ -1,14 +1,16 @@
 import { create } from "zustand";
 
+import type { UserRole } from "@/types/auth";
+
 interface AuthSignupState {
   nickname: string;
   bio: string;
-  role: string | null;
+  role: UserRole | null;
   profileImage: File | null;
 
   setNickname: (nickname: string) => void;
   setBio: (bio: string) => void;
-  setRole: (role: string) => void;
+  setRole: (role: UserRole) => void;
   setProfileImage: (file: File | null) => void;
   reset: () => void;
 }

@@ -22,7 +22,7 @@ export default function TextArea({
   placeholder,
   maxLength = 500,
   includeCountArea = true,
-  scrollable = false,
+  scrollable = true,
   value,
   onChange,
   ...props
@@ -56,13 +56,15 @@ export default function TextArea({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           placeholder={placeholder}
-          className="text-body-1 text-coolNeutral-900 placeholder:text-text-input h-31 w-full resize-none overflow-y-auto bg-transparent px-4 pt-3 pb-2 outline-none"
+          className={`text-body-1 text-coolNeutral-900 placeholder:text-text-input h-31 w-full resize-none bg-transparent px-4 pt-2 pb-0 outline-none ${
+            scrollable ? "overflow-y-auto" : "overflow-hidden"
+          }`}
           {...props}
         />
 
         {/* Count */}
         {includeCountArea && (
-          <div className="flex justify-end px-4 pt-1.5 pb-2">
+          <div className="flex h-9 justify-end px-4 pt-1.5 pb-2">
             <span className="text-caption text-coolNeutral-600">
               {value.length}/{maxLength}
             </span>

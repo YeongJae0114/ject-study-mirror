@@ -3,10 +3,10 @@
  * Base URL은 NEXT_PUBLIC_API_BASE. 미설정 시 빈 문자열 → 상대경로로 next dev rewrites 프록시를 타 CORS 회피.
  */
 
-import type { ApiEnvelope, ApiErrorBody } from '@/types/chat';
-import { getAccessToken } from '@/services/session';
+import { getAccessToken } from "@/services/session";
+import type { ApiEnvelope, ApiErrorBody } from "@/types/chat";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? '';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "";
 
 /** REST 에러. error.code로 분기하고, message는 표시용. */
 export class ApiError extends Error {
@@ -18,10 +18,10 @@ export class ApiError extends Error {
     code: string,
     message: string,
     status: number,
-    fields: Array<{ field: string; reason: string }> | null = null,
+    fields: Array<{ field: string; reason: string }> | null = null
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
     this.code = code;
     this.status = status;
     this.fields = fields;
@@ -29,13 +29,13 @@ export class ApiError extends Error {
 }
 
 interface RequestOptions {
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
   /** 쿼리스트링 파라미터. undefined/null 값은 제외된다. */
   query?: Record<string, string | number | undefined | null>;
 }
 
-function buildUrl(path: string, query?: RequestOptions['query']): string {
+function buildUrl(path: string, query?: RequestOptions["query"]): string {
   const url = `${API_BASE}${path}`;
   if (!query) return url;
   const search = new URLSearchParams();
@@ -49,12 +49,12 @@ function buildUrl(path: string, query?: RequestOptions['query']): string {
 
 /** 성공 시 ApiEnvelope<T>의 `.data` 반환, 실패 시 ApiError throw. */
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = 'GET', body, query } = options;
+  const { method = "GET", body, query } = options;
 
   const headers: Record<string, string> = {};
   const token = getAccessToken();
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (body !== undefined) headers["Content-Type"] = "application/json";
 
   const response = await fetch(buildUrl(path, query), {
     method,
@@ -63,8 +63,8 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   });
 
   if (!response.ok) {
-    let code = 'UNKNOWN_ERROR';
-    let message = response.statusText || '요청에 실패했습니다.';
+    let code = "UNKNOWN_ERROR";
+    let message = response.statusText || "요청에 실패했습니다.";
     let fields: Array<{ field: string; reason: string }> | null = null;
     try {
       const errorBody = (await response.json()) as ApiErrorBody;
@@ -87,8 +87,10 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 }
 
 export const apiClient = {
-  get: <T>(path: string, query?: RequestOptions['query']) =>
-    request<T>(path, { method: 'GET', query }),
-  post: <T>(path: string, body?: unknown) =>
-    request<T>(path, { method: 'POST', body }),
+  get: <T>(path: string, query?: RequestOptions["query"]) =>
+    request<T>(path, { method: "GET", query }),
+  post: <T>(path: string, body?: unknown) => request<T>(path, { method: "POST", body }),
+  put: <T>(path: string, body?: unknown) => request<T>(path, { method: "PUT", body }),
+  patch: <T>(path: string, body?: unknown) => request<T>(path, { method: "PATCH", body }),
+  delete: <T>(path: string, body?: unknown) => request<T>(path, { method: "DELETE", body }),
 };

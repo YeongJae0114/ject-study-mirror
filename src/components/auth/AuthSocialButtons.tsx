@@ -3,13 +3,11 @@ import React from "react";
 interface AuthSocialButtonsProps {
   onGoogleLogin?: () => void;
   onNaverLogin?: () => void;
-  onKakaoLogin?: () => void;
 }
 
 export default function AuthSocialButtons({
   onGoogleLogin,
   onNaverLogin,
-  onKakaoLogin,
 }: AuthSocialButtonsProps) {
   return (
     <div className="mx-auto flex w-65.5 flex-col gap-3">
@@ -51,20 +49,6 @@ export default function AuthSocialButtons({
           />
         </svg>
         네이버 계정으로 로그인
-      </button>
-
-      <button
-        onClick={onKakaoLogin}
-        className="text-label flex h-10 w-full items-center justify-center gap-2.5 rounded-sm bg-[#FEE500] font-medium text-black transition-colors hover:bg-[#f9da00] active:bg-[#e5c700]"
-        type="button"
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M12 2C6.48 2 2 5.86 2 10.74c0 3.08 2.04 5.84 5.14 7.44L6.5 22l4.36-2.84c.38.06.77.1 1.14.1 5.52 0 10-3.86 10-8.74C22 5.86 17.52 2 12 2z"
-            fill="currentColor"
-          />
-        </svg>
-        카카오 계정으로 로그인
       </button>
     </div>
   );
