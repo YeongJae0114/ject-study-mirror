@@ -3,15 +3,7 @@
 import type { ReactNode } from "react";
 
 import { useQuery } from "@tanstack/react-query";
-import type { LucideIcon } from "lucide-react";
-import {
-  ChevronRight,
-  Home,
-  Images,
-  LockKeyhole,
-  MessageCircle,
-  SquareUserRound,
-} from "lucide-react";
+import { ChevronRight, Images, LockKeyhole } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -36,12 +28,6 @@ interface ExhibitionItemProps {
 
 interface ArtworkCardProps {
   artwork: MypageArtwork;
-}
-
-interface BottomNavigationItemProps {
-  label: string;
-  icon: LucideIcon;
-  selected?: boolean;
 }
 
 // 현재 백엔드 명세로 연결 가능한 프로필 정보만 API에서 채우고,
@@ -227,39 +213,6 @@ function ArtworkCard({ artwork }: ArtworkCardProps) {
   );
 }
 
-function BottomNavigationItem({ label, icon: Icon, selected = false }: BottomNavigationItemProps) {
-  return (
-    <button
-      type="button"
-      className="flex h-14 min-w-17.5 flex-1 flex-col items-center gap-1 py-1.5"
-    >
-      <Icon
-        size={24}
-        className={selected ? "text-object-primary" : "text-text-secondary"}
-        strokeWidth={selected ? 2.3 : 1.8}
-      />
-      <span
-        className={`text-caption flex h-4 items-center justify-center text-center ${
-          selected ? "text-text-primary font-medium" : "text-text-secondary font-regular"
-        }`}
-      >
-        {label}
-      </span>
-    </button>
-  );
-}
-
-function BottomNavigation() {
-  return (
-    <nav className="border-border-primary bg-bg-primary fixed right-0 bottom-0 left-0 z-10 flex w-full min-w-[320px] items-center justify-center gap-1.5 border-t px-3 pb-2">
-      <BottomNavigationItem label="홈" icon={Home} />
-      <BottomNavigationItem label="전시 현황" icon={Images} />
-      <BottomNavigationItem label="채팅" icon={MessageCircle} />
-      <BottomNavigationItem label="마이페이지" icon={SquareUserRound} selected />
-    </nav>
-  );
-}
-
 export default function MypagePage() {
   const meQuery = useQuery({
     queryKey: ["auth", "me"],
@@ -284,7 +237,7 @@ export default function MypagePage() {
   const isProfileLoading = meQuery.isLoading || nicknamePolicyQuery.isLoading;
 
   return (
-    <main className="bg-bg-primary min-h-dvh w-full pb-24">
+    <main className="bg-bg-primary min-h-dvh w-full pb-10">
       <MypageHeader />
 
       <ProfileSummary profile={profile} isLoading={isProfileLoading} />
@@ -355,8 +308,6 @@ export default function MypagePage() {
           )}
         </section>
       </div>
-
-      <BottomNavigation />
     </main>
   );
 }
