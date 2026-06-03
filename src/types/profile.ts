@@ -13,6 +13,7 @@ export interface Artwork {
   id: string;
   title: string;
   type: string;
+  author: string;
   status: "전시 중" | "전시 가능" | "전시 예정";
   imageUrl: string;
 }
