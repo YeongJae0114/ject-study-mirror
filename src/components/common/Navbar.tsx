@@ -44,7 +44,7 @@ export default function Navbar() {
     return null;
   }
   return (
-    <nav className="border-border-primary bg-bg-primary fixed right-0 bottom-0 left-0 h-16 border-t px-3 pt-1.5 pb-2">
+    <nav className="border-border-primary bg-bg-primary fixed right-0 bottom-0 left-1/2 h-16 w-full max-w-97.5 -translate-x-1/2 border-t px-3 pt-1.5 pb-2">
       <div className="mx-auto flex max-w-3xl gap-1.5">
         {menus.map(menu => {
           const isActive = menu.href === "/" ? pathname === "/" : pathname.startsWith(menu.href);

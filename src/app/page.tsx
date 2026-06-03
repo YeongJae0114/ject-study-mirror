@@ -36,7 +36,7 @@ export default function Home() {
       <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
       {activeTab === "recommend" && (
         <RecommendTab artData={mockArtworks} spaceData={mockEmptyData} />
-      )}{" "}
+      )}
       {activeTab === "artwork" && <ArtTab artData={mockArtworks} />}
       {activeTab === "space" && <SpaceTab spaceData={mockEmptyData} />}
     </div>
