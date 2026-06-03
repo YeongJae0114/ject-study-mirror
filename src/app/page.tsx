@@ -1,19 +1,42 @@
+"use client";
+
+import Image from "next/image";
+import Tabs from "@/components/common/Tab";
+import { useState } from "react";
+import RecommendTab from "@/components/home/RecommendTab";
+import ArtTab from "@/components/home/ArtTab";
+import SpaceTab from "@/components/home/SpaceTab";
+
+const tabs = [
+  { label: "추천", value: "recommend" },
+  { label: "작품", value: "artwork" },
+  { label: "공간", value: "space" },
+];
+
 export default function Home() {
+  const [activeTab, setActiveTab] = useState("recommend");
+
   return (
-    <>
-      <div className="text-display-2 font-bold">디자인 시스템 REFIT</div>
-
-      <button
-        className={`bg-btn-primary-bg hover:bg-btn-primary-hover active:bg-btn-primary-pressed text-label text-text-invert shadow-spread-medium m-4 h-10 w-20 rounded-md px-4 py-2 font-semibold`}
-      >
-        버튼
-      </button>
-
-      <div className="flex gap-2">
-        <div className="h-10 w-10 rounded bg-lime-500"></div>
-        <div className="bg-primary-700 h-10 w-10 rounded"></div>
-        <div className="h-10 w-10 rounded bg-red-500"></div>
+    <div className="pb-10">
+      <div className="px-5 py-4">
+        <div className="text-headline-1 text-text-primary h-14 font-semibold">홈</div>
       </div>
-    </>
+      {/* 배너 */}
+      <section className="px-5">
+        <div className="flex items-center justify-between">
+          <div className="text-title-3 text-text-primary font-semibold">
+            <div>지금 나에게 핏한</div>
+            <div>전시 매칭</div>
+          </div>
+          <Image src="/home-icon.svg" alt="홈 아이콘" width={134} height={88} />
+        </div>
+      </section>
+
+      {/* 탭 */}
+      <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
+      {activeTab === "recommend" && <RecommendTab />}
+      {activeTab === "artwork" && <ArtTab />}
+      {activeTab === "space" && <SpaceTab />}
+    </div>
   );
 }
