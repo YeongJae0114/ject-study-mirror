@@ -10,6 +10,7 @@ import Link from "next/link";
 import { getMe } from "@/services/authApi";
 import { getNicknamePolicy } from "@/services/userApi";
 import type { MypageArtwork, MypageData, MypageExhibition, MypageProfile } from "@/types/mypage";
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 interface BadgeProps {
   children: ReactNode;
@@ -228,7 +229,7 @@ export default function MypagePage() {
       ? {
           nickname: nicknamePolicyQuery.data?.nickname ?? meQuery.data?.nickname ?? "",
           introduction: meQuery.data?.bio ?? null,
-          profileImageUrl: meQuery.data?.profileImageUrl ?? null,
+          profileImageUrl: normalizeImageUrl(meQuery.data?.profileImageUrl),
           roleLabel: getRoleLabel(meQuery.data?.role),
           snsUrl: meQuery.data?.snsUrl ?? null,
         }
