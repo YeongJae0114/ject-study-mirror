@@ -6,6 +6,7 @@ import { useState } from "react";
 import RecommendTab from "@/components/home/RecommendTab";
 import ArtTab from "@/components/home/ArtTab";
 import SpaceTab from "@/components/home/SpaceTab";
+import { mockArtworks, mockEmptyData } from "./profile/mockData";
 
 const tabs = [
   { label: "추천", value: "recommend" },
@@ -31,12 +32,13 @@ export default function Home() {
           <Image src="/home-icon.svg" alt="홈 아이콘" width={134} height={88} />
         </div>
       </section>
-
       {/* 탭 */}
       <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
-      {activeTab === "recommend" && <RecommendTab />}
-      {activeTab === "artwork" && <ArtTab />}
-      {activeTab === "space" && <SpaceTab />}
+      {activeTab === "recommend" && (
+        <RecommendTab artData={mockArtworks} spaceData={mockEmptyData} />
+      )}{" "}
+      {activeTab === "artwork" && <ArtTab artData={mockArtworks} />}
+      {activeTab === "space" && <SpaceTab spaceData={mockEmptyData} />}
     </div>
   );
 }

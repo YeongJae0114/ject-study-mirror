@@ -1,5 +1,7 @@
 import { Activity, Artwork } from "@/types/profile";
 
+export const mockEmptyData: Artwork[] = [];
+
 export const mockArtworks: Artwork[] = [
   {
     id: "1",
