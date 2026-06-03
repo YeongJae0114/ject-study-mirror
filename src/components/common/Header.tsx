@@ -18,7 +18,7 @@ export default function Header({ title, showBack = false, showBorder = true, rig
   return (
     <>
       <header
-        className={`bg-bg-primary fixed top-0 right-0 left-0 z-1 mx-auto flex h-15 w-full min-w-[320px] items-center justify-between px-4 ${
+        className={`bg-bg-primary fixed top-0 right-0 left-1/2 z-1 flex h-15 w-full max-w-97.5 -translate-x-1/2 items-center justify-between px-4 ${
           showBorder ? "border-border-primary border-b" : ""
         }`}
       >

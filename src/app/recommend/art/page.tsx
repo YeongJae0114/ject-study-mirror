@@ -7,7 +7,7 @@ import Header from "@/components/common/Header";
 export default function RecommendArtPage() {
   return (
     <div className="mx-auto min-h-screen w-full max-w-md bg-white pb-10">
-      <Header title="추천 작품" showBack />
+      <Header title="추천 작품" showBack showBorder={false} />
 
       <main className="px-5 pt-5">
         <div className="grid grid-cols-2 gap-x-3.5 gap-y-3.5">

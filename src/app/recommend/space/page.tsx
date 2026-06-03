@@ -7,7 +7,7 @@ import Header from "@/components/common/Header";
 export default function RecommendSpacePage() {
   return (
     <div className="mx-auto min-h-screen w-full max-w-md bg-white pb-10">
-      <Header title="추천 공간" showBack />
+      <Header title="추천 공간" showBack showBorder={false} />
 
       <main className="px-5 pt-5">
         <div className="grid grid-cols-2 gap-x-4 gap-y-6">
