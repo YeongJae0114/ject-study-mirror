@@ -67,7 +67,7 @@ export default function ExhibitionStatusList({
   }
 
   return (
-    <ul className="flex flex-col gap-3 px-5 pt-5 pb-24">
+    <ul className="flex flex-col gap-3 px-5 pt-5 pb-[calc(6rem+env(safe-area-inset-bottom))]">
       {exhibitions.map(exhibition => (
         <li key={exhibition.id}>
           <ExhibitionStatusCard

@@ -26,7 +26,7 @@ export default function ChatListPage() {
       ) : rooms.length === 0 ? (
         <EmptyChat />
       ) : (
-        <>
+        <div className="pb-[calc(5rem+env(safe-area-inset-bottom))]">
           <ul className="divide-border-primary flex flex-col divide-y">
             {rooms.map(room => (
               <ChatListItem
@@ -49,7 +49,7 @@ export default function ChatListPage() {
               </button>
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );

@@ -64,7 +64,7 @@ export default function Home() {
   const spaceFeed = (spaceFeedQuery.data?.pages ?? []).flatMap(page => page.items).map(toSpaceCard);
 
   return (
-    <div className="pb-10">
+    <div className="pb-[calc(5rem+env(safe-area-inset-bottom))]">
       <div className="px-5 py-4">
         <div className="text-headline-1 text-text-primary h-14 font-semibold">홈</div>
       </div>

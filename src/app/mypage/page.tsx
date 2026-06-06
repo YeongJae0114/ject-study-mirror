@@ -295,7 +295,7 @@ export default function MypagePage() {
   const isProfileLoading = meQuery.isLoading || nicknamePolicyQuery.isLoading;
 
   return (
-    <main className="bg-bg-primary min-h-dvh w-full pb-10">
+    <main className="bg-bg-primary min-h-dvh w-full pb-[calc(5rem+env(safe-area-inset-bottom))]">
       <MypageHeader />
 
       <ProfileSummary profile={profile} isLoading={isProfileLoading} />
