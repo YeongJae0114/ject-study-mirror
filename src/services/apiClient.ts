@@ -4,9 +4,13 @@
  */
 
 import { getAccessToken } from "@/services/session";
+import { useAuthStore } from "@/stores/useAuthStore";
 import type { ApiEnvelope, ApiErrorBody } from "@/types/chat";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "";
+const REISSUE_PATH = "/api/v1/auth/reissue";
+
+let reissuePromise: Promise<string | null> | null = null;
 
 /** REST 에러. error.code로 분기하고, message는 표시용. */
 export class ApiError extends Error {
@@ -47,20 +51,75 @@ function buildUrl(path: string, query?: RequestOptions["query"]): string {
   return qs ? `${url}?${qs}` : url;
 }
 
+async function readData<T>(response: Response): Promise<T> {
+  const text = await response.text();
+  if (!text) return undefined as T;
+  const envelope = JSON.parse(text) as ApiEnvelope<T>;
+  return envelope.data;
+}
+
+async function reissueAccessToken(): Promise<string | null> {
+  if (!reissuePromise) {
+    reissuePromise = (async () => {
+      try {
+        const response = await fetch(buildUrl(REISSUE_PATH), {
+          method: "POST",
+          credentials: "include",
+        });
+
+        if (!response.ok) return null;
+
+        const data = await readData<{ accessToken: string }>(response);
+        if (!data?.accessToken) return null;
+
+        useAuthStore.setState({ accessToken: data.accessToken });
+        return data.accessToken;
+      } catch {
+        return null;
+      }
+    })().finally(() => {
+      reissuePromise = null;
+    });
+  }
+
+  return reissuePromise;
+}
+
 /** 성공 시 ApiEnvelope<T>의 `.data` 반환, 실패 시 ApiError throw. */
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { method = "GET", body, query } = options;
 
   const headers: Record<string, string> = {};
   const token = getAccessToken();
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (token && path !== REISSUE_PATH) headers["Authorization"] = `Bearer ${token}`;
   if (body !== undefined) headers["Content-Type"] = "application/json";
 
-  const response = await fetch(buildUrl(path, query), {
+  const requestBody = body !== undefined ? JSON.stringify(body) : undefined;
+  const url = buildUrl(path, query);
+  let response = await fetch(url, {
     method,
     headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: requestBody,
+    credentials: "include",
   });
+
+  if (response.status === 401 && token && path !== REISSUE_PATH) {
+    const nextToken = await reissueAccessToken();
+
+    if (nextToken) {
+      response = await fetch(url, {
+        method,
+        headers: {
+          ...headers,
+          Authorization: `Bearer ${nextToken}`,
+        },
+        body: requestBody,
+        credentials: "include",
+      });
+    } else {
+      useAuthStore.getState().clearAuth();
+    }
+  }
 
   if (!response.ok) {
     let code = "UNKNOWN_ERROR";
@@ -80,10 +139,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   }
 
   // 204 등 본문 없는 응답 방어.
-  const text = await response.text();
-  if (!text) return undefined as T;
-  const envelope = JSON.parse(text) as ApiEnvelope<T>;
-  return envelope.data;
+  return readData<T>(response);
 }
 
 export const apiClient = {

@@ -25,7 +25,7 @@ export function logout(): Promise<{ message: string }> {
   return apiClient.post<{ message: string }>("/api/v1/auth/logout");
 }
 
-/** 토큰 재발급 — 아직 유효한 토큰만 가능. 만료된 토큰은 재로그인 필요. */
+/** 토큰 재발급 — HttpOnly refresh token cookie로 새 accessToken을 발급받는다. */
 export function reissue(): Promise<{ accessToken: string }> {
   return apiClient.post<{ accessToken: string }>("/api/v1/auth/reissue");
 }
