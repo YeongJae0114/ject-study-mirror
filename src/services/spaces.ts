@@ -8,5 +8,5 @@ export interface CreateSpaceRequest {
 
 // 공간 등록 요청
 export const createSpace = (payload: CreateSpaceRequest) => {
-  return apiClient.post("api/v1/spaces", payload);
+  return apiClient.post("/api/v1/spaces", payload);
 };
