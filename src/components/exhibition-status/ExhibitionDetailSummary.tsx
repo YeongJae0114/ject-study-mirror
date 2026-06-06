@@ -24,7 +24,7 @@ export default function ExhibitionDetailSummary({ exhibition }: ExhibitionDetail
           <div
             aria-hidden="true"
             className="h-full w-full bg-cover bg-center"
-            style={{ backgroundImage: `url(${artworkThumbnailUrl})` }}
+            style={{ backgroundImage: `url("${artworkThumbnailUrl}")` }}
           />
         ) : (
           <Images size={34} />

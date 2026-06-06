@@ -33,7 +33,7 @@ export default function ProfileAvatarInput({ onImageChange }: ProfileAvatarInput
                 role="img"
                 aria-label="프로필 이미지"
                 className="h-full w-full bg-cover bg-center"
-                style={{ backgroundImage: `url(${imageUrl})` }}
+                style={{ backgroundImage: `url("${imageUrl}")` }}
               />
             </div>
           ) : (

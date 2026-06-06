@@ -47,39 +47,44 @@ export default function MypageActivitiesPage() {
           </div>
         ) : activities.length > 0 ? (
           <div className="flex flex-col gap-4">
-            {activities.map((activity, index) => (
-              <Link key={activity.id} href={`/exhibitions/${activity.id}`} className="block">
-                <div className="flex items-center gap-4">
-                  <div className="relative size-18.5 shrink-0 overflow-hidden rounded-lg">
-                    {activity.thumbnailUrl ? (
-                      <Image
-                        src={normalizeImageUrl(activity.thumbnailUrl) ?? ""}
-                        alt=""
-                        fill
-                        sizes="74px"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="bg-bg-primary-darker text-text-disabled flex size-full items-center justify-center">
-                        <Images size={24} />
-                      </div>
-                    )}
-                  </div>
+            {activities.map((activity, index) => {
+              const thumbnailUrl = normalizeImageUrl(activity.thumbnailUrl);
 
-                  <div className="flex min-w-0 flex-1 flex-col gap-1 leading-[1.45] font-medium">
-                    <p className="text-body-1 text-text-primary truncate">{activity.title}</p>
-                    <div className="text-body-2 text-text-secondary flex flex-col gap-[3px]">
-                      <p>{`${formatDate(activity.startDate)}-${formatDate(activity.endDate)}`}</p>
-                      <p>{activity.spaceName}</p>
+              return (
+                <Link key={activity.id} href={`/exhibitions/${activity.id}`} className="block">
+                  <div className="flex items-center gap-4">
+                    <div className="relative size-18.5 shrink-0 overflow-hidden rounded-lg">
+                      {thumbnailUrl ? (
+                        <Image
+                          src={thumbnailUrl}
+                          alt=""
+                          fill
+                          sizes="74px"
+                          className="object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="bg-bg-primary-darker text-text-disabled flex size-full items-center justify-center">
+                          <Images size={24} />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex min-w-0 flex-1 flex-col gap-1 leading-[1.45] font-medium">
+                      <p className="text-body-1 text-text-primary truncate">{activity.title}</p>
+                      <div className="text-body-2 text-text-secondary flex flex-col gap-[3px]">
+                        <p>{`${formatDate(activity.startDate)}-${formatDate(activity.endDate)}`}</p>
+                        <p>{activity.spaceName}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {index < activities.length - 1 && (
-                  <div className="border-border-primary mt-4 border-t" />
-                )}
-              </Link>
-            ))}
+                  {index < activities.length - 1 && (
+                    <div className="border-border-primary mt-4 border-t" />
+                  )}
+                </Link>
+              );
+            })}
             {query.hasNextPage && (
               <button
                 type="button"

@@ -57,7 +57,7 @@ export default function ProfileImageInput({ initialImageUrl, onChange }: Profile
               role="img"
               aria-label="프로필 이미지"
               className="h-full w-full bg-cover bg-center"
-              style={{ backgroundImage: `url(${displayUrl})` }}
+              style={{ backgroundImage: `url("${displayUrl}")` }}
             />
           </div>
         ) : (
