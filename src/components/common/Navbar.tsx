@@ -56,6 +56,11 @@ export default function Navbar() {
               <Link
                 key={menu.href}
                 href={menu.href}
+                onClick={() => {
+                  if (isActive) {
+                    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+                  }
+                }}
                 className="flex h-full flex-1 flex-col items-center justify-center gap-1"
               >
                 <Icon active={isActive} />
