@@ -7,6 +7,7 @@ import ExpandableText from "@/components/archive-detail/ExpandableText";
 import ImageSwiper from "@/components/archive-detail/ImageSwiper";
 import NicknameCard from "@/components/archive-detail/NicknameCard";
 import { getSpaceDetail } from "@/services/spaces";
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 export default function SpaceDetailPage() {
   const router = useRouter();
@@ -20,7 +21,11 @@ export default function SpaceDetailPage() {
   });
 
   const space = query.data;
-  const spaceImages = space?.imageUrls?.filter(Boolean) ?? [];
+  const spaceImages =
+    space?.imageUrls?.flatMap(url => {
+      const normalized = normalizeImageUrl(url);
+      return normalized ? [normalized] : [];
+    }) ?? [];
 
   return (
     <div className="min-h-screen bg-white pb-32">

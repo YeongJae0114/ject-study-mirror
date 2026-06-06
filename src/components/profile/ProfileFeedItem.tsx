@@ -1,15 +1,20 @@
 import { Artwork } from "@/types/profile";
 import { ExhibitionStatus } from "../common/ExhibitionStatus";
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 interface ProfileFeedItemProps {
   artwork: Artwork;
 }
 
 export const ProfileFeedItem = ({ artwork }: ProfileFeedItemProps) => {
+  const imageUrl = normalizeImageUrl(artwork.imageUrl);
+
   return (
     <div className="flex flex-col">
       <div className="mb-2 aspect-4/3 overflow-hidden rounded-lg">
-        <img src={artwork.imageUrl} alt={artwork.title} className="h-full w-full object-cover" />
+        {imageUrl ? (
+          <img src={imageUrl} alt={artwork.title} className="h-full w-full object-cover" />
+        ) : null}
       </div>
 
       <ExhibitionStatus status={artwork.status} />

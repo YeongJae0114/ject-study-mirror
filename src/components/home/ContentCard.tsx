@@ -1,5 +1,6 @@
 import { Images } from "lucide-react";
 import Link from "next/link";
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 interface ContentCardProps {
   title: string;
@@ -10,12 +11,14 @@ interface ContentCardProps {
 }
 
 export default function ContentCard({ title, imageUrl, author, type, href }: ContentCardProps) {
+  const displayImageUrl = normalizeImageUrl(imageUrl);
+
   const content = (
     <div className="w-42 shrink-0">
       {/* 썸네일*/}
       <div className="bg-bg-primary-darker aspect-4/3 overflow-hidden rounded-lg">
-        {imageUrl ? (
-          <img src={imageUrl} alt={title} className="h-full w-full object-cover" />
+        {displayImageUrl ? (
+          <img src={displayImageUrl} alt={title} className="h-full w-full object-cover" />
         ) : (
           <div className="text-text-disabled flex h-full w-full items-center justify-center">
             <Images size={28} />

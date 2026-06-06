@@ -9,6 +9,7 @@ import RegionText from "@/components/archive-detail/RegionText";
 import ImageSwiper from "@/components/archive-detail/ImageSwiper";
 import NicknameCard from "@/components/archive-detail/NicknameCard";
 import { getArtworkDetail } from "@/services/artworks";
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 function formatDate(date: string | null) {
   if (!date) return "-";
@@ -27,7 +28,11 @@ export default function ArtDetailPage() {
   });
 
   const artwork = query.data;
-  const artworkImages = artwork?.imageUrls?.filter(Boolean) ?? [];
+  const artworkImages =
+    artwork?.imageUrls?.flatMap(url => {
+      const normalized = normalizeImageUrl(url);
+      return normalized ? [normalized] : [];
+    }) ?? [];
 
   return (
     <div className="min-h-screen bg-white pb-32">

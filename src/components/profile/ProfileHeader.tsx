@@ -1,12 +1,15 @@
 import { ProfileHeaderProps } from "@/types/profile";
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 import Image from "next/image";
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ avatarUrl, role, name }) => {
+  const displayAvatarUrl = normalizeImageUrl(avatarUrl);
+
   return (
     <div className="flex flex-col items-center pt-8">
       <div className="mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full">
-        {avatarUrl ? (
-          <Image src={avatarUrl} alt="프로필 사진" className="h-full w-full object-cover" />
+        {displayAvatarUrl ? (
+          <Image src={displayAvatarUrl} alt="프로필 사진" className="h-full w-full object-cover" />
         ) : (
           <Image src="/default-profile.svg" alt="기본 이미지" width={80} height={80} />
         )}

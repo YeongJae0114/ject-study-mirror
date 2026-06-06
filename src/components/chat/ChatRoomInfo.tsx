@@ -5,6 +5,7 @@ import { ImageIcon } from "lucide-react";
 import ProposeExhibitionSheet from "@/components/chat/ProposeExhibitionSheet";
 import { CHAT_CONTEXT_TYPE_LABEL, CHAT_PROPOSE_EXHIBITION_LABEL } from "@/constants/chat";
 import type { ChatContext } from "@/types/chat";
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 interface ChatRoomInfoProps {
   context: ChatContext;
@@ -12,17 +13,14 @@ interface ChatRoomInfoProps {
 
 export default function ChatRoomInfo({ context }: ChatRoomInfoProps) {
   const [proposeOpen, setProposeOpen] = useState(false);
+  const thumbnailUrl = normalizeImageUrl(context.thumbnailUrl);
 
   return (
     <div className="border-b-border-primary bg-bg-primary flex w-full items-center gap-3 border-b px-4 py-3">
       {/* 썸네일 (없으면 placeholder) */}
-      {context.thumbnailUrl ? (
+      {thumbnailUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={context.thumbnailUrl}
-          alt=""
-          className="h-12 w-12 shrink-0 rounded-lg object-cover"
-        />
+        <img src={thumbnailUrl} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />
       ) : (
         <div
           aria-hidden

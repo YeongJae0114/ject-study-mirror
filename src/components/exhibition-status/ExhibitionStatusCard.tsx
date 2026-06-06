@@ -2,6 +2,7 @@ import { CalendarDays, ChevronRight, FileText, Images, MapPin } from "lucide-rea
 
 import ExhibitionStatusBadge from "@/components/exhibition-status/ExhibitionStatusBadge";
 import type { ExhibitionListItem } from "@/types/exhibition";
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 interface ExhibitionStatusCardProps {
   exhibition: ExhibitionListItem;
@@ -19,6 +20,8 @@ function formatPeriod(startDate: string, endDate: string) {
 }
 
 export default function ExhibitionStatusCard({ exhibition, onClick }: ExhibitionStatusCardProps) {
+  const thumbnailUrl = normalizeImageUrl(exhibition.thumbnailUrl);
+
   return (
     <button
       type="button"
@@ -26,11 +29,11 @@ export default function ExhibitionStatusCard({ exhibition, onClick }: Exhibition
       className="border-border-primary bg-bg-primary active:bg-bg-primary-darker flex w-full gap-4 rounded-lg border p-4 text-left transition-colors"
     >
       <div className="bg-bg-primary-darker text-text-disabled flex size-22 shrink-0 items-center justify-center overflow-hidden rounded-lg">
-        {exhibition.thumbnailUrl ? (
+        {thumbnailUrl ? (
           <div
             aria-hidden="true"
             className="h-full w-full bg-cover bg-center"
-            style={{ backgroundImage: `url(${exhibition.thumbnailUrl})` }}
+            style={{ backgroundImage: `url(${thumbnailUrl})` }}
           />
         ) : (
           <Images size={26} />
