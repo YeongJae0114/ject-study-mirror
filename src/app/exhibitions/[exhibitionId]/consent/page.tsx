@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, use, useEffect, useMemo, useRef, useState } from "react";
 
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -96,7 +96,18 @@ function ConsentPageSkeleton() {
   );
 }
 
-export default function ConsentPage({ params }: ConsentPageProps) {
+function ConsentPageFallback() {
+  return (
+    <div className="bg-bg-primary min-h-dvh">
+      <Header title="동의서 작성" showBack />
+      <main className="mx-auto min-h-[calc(100dvh-60px)] w-full max-w-[430px] min-w-[320px]">
+        <ConsentPageSkeleton />
+      </main>
+    </div>
+  );
+}
+
+function ConsentPageContent({ params }: ConsentPageProps) {
   const { exhibitionId } = use(params);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -306,5 +317,13 @@ export default function ConsentPage({ params }: ConsentPageProps) {
 
       <Toast open={toastOpen} message="동의서 작성이 완료되었습니다." />
     </div>
+  );
+}
+
+export default function ConsentPage({ params }: ConsentPageProps) {
+  return (
+    <Suspense fallback={<ConsentPageFallback />}>
+      <ConsentPageContent params={params} />
+    </Suspense>
   );
 }
