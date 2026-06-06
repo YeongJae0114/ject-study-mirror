@@ -16,7 +16,7 @@ const menus = [
   },
   {
     label: "전시 현황",
-    href: "/exhibition",
+    href: "/exhibitions/status",
     icon: ExhibitionIcon,
   },
   {
@@ -36,7 +36,7 @@ export default function Navbar() {
 
   const shouldShowNavbar =
     pathname === "/" ||
-    pathname === "/exhibition" ||
+    pathname === "/exhibitions/status" ||
     pathname === "/chat" ||
     pathname === "/mypage";
 

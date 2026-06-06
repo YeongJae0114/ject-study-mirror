@@ -23,5 +23,5 @@ export interface CreateArtworkRequest {
 
 // 작품 등록 요청
 export const createArtwork = (payload: CreateArtworkRequest) => {
-  return apiClient.post("api/v1/artworks", payload);
+  return apiClient.post("/api/v1/artworks", payload);
 };
