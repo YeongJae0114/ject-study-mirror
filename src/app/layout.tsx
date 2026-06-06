@@ -1,8 +1,11 @@
+import { Suspense } from "react";
+
 import type { Metadata } from "next";
 import { Alata } from "next/font/google";
 import localFont from "next/font/local";
 
 import Navbar from "@/components/common/Navbar";
+import ScrollManager from "@/components/common/ScrollManager";
 
 import Providers from "./providers";
 
@@ -36,6 +39,9 @@ export default function RootLayout({
       {/* <body className="flex min-h-full flex-col"> */}
       <body className="mx-auto min-h-screen w-full max-w-97.5 bg-white">
         <Providers>{children}</Providers>
+        <Suspense fallback={null}>
+          <ScrollManager />
+        </Suspense>
         <Navbar />
       </body>
     </html>

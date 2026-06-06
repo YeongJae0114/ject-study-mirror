@@ -33,7 +33,7 @@ export default function ExhibitionStatusCard({ exhibition, onClick }: Exhibition
           <div
             aria-hidden="true"
             className="h-full w-full bg-cover bg-center"
-            style={{ backgroundImage: `url(${thumbnailUrl})` }}
+            style={{ backgroundImage: `url("${thumbnailUrl}")` }}
           />
         ) : (
           <Images size={26} />

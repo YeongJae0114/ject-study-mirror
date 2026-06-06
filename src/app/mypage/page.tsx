@@ -179,7 +179,14 @@ function ExhibitionItem({ exhibition, hasDivider = false }: ExhibitionItemProps)
       <div className="flex items-center gap-4">
         <div className="relative size-18.5 shrink-0 overflow-hidden rounded-lg">
           {exhibition.imageUrl ? (
-            <Image src={exhibition.imageUrl} alt="" fill sizes="74px" className="object-cover" />
+            <Image
+              src={exhibition.imageUrl}
+              alt=""
+              fill
+              sizes="74px"
+              className="object-cover"
+              unoptimized
+            />
           ) : (
             <ImageFallback>
               <Images size={24} />
@@ -288,7 +295,7 @@ export default function MypagePage() {
   const isProfileLoading = meQuery.isLoading || nicknamePolicyQuery.isLoading;
 
   return (
-    <main className="bg-bg-primary min-h-dvh w-full pb-10">
+    <main className="bg-bg-primary min-h-dvh w-full pb-[calc(5rem+env(safe-area-inset-bottom))]">
       <MypageHeader />
 
       <ProfileSummary profile={profile} isLoading={isProfileLoading} />

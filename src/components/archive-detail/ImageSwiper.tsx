@@ -7,6 +7,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 import "swiper/css";
 
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
+
 interface ImageSwiperProps {
   images: string[];
   altPrefix?: string;
@@ -20,7 +22,11 @@ export default function ImageSwiper({
 }: ImageSwiperProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const hasImages = images && images.length > 0;
+  const displayImages = images.flatMap(image => {
+    const normalized = normalizeImageUrl(image);
+    return normalized ? [normalized] : [];
+  });
+  const hasImages = displayImages.length > 0;
 
   return (
     <div className="relative h-70 w-full overflow-hidden">
@@ -32,7 +38,7 @@ export default function ImageSwiper({
           loop={true}
           onRealIndexChange={swiper => setActiveIndex(swiper.realIndex)}
         >
-          {images.map((src, index) => (
+          {displayImages.map((src, index) => (
             <SwiperSlide key={index} className="relative">
               <Image
                 src={src}
@@ -54,7 +60,7 @@ export default function ImageSwiper({
       {/* 이미지 개수 인덱스 표시 뱃지 */}
       {hasImages && (
         <div className="bg-object-secondary text-caption text-text-invert absolute right-5 bottom-5 z-10 h-6 w-10.5 rounded-sm px-1.5 py-1 text-center font-medium">
-          {activeIndex + 1}/{images.length}
+          {activeIndex + 1}/{displayImages.length}
         </div>
       )}
     </div>
