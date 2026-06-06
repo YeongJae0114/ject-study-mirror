@@ -8,9 +8,7 @@ const backendOrigin = process.env.BACKEND_ORIGIN ?? "http://localhost:8080";
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    return [
-      { source: "/api/:path*", destination: `${backendOrigin}/api/:path*` },
-    ];
+    return [{ source: "/api/:path*", destination: `${backendOrigin}/api/:path*` }];
   },
 };
 

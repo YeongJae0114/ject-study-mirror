@@ -1,13 +1,15 @@
 "use client";
 
+import { useState } from "react";
+
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 
 import ExpandableText from "@/components/archive-detail/ExpandableText";
-import SizeText from "@/components/archive-detail/SizeText";
-import RegionText from "@/components/archive-detail/RegionText";
 import ImageSwiper from "@/components/archive-detail/ImageSwiper";
 import NicknameCard from "@/components/archive-detail/NicknameCard";
+import RegionText from "@/components/archive-detail/RegionText";
+import SizeText from "@/components/archive-detail/SizeText";
 import { useCreateChatRoom } from "@/hooks/useCreateChatRoom";
 import { getArtworkDetail } from "@/services/artworks";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
@@ -21,11 +23,16 @@ function hasText(value?: string | null) {
   return Boolean(value?.trim());
 }
 
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "전시 문의를 시작하지 못했습니다.";
+}
+
 export default function ArtDetailPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const artworkId = params.id;
   const createChatRoom = useCreateChatRoom();
+  const [inquiryErrorMessage, setInquiryErrorMessage] = useState<string | null>(null);
 
   const query = useQuery({
     queryKey: ["artwork-detail", artworkId],
@@ -49,11 +56,12 @@ export default function ArtDetailPage() {
   const handleInquiryClick = () => {
     if (!Number.isFinite(numericArtworkId)) return;
 
+    setInquiryErrorMessage(null);
     createChatRoom.mutate(
       { targetType: "ARTWORK", targetId: numericArtworkId },
       {
         onSuccess: room => router.push(`/chat/${room.id}`),
-        onError: error => alert(error.message || "전시 문의를 시작하지 못했습니다."),
+        onError: error => setInquiryErrorMessage(getErrorMessage(error)),
       }
     );
   };
@@ -136,6 +144,14 @@ export default function ArtDetailPage() {
           </div>
 
           <div className="border-border-primary bg-bg-primary fixed right-0 bottom-0 left-0 z-50 border-t px-5 pt-3 pb-9">
+            {inquiryErrorMessage && (
+              <p
+                role="alert"
+                className="text-caption text-error-default mx-auto mb-2 max-w-[430px]"
+              >
+                {inquiryErrorMessage}
+              </p>
+            )}
             <button
               onClick={handleInquiryClick}
               disabled={createChatRoom.isPending}

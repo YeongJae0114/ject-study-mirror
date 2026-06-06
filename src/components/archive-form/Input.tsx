@@ -3,6 +3,7 @@
 import { type ChangeEvent, type InputHTMLAttributes } from "react";
 
 import { AlertCircle } from "lucide-react";
+import Image from "next/image";
 
 import Label from "./Label";
 
@@ -70,7 +71,7 @@ export default function Input({
 
         {deleteButton && !isError && writing && (
           <button type="button" onClick={handleClear} className="flex items-center justify-center">
-            <img src="/cancel-icon.svg" alt="취소" className="h-6 w-6" />
+            <Image src="/cancel-icon.svg" alt="취소" width={24} height={24} />
           </button>
         )}
       </div>

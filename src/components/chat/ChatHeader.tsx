@@ -14,17 +14,17 @@ export default function ChatHeader({ title, onMore }: ChatHeaderProps) {
   const router = useRouter();
 
   return (
-    <header className="flex h-15 w-full min-w-[320px] items-center justify-between border-b border-b-border-primary bg-bg-primary px-4">
+    <header className="border-b-border-primary bg-bg-primary flex h-15 w-full min-w-[320px] items-center justify-between border-b px-4">
       <button
         type="button"
         aria-label="뒤로가기"
         onClick={() => router.back()}
-        className="flex w-6 cursor-pointer items-center text-text-primary"
+        className="text-text-primary flex w-6 cursor-pointer items-center"
       >
         <ArrowLeft size={24} />
       </button>
 
-      <div className="flex-1 truncate px-2 text-center text-headline-1 font-semibold text-text-primary">
+      <div className="text-headline-1 text-text-primary flex-1 truncate px-2 text-center font-semibold">
         {title ?? "상대방"}
       </div>
 
@@ -32,7 +32,7 @@ export default function ChatHeader({ title, onMore }: ChatHeaderProps) {
         type="button"
         aria-label="더보기"
         onClick={onMore}
-        className="flex w-6 cursor-pointer items-center justify-end text-text-primary"
+        className="text-text-primary flex w-6 cursor-pointer items-center justify-end"
       >
         <MoreVertical size={24} />
       </button>

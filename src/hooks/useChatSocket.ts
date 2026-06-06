@@ -3,47 +3,36 @@
  * 응답이 DESC이므로 새 메시지는 첫 페이지 맨 앞에 prepend, 서버 에코분은 id로 dedupe.
  */
 
-import { useEffect, useRef, useState } from 'react';
-import {
-  useQueryClient,
-  type InfiniteData,
-  type QueryClient,
-} from '@tanstack/react-query';
-import { connectChatRoom, type ChatRoomSocket } from '@/services/chatSocket';
-import { messagesKey } from '@/hooks/useMessages';
-import { useSession } from '@/services/session';
-import type { CursorPage, Message, SocketErrorPayload } from '@/types/chat';
+import { useEffect, useRef, useState } from "react";
+
+import { useQueryClient, type InfiniteData, type QueryClient } from "@tanstack/react-query";
+
+import { messagesKey } from "@/hooks/useMessages";
+import { connectChatRoom, type ChatRoomSocket } from "@/services/chatSocket";
+import { useSession } from "@/services/session";
+import type { CursorPage, Message, SocketErrorPayload } from "@/types/chat";
 
 /** 수신 메시지를 캐시에 머지. 첫 페이지 앞에 prepend, 전 페이지 통틀어 id 중복 제거. */
-function mergeIncomingMessage(
-  queryClient: QueryClient,
-  roomId: number,
-  message: Message,
-) {
-  queryClient.setQueryData<InfiniteData<CursorPage<Message>>>(
-    messagesKey(roomId),
-    (prev) => {
-      // 이력 없으면 단일 페이지로 시드.
-      if (!prev || prev.pages.length === 0) {
-        return {
-          pages: [{ items: [message], nextCursor: null, hasNext: false }],
-          pageParams: [undefined],
-        };
-      }
-
-      const exists = prev.pages.some((page) =>
-        page.items.some((m) => m.id === message.id),
-      );
-      if (exists) return prev;
-
-      const [firstPage, ...restPages] = prev.pages;
-      const updatedFirst: CursorPage<Message> = {
-        ...firstPage,
-        items: [message, ...firstPage.items],
+function mergeIncomingMessage(queryClient: QueryClient, roomId: number, message: Message) {
+  queryClient.setQueryData<InfiniteData<CursorPage<Message>>>(messagesKey(roomId), prev => {
+    // 이력 없으면 단일 페이지로 시드.
+    if (!prev || prev.pages.length === 0) {
+      return {
+        pages: [{ items: [message], nextCursor: null, hasNext: false }],
+        pageParams: [undefined],
       };
-      return { ...prev, pages: [updatedFirst, ...restPages] };
-    },
-  );
+    }
+
+    const exists = prev.pages.some(page => page.items.some(m => m.id === message.id));
+    if (exists) return prev;
+
+    const [firstPage, ...restPages] = prev.pages;
+    const updatedFirst: CursorPage<Message> = {
+      ...firstPage,
+      items: [message, ...firstPage.items],
+    };
+    return { ...prev, pages: [updatedFirst, ...restPages] };
+  });
 }
 
 export interface UseChatSocketResult {
@@ -74,8 +63,8 @@ export function useChatSocket(roomId: number): UseChatSocketResult {
     let active = true;
 
     const socket = connectChatRoom(roomId, {
-      onMessage: (message) => mergeIncomingMessage(queryClient, roomId, message),
-      onSocketError: (payload) => {
+      onMessage: message => mergeIncomingMessage(queryClient, roomId, message),
+      onSocketError: payload => {
         if (active) setLastError(payload);
       },
       onConnected: () => {

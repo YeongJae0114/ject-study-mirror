@@ -1,6 +1,8 @@
+import { Images } from "lucide-react";
+import Image from "next/image";
+
 import { Activity } from "@/types/profile";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
-import { Images } from "lucide-react";
 
 interface ProfileActivityItemProps {
   activity: Activity;
@@ -11,9 +13,16 @@ export const ProfileActivityItem = ({ activity }: ProfileActivityItemProps) => {
 
   return (
     <div className="border-border-primary flex items-center gap-4 border-b py-4 last:border-b-0">
-      <div className="bg-bg-primary-darker text-text-disabled flex h-18.5 w-18.5 shrink-0 items-center justify-center overflow-hidden rounded-lg">
+      <div className="bg-bg-primary-darker text-text-disabled relative flex h-18.5 w-18.5 shrink-0 items-center justify-center overflow-hidden rounded-lg">
         {imageUrl ? (
-          <img src={imageUrl} alt={activity.title} className="h-full w-full object-cover" />
+          <Image
+            src={imageUrl}
+            alt={activity.title}
+            fill
+            unoptimized
+            className="object-cover"
+            sizes="74px"
+          />
         ) : (
           <Images size={24} />
         )}

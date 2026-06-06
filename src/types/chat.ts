@@ -97,11 +97,10 @@ export interface CursorPage<T> {
 }
 
 /**
- * 전시 제안 폼 입력값(프론트 전용). 백엔드 전시 제안 API 부재로 전송은 추후 연동.
- * target: 선택한 작품/공간 표시값(컨텍스트 ARTWORK→공간, SPACE→작품). 날짜는 yyyy-MM-dd.
+ * 전시 제안 폼 입력값. targetId는 컨텍스트 ARTWORK→공간 id, SPACE→작품 id. 날짜는 yyyy-MM-dd.
  */
 export interface ProposeExhibitionDraft {
-  target: string;
+  targetId: number;
   title: string;
   startDate: string;
   endDate: string;

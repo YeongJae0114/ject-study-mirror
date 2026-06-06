@@ -1,6 +1,7 @@
 // 제안 수락 mutation. 성공 시 제안 상세 invalidate(ACCEPTED 반영). 합의서 링크는 STOMP로 도착.
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { acceptProposal } from "@/services/proposalApi";
 import type { AcceptProposalResult } from "@/types/proposal";
 

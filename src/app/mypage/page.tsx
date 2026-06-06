@@ -263,7 +263,7 @@ export default function MypagePage() {
     queryFn: () => getMypageFeed({ page: 0, size: 4 }),
     enabled: canFetchProfile,
   });
-  const activitiesQuery = useExhibitions("CONFIRMED", 0, 3);
+  const activitiesQuery = useExhibitions("CONFIRMED", 0, 4);
 
   if (!canFetchProfile) return null;
 

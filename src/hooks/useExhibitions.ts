@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { cancelExhibition, getExhibitionDetail, getMyExhibitions } from "@/services/exhibitionApi";
 import { useSession } from "@/services/session";
@@ -26,6 +26,18 @@ export function useExhibitions(filter: ExhibitionStatusFilter, page = 0, size = 
   return useQuery<ExhibitionListResponse>({
     queryKey: [...exhibitionStatusListKey(filter), page, size],
     queryFn: () => getMyExhibitions({ filter, page, size }),
+    enabled: Boolean(accessToken),
+  });
+}
+
+export function useInfiniteExhibitions(filter: ExhibitionStatusFilter, size = 20) {
+  const { accessToken } = useSession();
+
+  return useInfiniteQuery<ExhibitionListResponse>({
+    queryKey: [...exhibitionStatusListKey(filter), "infinite", size],
+    queryFn: ({ pageParam }) => getMyExhibitions({ filter, page: pageParam as number, size }),
+    initialPageParam: 0,
+    getNextPageParam: lastPage => (lastPage.hasNext ? lastPage.page + 1 : undefined),
     enabled: Boolean(accessToken),
   });
 }

@@ -3,11 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 
+import Header from "@/components/common/Header";
+import { ProfileActivityList } from "@/components/profile/ProfileActivityList";
+import { ProfileFeedList } from "@/components/profile/ProfileFeedList";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileInfo } from "@/components/profile/ProfileInfo";
-import { ProfileFeedList } from "@/components/profile/ProfileFeedList";
-import { ProfileActivityList } from "@/components/profile/ProfileActivityList";
-import Header from "@/components/common/Header";
 import {
   getPublicProfile,
   getPublicProfileActivities,

@@ -3,8 +3,8 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 
-import Header from "@/components/common/Header";
 import { EmptyContent } from "@/components/common/EmptyContent";
+import Header from "@/components/common/Header";
 import { ProfileFeedItem } from "@/components/profile/ProfileFeedItem";
 import { getPublicProfileFeed } from "@/services/profileApi";
 import type { ProfileFeedItem as ProfileFeedItemType, ProfileFeedResponse } from "@/types/profile";

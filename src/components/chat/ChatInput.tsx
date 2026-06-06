@@ -1,12 +1,11 @@
 "use client";
 
 import { type ChangeEvent, type FormEvent } from "react";
+
 import { ArrowRight } from "lucide-react";
+
+import { CHAT_INPUT_PLACEHOLDER, CHAT_MESSAGE_MAX_LENGTH } from "@/constants/chat";
 import { useChatStore } from "@/stores/useChatStore";
-import {
-  CHAT_INPUT_PLACEHOLDER,
-  CHAT_MESSAGE_MAX_LENGTH,
-} from "@/constants/chat";
 
 interface ChatInputProps {
   /** 트림된 내용 전달. 부모가 소켓 sendMessage 연결 */
@@ -15,8 +14,8 @@ interface ChatInputProps {
 }
 
 export default function ChatInput({ onSend, disabled = false }: ChatInputProps) {
-  const draftMessage = useChatStore((state) => state.draftMessage);
-  const setDraftMessage = useChatStore((state) => state.setDraftMessage);
+  const draftMessage = useChatStore(state => state.draftMessage);
+  const setDraftMessage = useChatStore(state => state.setDraftMessage);
 
   const trimmed = draftMessage.trim();
   const canSend = trimmed.length > 0 && !disabled;
@@ -35,16 +34,16 @@ export default function ChatInput({ onSend, disabled = false }: ChatInputProps) 
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex w-full items-center gap-2 bg-bg-primary px-4 py-3"
+      className="bg-bg-primary flex w-full items-center gap-2 px-4 py-3"
     >
-      <div className="flex flex-1 items-center rounded-lg border border-border-primary bg-bg-primary px-4 py-2 transition-colors focus-within:border-border-secondary">
+      <div className="border-border-primary bg-bg-primary focus-within:border-border-secondary flex flex-1 items-center rounded-lg border px-4 py-2 transition-colors">
         <input
           value={draftMessage}
           onChange={handleChange}
           placeholder={CHAT_INPUT_PLACEHOLDER}
           maxLength={CHAT_MESSAGE_MAX_LENGTH}
           disabled={disabled}
-          className="flex-1 bg-transparent text-body-1 text-text-primary outline-none placeholder:text-text-input"
+          className="text-body-1 text-text-primary placeholder:text-text-input flex-1 bg-transparent outline-none"
         />
       </div>
 
@@ -55,7 +54,7 @@ export default function ChatInput({ onSend, disabled = false }: ChatInputProps) 
         className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors ${
           canSend
             ? "bg-object-primary text-text-invert hover:bg-object-primary-hover active:bg-object-primary-pressed"
-            : "cursor-not-allowed bg-object-disabled text-text-disabled"
+            : "bg-object-disabled text-text-disabled cursor-not-allowed"
         }`}
       >
         <ArrowRight size={20} />

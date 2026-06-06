@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 
@@ -15,11 +17,16 @@ function hasText(value?: string | null) {
   return Boolean(value?.trim());
 }
 
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "전시 문의를 시작하지 못했습니다.";
+}
+
 export default function SpaceDetailPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const spaceId = params.id;
   const createChatRoom = useCreateChatRoom();
+  const [inquiryErrorMessage, setInquiryErrorMessage] = useState<string | null>(null);
 
   const query = useQuery({
     queryKey: ["space-detail", spaceId],
@@ -44,11 +51,12 @@ export default function SpaceDetailPage() {
   const handleInquiryClick = () => {
     if (!Number.isFinite(numericSpaceId)) return;
 
+    setInquiryErrorMessage(null);
     createChatRoom.mutate(
       { targetType: "SPACE", targetId: numericSpaceId },
       {
         onSuccess: room => router.push(`/chat/${room.id}`),
-        onError: error => alert(error.message || "전시 문의를 시작하지 못했습니다."),
+        onError: error => setInquiryErrorMessage(getErrorMessage(error)),
       }
     );
   };
@@ -128,6 +136,14 @@ export default function SpaceDetailPage() {
           </div>
 
           <div className="border-border-primary bg-bg-primary fixed right-0 bottom-0 left-0 z-50 border-t px-5 pt-3 pb-9">
+            {inquiryErrorMessage && (
+              <p
+                role="alert"
+                className="text-caption text-error-default mx-auto mb-2 max-w-[430px]"
+              >
+                {inquiryErrorMessage}
+              </p>
+            )}
             <button
               onClick={handleInquiryClick}
               disabled={createChatRoom.isPending}

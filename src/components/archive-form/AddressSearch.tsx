@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import { Search } from 'lucide-react';
-import DaumPostcode, { Address } from 'react-daum-postcode';
-import { Drawer } from 'vaul';
+import { Search } from "lucide-react";
+import DaumPostcode, { Address } from "react-daum-postcode";
+import { Drawer } from "vaul";
 
 interface AddressBottomSheetProps {
   value?: string;
@@ -17,7 +17,7 @@ export default function AddressBottomSheet({ value, onChange }: AddressBottomShe
   const handleComplete = (data: Address) => {
     let fullAddress = data.address;
 
-    let extraAddress = '';
+    let extraAddress = "";
 
     if (data.bname) {
       extraAddress += data.bname;
@@ -43,8 +43,8 @@ export default function AddressBottomSheet({ value, onChange }: AddressBottomShe
         onClick={() => setOpen(true)}
         className="border-border-primary flex h-12.5 w-full items-center justify-between rounded-lg border px-4 transition-colors"
       >
-        <span className={`text-body-1 ${value ? 'text-text-primary' : 'text-text-input'}`}>
-          {value || '도로명 주소 검색하기'}
+        <span className={`text-body-1 ${value ? "text-text-primary" : "text-text-input"}`}>
+          {value || "도로명 주소 검색하기"}
         </span>
         <Search size={20} />
       </button>
@@ -75,8 +75,8 @@ export default function AddressBottomSheet({ value, onChange }: AddressBottomShe
               <DaumPostcode
                 onComplete={handleComplete}
                 style={{
-                  width: '100%',
-                  height: '100%',
+                  width: "100%",
+                  height: "100%",
                 }}
               />
             </div>

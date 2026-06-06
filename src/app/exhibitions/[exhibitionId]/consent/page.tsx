@@ -10,8 +10,8 @@ import ExhibitionProgressInfoCard from "@/components/exhibition-consent/Exhibiti
 import SignatureSection from "@/components/exhibition-consent/SignatureSection";
 import Toast from "@/components/mypage/Toast";
 import { useExhibitionConsent, useSubmitExhibitionConsent } from "@/hooks/useExhibitionConsent";
-import { useSession } from "@/services/session";
-import type { ConsentMode, ExhibitionConsent } from "@/types/exhibitionConsent";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
+import type { ConsentMode } from "@/types/exhibitionConsent";
 
 interface ConsentPageProps {
   params: Promise<{ exhibitionId: string }>;
@@ -25,61 +25,6 @@ interface ConsentDraftState {
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "요청 처리 중 오류가 발생했습니다.";
-}
-
-function getPreviewSignatureDataUrl() {
-  return (
-    "data:image/svg+xml;charset=UTF-8," +
-    encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="152" viewBox="0 0 320 152"><path d="M86 91c22-41 37 39 61-3 17-30 27 25 47-1 12-15 27 1 38 18" fill="none" stroke="#1A1A1E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    )
-  );
-}
-
-function createPreviewConsent(exhibitionId: number, readOnly: boolean): ExhibitionConsent {
-  return {
-    exhibitionId,
-    mode: readOnly ? "READONLY" : "WRITE",
-    canSubmit: !readOnly,
-    exhibition: {
-      title: "작성된 전시 이름",
-      startDate: "2026-06-20",
-      endDate: "2026-06-30",
-      spaceName: "전시 공간 이름",
-      spaceAddress: "공간 도로명 주소",
-      spaceOwnerNickname: "공간 파트너 닉네임",
-      spaceOwnerProfileImageUrl: null,
-      spaceThumbnailUrl: null,
-      creatorNickname: "크리에이터 닉네임",
-      creatorProfileImageUrl: null,
-      artworkTitle: "전시 작품 이름",
-      artworkType: "작품 유형",
-      artworkThumbnailUrl: null,
-    },
-    agreements: [
-      {
-        id: "progress_terms",
-        title: "전시 진행 약관",
-        required: true,
-        content:
-          "제1조 (목적)\n본 약관은 리핏 플랫폼을 통해 크리에이터와 공간 파트너가 전시 진행 및 공간 이용에 관한 제반 사항을 규정함을 목적으로 합니다.\n\n제2조 (전시 위탁)\n전시 기간 동안 작품 설치, 관리, 철수 일정은 양 당사자가 합의한 내용을 기준으로 진행합니다.",
-        checked: readOnly,
-      },
-      {
-        id: "notice",
-        title: "전시 주의사항",
-        required: true,
-        content:
-          "원활한 전시 진행을 위해 공간 파트너와 크리에이터가 작성한 안내사항을 확인해주세요.\n\n[공간 파트너가 작성한 내용입니다.]\n\n[크리에이터가 작성한 내용입니다.]",
-        checked: readOnly,
-      },
-    ],
-    signature: {
-      signed: readOnly,
-      signedAt: readOnly ? "2026-06-03T12:00:00Z" : null,
-      imageUrl: readOnly ? getPreviewSignatureDataUrl() : null,
-    },
-  };
 }
 
 function ConsentPageSkeleton() {
@@ -111,21 +56,16 @@ function ConsentPageContent({ params }: ConsentPageProps) {
   const { exhibitionId } = use(params);
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { accessToken } = useSession();
+  const { isAuthReady, isAuthenticated } = useRequireAuth();
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const id = Number(exhibitionId);
   const isValidId = Number.isFinite(id);
   const requestedReadOnly = searchParams.get("mode") === "readonly";
-  const isPreviewMode = process.env.NODE_ENV === "development" && !accessToken && isValidId;
 
   const { data, isLoading, error, refetch } = useExhibitionConsent(id);
   const submitMutation = useSubmitExhibitionConsent(id);
-  const previewData = useMemo(
-    () => (isPreviewMode ? createPreviewConsent(id, requestedReadOnly) : null),
-    [id, isPreviewMode, requestedReadOnly]
-  );
-  const consentData = data ?? previewData;
+  const consentData = data;
 
   const [draft, setDraft] = useState<ConsentDraftState>({
     exhibitionId: id,
@@ -133,6 +73,7 @@ function ConsentPageContent({ params }: ConsentPageProps) {
     signatureDataUrl: undefined,
   });
   const [toastOpen, setToastOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("동의서 작성이 완료되었습니다.");
 
   const mode: ConsentMode = useMemo(() => {
     if (requestedReadOnly) return "readonly";
@@ -217,15 +158,15 @@ function ConsentPageContent({ params }: ConsentPageProps) {
       .filter(agreement => checkedMap[agreement.id])
       .map(agreement => agreement.id);
 
-    if (isPreviewMode) {
-      setToastOpen(true);
-      return;
-    }
-
     submitMutation.mutate(
       { agreementIds, signatureDataUrl },
       {
-        onSuccess: () => {
+        onSuccess: result => {
+          setToastMessage(
+            result.allConsentSubmitted
+              ? "상호 동의서 작성이 완료되었습니다."
+              : "동의서 작성이 완료되었습니다."
+          );
           setToastOpen(true);
           redirectTimerRef.current = setTimeout(() => {
             router.push("/exhibitions/status");
@@ -236,6 +177,7 @@ function ConsentPageContent({ params }: ConsentPageProps) {
   };
 
   const title = isReadOnly ? "동의서 확인" : "동의서 작성";
+  const pageLoading = !isAuthReady || !isAuthenticated || (isAuthenticated && isLoading);
 
   if (!isValidId) {
     return (
@@ -255,7 +197,7 @@ function ConsentPageContent({ params }: ConsentPageProps) {
       <Header title={title} showBack />
 
       <main className="mx-auto min-h-[calc(100dvh-60px)] w-full max-w-[430px] min-w-[320px]">
-        {isLoading && !consentData ? (
+        {pageLoading && !consentData ? (
           <ConsentPageSkeleton />
         ) : error && !consentData ? (
           <section className="flex min-h-[calc(100dvh-120px)] flex-col items-center justify-center px-4 text-center">
@@ -315,7 +257,7 @@ function ConsentPageContent({ params }: ConsentPageProps) {
         )}
       </main>
 
-      <Toast open={toastOpen} message="동의서 작성이 완료되었습니다." />
+      <Toast open={toastOpen} message={toastMessage} />
     </div>
   );
 }

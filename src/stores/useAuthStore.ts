@@ -12,12 +12,12 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    set => ({
       accessToken: null,
       userId: null,
       setAuth: ({ accessToken, userId }) => set({ accessToken, userId }),
       clearAuth: () => set({ accessToken: null, userId: null }),
     }),
-    { name: "refit-auth" },
-  ),
+    { name: "refit-auth" }
+  )
 );

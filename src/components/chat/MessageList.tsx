@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
+
+import type { Message } from "@/types/chat";
+import { formatDateDivider, isSameDay } from "@/utils/formatChatTime";
+
 import AgreementLinkCard from "./AgreementLinkCard";
 import MessageBubble from "./MessageBubble";
 import ProposalCard from "./ProposalCard";
-import { formatDateDivider, isSameDay } from "@/utils/formatChatTime";
-import type { Message } from "@/types/chat";
 
 interface MessageListProps {
   /** 이력은 최신순 DESC로 전달 → 내부에서 오름차순으로 뒤집어 표시 */

@@ -1,19 +1,90 @@
 "use client";
 
 import { useState } from "react";
+
+import { useQuery } from "@tanstack/react-query";
 import { ImageIcon } from "lucide-react";
+
 import ProposeExhibitionSheet from "@/components/chat/ProposeExhibitionSheet";
 import { CHAT_CONTEXT_TYPE_LABEL, CHAT_PROPOSE_EXHIBITION_LABEL } from "@/constants/chat";
-import type { ChatContext } from "@/types/chat";
+import { useCreateProposal } from "@/hooks/useCreateProposal";
+import { getProposalOptions } from "@/services/proposalApi";
+import type { ChatContext, ProposeExhibitionDraft } from "@/types/chat";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 interface ChatRoomInfoProps {
+  roomId: number;
   context: ChatContext;
 }
 
-export default function ChatRoomInfo({ context }: ChatRoomInfoProps) {
+export default function ChatRoomInfo({ roomId, context }: ChatRoomInfoProps) {
   const [proposeOpen, setProposeOpen] = useState(false);
   const thumbnailUrl = normalizeImageUrl(context.thumbnailUrl);
+  const createProposal = useCreateProposal();
+  const optionsQuery = useQuery({
+    queryKey: ["proposal", "options", roomId],
+    queryFn: () => getProposalOptions(roomId),
+    enabled: proposeOpen,
+  });
+
+  const proposalOptions = optionsQuery.data;
+  const targetOptions =
+    proposalOptions?.selection.items.map(item => {
+      const visibilityLabel = item.isPublic ? null : "비공개";
+      const description = [item.subtitle, visibilityLabel].filter(Boolean).join(" · ");
+
+      return {
+        label: item.title,
+        value: String(item.id),
+        description: description || undefined,
+      };
+    }) ?? [];
+
+  const targetMessage = optionsQuery.isLoading
+    ? "목록을 불러오는 중입니다."
+    : optionsQuery.isError
+      ? "목록을 불러오지 못했습니다."
+      : proposalOptions && targetOptions.length === 0
+        ? context.type === "ARTWORK"
+          ? "등록된 공간이 없어요."
+          : "등록된 작품이 없어요."
+        : undefined;
+
+  const submitError = createProposal.error
+    ? createProposal.error instanceof Error
+      ? createProposal.error.message
+      : "전시 제안을 생성하지 못했습니다."
+    : null;
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) createProposal.reset();
+    setProposeOpen(open);
+  };
+
+  const handleSubmit = async (draft: ProposeExhibitionDraft) => {
+    if (!proposalOptions) return;
+
+    const body =
+      proposalOptions.contextType === "ARTWORK"
+        ? {
+            chatRoomId: roomId,
+            artworkId: proposalOptions.fixedTarget.id,
+            spaceId: draft.targetId,
+            exhibitionTitle: draft.title,
+            startDate: draft.startDate,
+            endDate: draft.endDate,
+          }
+        : {
+            chatRoomId: roomId,
+            artworkId: draft.targetId,
+            spaceId: proposalOptions.fixedTarget.id,
+            exhibitionTitle: draft.title,
+            startDate: draft.startDate,
+            endDate: draft.endDate,
+          };
+
+    await createProposal.mutateAsync(body);
+  };
 
   return (
     <div className="border-b-border-primary bg-bg-primary flex w-full items-center gap-3 border-b px-4 py-3">
@@ -49,11 +120,15 @@ export default function ChatRoomInfo({ context }: ChatRoomInfoProps) {
 
       <ProposeExhibitionSheet
         open={proposeOpen}
-        onOpenChange={setProposeOpen}
+        onOpenChange={handleOpenChange}
         contextType={context.type}
-        onSubmit={() => {
-          // TODO: 백엔드 전시 제안 API 연동 후 제안 내용 채팅 전송
-        }}
+        targetLabel={proposalOptions?.selection.label}
+        targetPlaceholder={proposalOptions?.selection.placeholder}
+        targetOptions={targetOptions}
+        targetMessage={targetMessage}
+        isSubmitting={createProposal.isPending}
+        submitError={submitError}
+        onSubmit={handleSubmit}
       />
     </div>
   );

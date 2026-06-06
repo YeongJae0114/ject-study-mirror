@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import type { ConsentExhibitionInfo } from "@/types/exhibitionConsent";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
@@ -13,9 +15,9 @@ function InfoAvatar({ src, alt }: { src: string | null; alt: string }) {
   const displaySrc = normalizeImageUrl(src);
 
   return (
-    <div className="bg-object-disabled h-12 w-12 shrink-0 overflow-hidden rounded-full">
+    <div className="bg-object-disabled relative h-12 w-12 shrink-0 overflow-hidden rounded-full">
       {displaySrc ? (
-        <img src={displaySrc} alt={alt} className="h-full w-full object-cover" />
+        <Image src={displaySrc} alt={alt} fill unoptimized className="object-cover" sizes="48px" />
       ) : null}
     </div>
   );

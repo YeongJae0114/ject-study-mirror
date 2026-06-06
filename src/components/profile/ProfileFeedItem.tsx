@@ -1,5 +1,6 @@
-import Link from "next/link";
 import { Images } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 import { ExhibitionStatus } from "@/components/common/ExhibitionStatus";
 import { ProfileFeedItem as ProfileFeedItemType } from "@/types/profile";
@@ -21,9 +22,16 @@ export const ProfileFeedItem = ({ item }: ProfileFeedItemProps) => {
 
   return (
     <Link href={item.href} className="flex min-w-0 flex-col">
-      <div className="bg-bg-primary-darker text-text-disabled mb-2 flex aspect-4/3 items-center justify-center overflow-hidden rounded-lg">
+      <div className="bg-bg-primary-darker text-text-disabled relative mb-2 flex aspect-4/3 items-center justify-center overflow-hidden rounded-lg">
         {imageUrl ? (
-          <img src={imageUrl} alt={item.title} className="h-full w-full object-cover" />
+          <Image
+            src={imageUrl}
+            alt={item.title}
+            fill
+            unoptimized
+            className="object-cover"
+            sizes="50vw"
+          />
         ) : (
           <Images size={28} />
         )}

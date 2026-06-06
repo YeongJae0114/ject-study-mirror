@@ -1,10 +1,12 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
-import ContentCard from "./ContentCard";
 import { useRouter } from "next/navigation";
-import { EmptyContent } from "../common/EmptyContent";
+
 import type { FeedCardItem } from "@/types/feed";
+
+import ContentCard from "./ContentCard";
+import { EmptyContent } from "../common/EmptyContent";
 
 interface RecommendTabProps {
   artData: FeedCardItem[];
@@ -123,7 +125,12 @@ export default function RecommendTab({
         ) : (
           <div className="flex gap-2.5 overflow-x-auto px-5 pb-4 [&::-webkit-scrollbar]:hidden">
             {spaceData.slice(0, 8).map(space => (
-              <ContentCard key={space.id} title={space.title} imageUrl={space.imageUrl} href={space.href} />
+              <ContentCard
+                key={space.id}
+                title={space.title}
+                imageUrl={space.imageUrl}
+                href={space.href}
+              />
             ))}
           </div>
         )}

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
 import { useRouter } from "next/navigation";
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -10,16 +11,18 @@ const ERROR_MESSAGES: Record<string, string> = {
   MISSING_RESULT_KEY: "비정상적인 접근이에요.",
 };
 
+function getInitialErrorMessage() {
+  if (typeof window === "undefined") return "로그인에 실패했어요.";
+
+  // error.message(쿼리 값)는 신뢰할 수 없어 표시하지 않는다.
+  // 매핑된 code만 안내하고, 빈/미매핑 code는 일반 메시지로 폴백(|| 로 빈 문자열도 처리).
+  const code = new URLSearchParams(window.location.search).get("error.code");
+  return (code && ERROR_MESSAGES[code]) || "로그인에 실패했어요.";
+}
+
 export default function AuthErrorPage() {
   const router = useRouter();
-  const [message, setMessage] = useState("로그인에 실패했어요.");
-
-  useEffect(() => {
-    // error.message(쿼리 값)는 신뢰할 수 없어 표시하지 않는다.
-    // 매핑된 code만 안내하고, 빈/미매핑 code는 일반 메시지로 폴백(|| 로 빈 문자열도 처리).
-    const code = new URLSearchParams(window.location.search).get("error.code");
-    setMessage((code && ERROR_MESSAGES[code]) || "로그인에 실패했어요.");
-  }, []);
+  const [message] = useState(getInitialErrorMessage);
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center gap-4 px-5 text-center">
@@ -27,7 +30,7 @@ export default function AuthErrorPage() {
       <button
         type="button"
         onClick={() => router.replace("/auth")}
-        className="rounded-sm bg-object-primary px-4 py-2 text-label font-medium text-text-invert"
+        className="bg-object-primary text-label text-text-invert rounded-sm px-4 py-2 font-medium"
       >
         로그인으로 돌아가기
       </button>

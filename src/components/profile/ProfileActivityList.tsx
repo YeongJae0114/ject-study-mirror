@@ -1,10 +1,12 @@
 "use client";
 
-import { Activity } from "@/types/profile";
-import { ProfileActivityItem } from "./ProfileActivityItem";
 import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+
 import { EmptyContent } from "@/components/common/EmptyContent";
+import { Activity } from "@/types/profile";
+
+import { ProfileActivityItem } from "./ProfileActivityItem";
 
 interface ProfileActivityListProps {
   userId: number;

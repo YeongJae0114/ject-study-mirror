@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState } from "react";
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -19,7 +20,7 @@ export default function Providers({ children }: ProvidersProps) {
             staleTime: 30_000,
           },
         },
-      }),
+      })
   );
 
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;

@@ -1,23 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { ART_TYPES } from "@/constants/art";
 
-import Header from "@/components/common/Header";
-import Label from "@/components/archive-form/Label";
-import ImageUploader from "@/components/archive-form/ImageUploader";
-import { useImageStore } from "@/stores/useImageStore";
-import Input from "@/components/archive-form/Input";
-import Dropdown from "@/components/archive-form/Dropdown";
-import ArtTooltip from "@/components/archive-form/ArtToolTip";
-import Textarea from "@/components/archive-form/Textarea";
-import SizeInput from "@/components/archive-form/SizeInput";
-import ToggleButton from "@/components/archive-form/ToggleButton";
-import AddressSearch from "@/components/archive-form/AddressSearch";
-import { useUploadImage } from "@/hooks/useImageUploader";
 import { useMutation } from "@tanstack/react-query";
-import { createSpace } from "@/services/spaces";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+
+import AddressSearch from "@/components/archive-form/AddressSearch";
+import ArtTooltip from "@/components/archive-form/ArtToolTip";
+import Dropdown from "@/components/archive-form/Dropdown";
+import ImageUploader from "@/components/archive-form/ImageUploader";
+import Input from "@/components/archive-form/Input";
+import Label from "@/components/archive-form/Label";
+import SizeInput from "@/components/archive-form/SizeInput";
+import Textarea from "@/components/archive-form/Textarea";
+import ToggleButton from "@/components/archive-form/ToggleButton";
+import Header from "@/components/common/Header";
+import { ART_TYPES } from "@/constants/art";
+import { useUploadImage } from "@/hooks/useImageUploader";
+import { createSpace } from "@/services/spaces";
+import { useImageStore } from "@/stores/useImageStore";
 
 function FieldWrapper({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-2">{children}</div>;
@@ -25,6 +27,10 @@ function FieldWrapper({ children }: { children: React.ReactNode }) {
 
 function toOptionalNumber(value: string) {
   return value.trim() === "" ? undefined : Number(value);
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "공간 등록에 실패했습니다.";
 }
 
 export default function SpaceCreatePage() {
@@ -48,6 +54,8 @@ export default function SpaceCreatePage() {
   const [notes, setNotes] = useState("");
 
   const [isPublic, setIsPublic] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
 
   const isFormValid =
     images.length > 0 &&
@@ -65,6 +73,11 @@ export default function SpaceCreatePage() {
   });
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitErrorMessage(null);
+
     try {
       const uploadedImages = await Promise.all(images.map(image => uploadImage(image.file)));
 
@@ -84,7 +97,9 @@ export default function SpaceCreatePage() {
       clearImages();
       router.replace("/");
     } catch (error) {
-      alert("공간 등록에 실패했습니다.");
+      setSubmitErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -106,9 +121,11 @@ export default function SpaceCreatePage() {
           <div className="flex justify-between">
             <Label required>공간 유형</Label>
             <div className="relative">
-              <img
+              <Image
                 src="/info-icon.svg"
                 alt="공간 유형"
+                width={20}
+                height={20}
                 className="mr-2 cursor-pointer"
                 onClick={() => setIsTooltipOpen(!isTooltipOpen)}
               />
@@ -190,16 +207,21 @@ export default function SpaceCreatePage() {
 
       {/* Bottom Button () */}
       <div className="border-border-primary fixed right-0 bottom-4 left-0 h-24.5 border-t bg-white px-5 py-4">
+        {submitErrorMessage && (
+          <p role="alert" className="text-caption text-error-default mb-2">
+            {submitErrorMessage}
+          </p>
+        )}
         <button
-          disabled={!isFormValid}
+          disabled={!isFormValid || isSubmitting}
           onClick={handleSubmit}
           className={`text-body-1 h-12.5 w-full rounded-lg font-medium transition-colors ${
-            isFormValid
+            isFormValid && !isSubmitting
               ? "bg-object-primary text-text-invert cursor-pointer"
               : "bg-object-disabled text-text-disabled cursor-not-allowed"
           }`}
         >
-          추가하기
+          {isSubmitting ? "등록 중..." : "추가하기"}
         </button>
       </div>
     </main>

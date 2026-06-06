@@ -9,6 +9,7 @@ import Label from "./Label";
 interface DropdownOption {
   label: string;
   description?: string;
+  value?: string;
 }
 
 interface DropdownProps {
@@ -31,6 +32,7 @@ export default function Dropdown({
   onChange,
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const selectedOption = options.find(option => (option.value ?? option.label) === value);
 
   return (
     <div className="relative flex w-full flex-col gap-3">
@@ -46,7 +48,7 @@ export default function Dropdown({
         <span
           className={`text-body-1 ${value ? "text-text-primary medium" : "text-text-input regular"}`}
         >
-          {value || placeholder}
+          {selectedOption?.label || placeholder}
         </span>
 
         <ChevronDown
@@ -59,14 +61,15 @@ export default function Dropdown({
       {isOpen && (
         <div className="border-border-primary absolute top-13.5 z-20 w-full rounded-xl border bg-white p-3">
           {options.map(option => {
-            const isSelected = value === option.label;
+            const optionValue = option.value ?? option.label;
+            const isSelected = value === optionValue;
 
             return (
               <button
-                key={option.label}
+                key={optionValue}
                 type="button"
                 onClick={() => {
-                  onChange(option.label);
+                  onChange(optionValue);
                   setIsOpen(false);
                 }}
                 className={`flex w-full flex-col rounded-lg px-3 py-3 text-left transition-colors ${
@@ -82,6 +85,11 @@ export default function Dropdown({
                 >
                   {option.label}
                 </span>
+                {option.description && (
+                  <span className="text-label font-regular text-text-secondary mt-0.5 truncate">
+                    {option.description}
+                  </span>
+                )}
               </button>
             );
           })}

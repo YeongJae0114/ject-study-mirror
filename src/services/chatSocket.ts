@@ -4,11 +4,12 @@
  * 인증: CONNECT 프레임 native 헤더 `Authorization: Bearer <token>`.
  */
 
-import { Client, type IMessage, type StompSubscription } from '@stomp/stompjs';
-import type { Message, SocketErrorPayload } from '@/types/chat';
-import { getAccessToken, getMyUserId } from '@/services/session';
+import { Client, type IMessage, type StompSubscription } from "@stomp/stompjs";
 
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL ?? '';
+import { getAccessToken, getMyUserId } from "@/services/session";
+import type { Message, SocketErrorPayload } from "@/types/chat";
+
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
 export interface ChatSocketHandlers {
   /** 방 메시지 수신 콜백. */
@@ -24,10 +25,7 @@ export interface ChatSocketHandlers {
 }
 
 /** 채팅방 소켓 연결을 생성·활성화하고, dispose() 가능한 핸들을 반환한다. */
-export function connectChatRoom(
-  roomId: number,
-  handlers: ChatSocketHandlers,
-): ChatRoomSocket {
+export function connectChatRoom(roomId: number, handlers: ChatSocketHandlers): ChatRoomSocket {
   const token = getAccessToken();
   const myUserId = getMyUserId();
 
@@ -47,12 +45,9 @@ export function connectChatRoom(
 
     // 개인 큐는 본인 것만 구독 가능(남의 id 구독은 WEBSOCKET_SUBSCRIBE_FORBIDDEN).
     if (myUserId !== null) {
-      errorSub = client.subscribe(
-        `/sub/users/${myUserId}/errors`,
-        (frame: IMessage) => {
-          handlers.onSocketError?.(JSON.parse(frame.body) as SocketErrorPayload);
-        },
-      );
+      errorSub = client.subscribe(`/sub/users/${myUserId}/errors`, (frame: IMessage) => {
+        handlers.onSocketError?.(JSON.parse(frame.body) as SocketErrorPayload);
+      });
     }
 
     handlers.onConnected?.();
@@ -63,7 +58,7 @@ export function connectChatRoom(
   };
 
   if (handlers.onStompError) {
-    client.onStompError = (frame) => {
+    client.onStompError = frame => {
       handlers.onStompError?.({
         headers: frame.headers as Record<string, string>,
         body: frame.body,
@@ -85,7 +80,7 @@ export function connectChatRoom(
     markAsRead() {
       client.publish({
         destination: `/pub/chat-rooms/${roomId}/read`,
-        body: '',
+        body: "",
       });
     },
     /** 구독 해제 + 연결 종료. 언마운트 시 반드시 호출. */

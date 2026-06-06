@@ -3,13 +3,14 @@
  * ⚠️ ChatRoom에는 counterparty가 없으니 상대방은 artist/host 중 myUserId가 아닌 쪽으로 계산(02_data-contract.md §7).
  */
 
-import { useQuery } from '@tanstack/react-query';
-import { getChatRoom } from '@/services/chatApi';
-import { getAccessToken } from '@/services/session';
-import type { ChatRoom } from '@/types/chat';
+import { useQuery } from "@tanstack/react-query";
+
+import { getChatRoom } from "@/services/chatApi";
+import { getAccessToken } from "@/services/session";
+import type { ChatRoom } from "@/types/chat";
 
 export function chatRoomKey(roomId: number) {
-  return ['chat', 'room', roomId] as const;
+  return ["chat", "room", roomId] as const;
 }
 
 export function useChatRoom(roomId: number) {

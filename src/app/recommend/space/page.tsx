@@ -1,8 +1,8 @@
 "use client";
 
-import ContentCard from "@/components/home/ContentCard";
-import Header from "@/components/common/Header";
 import { EmptyContent } from "@/components/common/EmptyContent";
+import Header from "@/components/common/Header";
+import ContentCard from "@/components/home/ContentCard";
 import { useSpaceFeed } from "@/hooks/usePublicFeeds";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 

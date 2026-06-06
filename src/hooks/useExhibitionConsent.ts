@@ -39,6 +39,7 @@ export function useSubmitExhibitionConsent(exhibitionId: number) {
       void queryClient.invalidateQueries({ queryKey: exhibitionConsentKey(exhibitionId) });
       void queryClient.invalidateQueries({ queryKey: exhibitionStatusListKey() });
       void queryClient.invalidateQueries({ queryKey: exhibitionDetailKey(exhibitionId) });
+      void queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
   });
 }

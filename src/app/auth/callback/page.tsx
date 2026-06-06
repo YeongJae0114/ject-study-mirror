@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+
 import { useRouter } from "next/navigation";
 
-import { exchangeToken } from "@/services/authApi";
 import { ApiError } from "@/services/apiClient";
+import { exchangeToken } from "@/services/authApi";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 interface Guide {
@@ -14,7 +15,7 @@ interface Guide {
 
 export default function AuthCallbackPage() {
   const router = useRouter();
-  const setAuth = useAuthStore((s) => s.setAuth);
+  const setAuth = useAuthStore(s => s.setAuth);
   const [guide, setGuide] = useState<Guide | null>(null);
   const handled = useRef(false);
 
@@ -22,25 +23,21 @@ export default function AuthCallbackPage() {
     if (handled.current) return; // resultKey는 1회용 — 이중 실행 방지
     handled.current = true;
 
-    const resultKey = new URLSearchParams(window.location.search).get(
-      "resultKey",
-    );
+    const resultKey = new URLSearchParams(window.location.search).get("resultKey");
     if (!resultKey) {
       router.replace("/auth/error?error.code=MISSING_RESULT_KEY");
       return;
     }
 
     exchangeToken(resultKey)
-      .then((res) => {
+      .then(res => {
         switch (res.loginStatus) {
           case "LOGIN_SUCCESS":
-            if (res.accessToken)
-              setAuth({ accessToken: res.accessToken, userId: res.userId });
+            if (res.accessToken) setAuth({ accessToken: res.accessToken, userId: res.userId });
             router.replace("/");
             break;
           case "SIGNUP_REQUIRED":
-            if (res.accessToken)
-              setAuth({ accessToken: res.accessToken, userId: res.userId });
+            if (res.accessToken) setAuth({ accessToken: res.accessToken, userId: res.userId });
             router.replace("/auth/signup/profile");
             break;
           case "LOGIN_METHOD_GUIDE":
@@ -55,7 +52,7 @@ export default function AuthCallbackPage() {
             router.replace("/auth/error?error.code=UNKNOWN_LOGIN_STATUS");
         }
       })
-      .catch((err) => {
+      .catch(err => {
         const code = err instanceof ApiError ? err.code : "UNKNOWN_ERROR";
         router.replace(`/auth/error?error.code=${encodeURIComponent(code)}`);
       });
@@ -73,7 +70,7 @@ export default function AuthCallbackPage() {
         <button
           type="button"
           onClick={() => router.replace("/auth")}
-          className="rounded-sm bg-object-primary px-4 py-2 text-label font-medium text-text-invert"
+          className="bg-object-primary text-label text-text-invert rounded-sm px-4 py-2 font-medium"
         >
           로그인으로 돌아가기
         </button>

@@ -1,10 +1,12 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
-import { ProfileFeedItem } from "./ProfileFeedItem";
-import { ProfileFeedItem as ProfileFeedItemType } from "@/types/profile";
 import { useRouter } from "next/navigation";
+
 import { EmptyContent } from "@/components/common/EmptyContent";
+import { ProfileFeedItem as ProfileFeedItemType } from "@/types/profile";
+
+import { ProfileFeedItem } from "./ProfileFeedItem";
 
 interface ProfileFeedProps {
   userId: number;

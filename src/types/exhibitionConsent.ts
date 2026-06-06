@@ -34,6 +34,10 @@ export interface ExhibitionConsent {
   exhibitionId: number;
   mode: "WRITE" | "READONLY";
   canSubmit: boolean;
+  myConsentSubmitted: boolean;
+  creatorConsentSubmitted: boolean;
+  spaceOwnerConsentSubmitted: boolean;
+  allConsentSubmitted: boolean;
   exhibition: ConsentExhibitionInfo;
   agreements: ConsentAgreement[];
   signature: ConsentSignature;
@@ -48,5 +52,6 @@ export interface SubmitExhibitionConsentResult {
   exhibitionId: number;
   consentId: number;
   status: "COMPLETED";
+  allConsentSubmitted: boolean;
   signedAt: string;
 }

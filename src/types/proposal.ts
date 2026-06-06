@@ -19,6 +19,37 @@ export interface ProposalSpace {
   title: string;
 }
 
+export type ProposalTargetType = "ARTWORK" | "SPACE";
+
+export interface ProposalFixedTarget {
+  targetType: ProposalTargetType;
+  id: number;
+  title: string;
+  thumbnailUrl: string | null;
+}
+
+export interface ProposalOptionItem {
+  targetType: ProposalTargetType;
+  id: number;
+  title: string;
+  subtitle: string | null;
+  thumbnailUrl: string | null;
+  isPublic: boolean;
+}
+
+export interface ProposalSelection {
+  targetType: ProposalTargetType;
+  label: string;
+  placeholder: string;
+  items: ProposalOptionItem[];
+}
+
+export interface ProposalOptions {
+  contextType: ProposalTargetType;
+  fixedTarget: ProposalFixedTarget;
+  selection: ProposalSelection;
+}
+
 /** 제안 상세(생성 201 / 조회 200 공용). */
 export interface Proposal {
   id: number;
@@ -48,4 +79,5 @@ export interface AcceptProposalResult {
   proposalId: number;
   status: ProposalStatus;
   agreementId: number;
+  exhibitionId: number;
 }

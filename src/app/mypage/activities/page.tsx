@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import Header from "@/components/common/Header";
-import { useExhibitions } from "@/hooks/useExhibitions";
+import { useInfiniteExhibitions } from "@/hooks/useExhibitions";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
@@ -15,11 +15,11 @@ function formatDate(date: string) {
 
 export default function MypageActivitiesPage() {
   const { isAuthReady, isAuthenticated } = useRequireAuth();
-  const query = useExhibitions("CONFIRMED", 0, 20);
+  const query = useInfiniteExhibitions("CONFIRMED", 20);
 
   if (!isAuthReady || !isAuthenticated) return null;
 
-  const activities = query.data?.items ?? [];
+  const activities = query.data?.pages.flatMap(page => page.items) ?? [];
 
   return (
     <main className="bg-bg-primary min-h-dvh">
@@ -33,7 +33,9 @@ export default function MypageActivitiesPage() {
         ) : query.error ? (
           <div className="py-2">
             <p className="text-body-2 text-error-default">
-              {query.error instanceof Error ? query.error.message : "활동 정보를 불러오지 못했습니다."}
+              {query.error instanceof Error
+                ? query.error.message
+                : "활동 정보를 불러오지 못했습니다."}
             </p>
             <button
               type="button"
@@ -78,6 +80,16 @@ export default function MypageActivitiesPage() {
                 )}
               </Link>
             ))}
+            {query.hasNextPage && (
+              <button
+                type="button"
+                onClick={() => void query.fetchNextPage()}
+                disabled={query.isFetchingNextPage}
+                className="border-border-primary text-body-1 text-text-primary mt-2 h-11 w-full rounded-lg border font-medium disabled:opacity-50"
+              >
+                {query.isFetchingNextPage ? "불러오는 중" : "더보기"}
+              </button>
+            )}
           </div>
         ) : (
           <p className="text-body-2 text-text-secondary font-regular py-2">

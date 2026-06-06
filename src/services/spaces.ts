@@ -1,6 +1,7 @@
-import { apiClient } from "./apiClient";
 import type { SpaceDetail } from "@/types/archiveDetail";
 import type { FeedPage, SpaceFeedItem } from "@/types/feed";
+
+import { apiClient } from "./apiClient";
 
 export interface CreateSpaceRequest {
   title: string;
