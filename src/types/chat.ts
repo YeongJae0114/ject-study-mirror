@@ -5,7 +5,7 @@
  */
 
 /** 채팅방이 연결된 대상 종류 */
-export type ChatContextType = 'ARTWORK' | 'SPACE';
+export type ChatContextType = "ARTWORK" | "SPACE";
 
 /** 채팅방이 연결된 대상(작품/공간) 정보. title·thumbnailUrl은 nullable. */
 export interface ChatContext {
@@ -42,12 +42,20 @@ export interface ChatRoomListItem {
   lastMessageAt: string | null;
 }
 
-/** 메시지. STOMP 수신 + REST 이력 item 공용. */
+/**
+ * 메시지 종류. TEXT=일반 말풍선, PROPOSAL_CARD/AGREEMENT_LINK=시스템 메시지(referenceId로 상세 조회).
+ * PROPOSAL_CARD→referenceId=proposalId, AGREEMENT_LINK→referenceId=agreementId.
+ */
+export type MessageType = "TEXT" | "PROPOSAL_CARD" | "AGREEMENT_LINK";
+
+/** 메시지. STOMP 수신 + REST 이력 item 공용. 읽음 필드명은 `read`(isRead 아님). */
 export interface Message {
   id: number;
   chatRoomId: number;
   senderId: number;
   content: string;
+  messageType: MessageType;
+  referenceId: number | null;
   read: boolean;
   createdAt: string;
 }
@@ -86,6 +94,17 @@ export interface CursorPage<T> {
   items: T[];
   nextCursor: string | null;
   hasNext: boolean;
+}
+
+/**
+ * 전시 제안 폼 입력값(프론트 전용). 백엔드 전시 제안 API 부재로 전송은 추후 연동.
+ * target: 선택한 작품/공간 표시값(컨텍스트 ARTWORK→공간, SPACE→작품). 날짜는 yyyy-MM-dd.
+ */
+export interface ProposeExhibitionDraft {
+  target: string;
+  title: string;
+  startDate: string;
+  endDate: string;
 }
 
 /** STOMP errors 큐(`/sub/users/{userId}/errors`) payload. */
