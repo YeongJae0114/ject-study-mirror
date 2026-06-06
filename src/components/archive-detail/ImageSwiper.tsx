@@ -7,9 +7,15 @@ import "swiper/css";
 
 interface ImageSwiperProps {
   images: string[];
+  altPrefix?: string;
+  emptyLabel?: string;
 }
 
-export default function ImageSwiper({ images }: ImageSwiperProps) {
+export default function ImageSwiper({
+  images,
+  altPrefix = "이미지",
+  emptyLabel = "이미지가 없습니다.",
+}: ImageSwiperProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const hasImages = images && images.length > 0;
@@ -28,14 +34,16 @@ export default function ImageSwiper({ images }: ImageSwiperProps) {
             <SwiperSlide key={index}>
               <img
                 src={src}
-                alt={`작품 이미지 ${index + 1}`}
+                alt={`${altPrefix} ${index + 1}`}
                 className="h-full w-full object-cover"
               />
             </SwiperSlide>
           ))}
         </Swiper>
       ) : (
-        <div>이미지가 없습니다.</div>
+        <div className="bg-bg-primary-darker text-body-2 text-text-secondary flex h-full w-full items-center justify-center">
+          {emptyLabel}
+        </div>
       )}
 
       {/* 이미지 개수 인덱스 표시 뱃지 */}
