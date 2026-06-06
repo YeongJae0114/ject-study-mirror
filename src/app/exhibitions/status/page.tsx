@@ -38,7 +38,7 @@ export default function ExhibitionStatusPage() {
 
   return (
     <div className="bg-bg-primary min-h-dvh">
-      <Header title="전시 현황" showBorder />
+      <Header title="전시 현황" showBorder={false} />
       <main className="mx-auto min-h-[calc(100dvh-60px)] w-full max-w-97.5 min-w-[320px]">
         <StatusFilterTabs activeFilter={activeFilter} />
         <ExhibitionStatusList
