@@ -5,10 +5,10 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { Drawer } from "vaul";
 
-import DatePicker from "@/components/archive-form/DayPicker";
 import Dropdown from "@/components/archive-form/Dropdown";
 import Input from "@/components/archive-form/Input";
 import Label from "@/components/archive-form/Label";
+import ProposalDateRange from "@/components/chat/ProposalDateRange";
 import {
   PROPOSE_EXHIBITION_NAME_LABEL,
   PROPOSE_EXHIBITION_NAME_MAX_LENGTH,
@@ -130,19 +130,16 @@ export default function ProposeExhibitionSheet({
             {/* 희망 전시 일정 */}
             <FieldWrapper>
               <Label required>{PROPOSE_EXHIBITION_SCHEDULE_LABEL}</Label>
-              <div className="flex items-center gap-2">
-                <div className="flex-1">
-                  <DatePicker value={startDate} onChange={setStartDate} />
-                </div>
-                <span className="text-body-1 text-text-secondary">~</span>
-                <div className="flex-1">
-                  <DatePicker value={endDate} onChange={setEndDate} />
-                </div>
-              </div>
+              <ProposalDateRange
+                startDate={startDate}
+                endDate={endDate}
+                onChangeStart={setStartDate}
+                onChangeEnd={setEndDate}
+              />
               {dateError && (
-                <p className="text-caption text-error-default">
+                <div className="text-caption text-error-default">
                   종료일은 시작일 이후로 선택해주세요.
-                </p>
+                </div>
               )}
             </FieldWrapper>
           </div>
