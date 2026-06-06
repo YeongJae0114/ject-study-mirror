@@ -14,6 +14,7 @@ import {
 import { useAcceptProposal } from "@/hooks/useAcceptProposal";
 import { useProposal } from "@/hooks/useProposal";
 import { useRejectProposal } from "@/hooks/useRejectProposal";
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 interface ProposalCardProps {
   proposalId: number;
@@ -54,6 +55,7 @@ export default function ProposalCard({ proposalId, myUserId }: ProposalCardProps
   const isPending = proposal.status === "PENDING";
   const isMutating = accept.isPending || reject.isPending;
   const actionError = accept.error ?? reject.error;
+  const artworkThumbnailUrl = normalizeImageUrl(proposal.artwork.thumbnailUrl);
 
   return (
     <div className={`flex ${isProposer ? "justify-end" : "justify-start"}`}>
@@ -76,10 +78,10 @@ export default function ProposalCard({ proposalId, myUserId }: ProposalCardProps
             <Field label={PROPOSAL_CARD_SPACE_LABEL} value={proposal.space.title} />
           </div>
 
-          {proposal.artwork.thumbnailUrl ? (
+          {artworkThumbnailUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={proposal.artwork.thumbnailUrl}
+              src={artworkThumbnailUrl}
               alt=""
               className="h-14 w-14 shrink-0 rounded-lg object-cover"
             />

@@ -1,4 +1,5 @@
 import type { ConsentExhibitionInfo } from "@/types/exhibitionConsent";
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 interface ExhibitionProgressInfoCardProps {
   exhibition: ConsentExhibitionInfo;
@@ -9,9 +10,13 @@ function formatDateRange(startDate: string, endDate: string) {
 }
 
 function InfoAvatar({ src, alt }: { src: string | null; alt: string }) {
+  const displaySrc = normalizeImageUrl(src);
+
   return (
     <div className="bg-object-disabled h-12 w-12 shrink-0 overflow-hidden rounded-full">
-      {src ? <img src={src} alt={alt} className="h-full w-full object-cover" /> : null}
+      {displaySrc ? (
+        <img src={displaySrc} alt={alt} className="h-full w-full object-cover" />
+      ) : null}
     </div>
   );
 }

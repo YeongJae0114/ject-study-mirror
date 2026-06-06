@@ -2,6 +2,7 @@ import { CalendarDays, Images, MapPin } from "lucide-react";
 
 import ExhibitionStatusBadge from "@/components/exhibition-status/ExhibitionStatusBadge";
 import type { ExhibitionDetail } from "@/types/exhibition";
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 interface ExhibitionDetailSummaryProps {
   exhibition: ExhibitionDetail;
@@ -14,14 +15,16 @@ function formatDate(value: string) {
 }
 
 export default function ExhibitionDetailSummary({ exhibition }: ExhibitionDetailSummaryProps) {
+  const artworkThumbnailUrl = normalizeImageUrl(exhibition.artwork.thumbnailUrl);
+
   return (
     <section className="border-border-primary border-b px-5 py-5">
       <div className="bg-bg-primary-darker text-text-disabled flex aspect-4/3 w-full items-center justify-center overflow-hidden rounded-lg">
-        {exhibition.artwork.thumbnailUrl ? (
+        {artworkThumbnailUrl ? (
           <div
             aria-hidden="true"
             className="h-full w-full bg-cover bg-center"
-            style={{ backgroundImage: `url(${exhibition.artwork.thumbnailUrl})` }}
+            style={{ backgroundImage: `url(${artworkThumbnailUrl})` }}
           />
         ) : (
           <Images size={34} />

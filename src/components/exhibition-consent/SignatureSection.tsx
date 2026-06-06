@@ -4,6 +4,7 @@ import { RefreshCw } from "lucide-react";
 
 import SignaturePad from "@/components/exhibition-consent/SignaturePad";
 import type { ConsentMode } from "@/types/exhibitionConsent";
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 interface SignatureSectionProps {
   mode: ConsentMode;
@@ -32,6 +33,7 @@ export default function SignatureSection({
 }: SignatureSectionProps) {
   const isReadOnly = mode === "readonly";
   const displayDate = formatSignatureDate(signedAt);
+  const displaySignatureUrl = normalizeImageUrl(signatureDataUrl);
 
   const handleClear = () => {
     onSignatureChange?.(null);
@@ -58,9 +60,9 @@ export default function SignatureSection({
 
       {isReadOnly ? (
         <div className="bg-bg-primary-darker border-border-primary flex h-[152px] items-center justify-center overflow-hidden rounded-lg border">
-          {signatureDataUrl ? (
+          {displaySignatureUrl ? (
             <img
-              src={signatureDataUrl}
+              src={displaySignatureUrl}
               alt="저장된 서명"
               className="h-full w-full object-contain"
             />
