@@ -1,16 +1,26 @@
+import { Images } from "lucide-react";
+import Link from "next/link";
+
 interface ContentCardProps {
   title: string;
-  imageUrl: string;
-  author?: string;
-  type?: string;
+  imageUrl?: string | null;
+  author?: string | null;
+  type?: string | null;
+  href?: string;
 }
 
-export default function ContentCard({ title, imageUrl, author, type }: ContentCardProps) {
-  return (
+export default function ContentCard({ title, imageUrl, author, type, href }: ContentCardProps) {
+  const content = (
     <div className="w-42 shrink-0">
       {/* 썸네일*/}
-      <div className="aspect-4/3 overflow-hidden rounded-lg">
-        <img src={imageUrl} alt={title} className="h-full w-full object-cover" />
+      <div className="bg-bg-primary-darker aspect-4/3 overflow-hidden rounded-lg">
+        {imageUrl ? (
+          <img src={imageUrl} alt={title} className="h-full w-full object-cover" />
+        ) : (
+          <div className="text-text-disabled flex h-full w-full items-center justify-center">
+            <Images size={28} />
+          </div>
+        )}
       </div>
 
       {/* 제목 */}
@@ -30,5 +40,13 @@ export default function ContentCard({ title, imageUrl, author, type }: ContentCa
         </div>
       )}
     </div>
+  );
+
+  if (!href) return content;
+
+  return (
+    <Link href={href} className="block w-42 shrink-0">
+      {content}
+    </Link>
   );
 }

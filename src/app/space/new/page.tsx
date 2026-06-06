@@ -67,6 +67,7 @@ export default function SpaceCreatePage() {
       await createSpaceMutation({
         title,
         description,
+        isPublic,
         imageIds: uploadedImages.map(image => image.imageId),
       });
 

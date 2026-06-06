@@ -4,14 +4,59 @@ import { ChevronRight } from "lucide-react";
 import ContentCard from "./ContentCard";
 import { useRouter } from "next/navigation";
 import { EmptyContent } from "../common/EmptyContent";
-import { Artwork } from "@/types/profile";
+import type { FeedCardItem } from "@/types/feed";
 
 interface RecommendTabProps {
-  artData: Artwork[];
-  spaceData: Artwork[];
+  artData: FeedCardItem[];
+  spaceData: FeedCardItem[];
+  isArtLoading?: boolean;
+  isSpaceLoading?: boolean;
+  artErrorMessage?: string | null;
+  spaceErrorMessage?: string | null;
+  onRetryArt?: () => void;
+  onRetrySpace?: () => void;
 }
 
-export default function RecommendTab({ artData, spaceData }: RecommendTabProps) {
+function LoadingRow() {
+  return (
+    <div className="flex gap-2.5 overflow-hidden px-5 pb-4">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div key={index} className="w-42 shrink-0">
+          <div className="bg-bg-primary-darker aspect-4/3 rounded-lg" />
+          <div className="bg-bg-primary-darker mt-2 h-5 w-28 rounded" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  return (
+    <div className="px-5 py-4">
+      <p className="text-body-2 text-error-default">{message}</p>
+      {onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="border-border-primary text-body-2 text-text-primary mt-3 h-9 rounded-lg border px-4 font-medium"
+        >
+          다시 불러오기
+        </button>
+      )}
+    </div>
+  );
+}
+
+export default function RecommendTab({
+  artData,
+  spaceData,
+  isArtLoading = false,
+  isSpaceLoading = false,
+  artErrorMessage = null,
+  spaceErrorMessage = null,
+  onRetryArt,
+  onRetrySpace,
+}: RecommendTabProps) {
   const router = useRouter();
   return (
     <>
@@ -30,14 +75,23 @@ export default function RecommendTab({ artData, spaceData }: RecommendTabProps) 
           )}
         </div>
 
-        {artData.length === 0 ? (
+        {isArtLoading ? (
+          <LoadingRow />
+        ) : artErrorMessage ? (
+          <ErrorState message={artErrorMessage} onRetry={onRetryArt} />
+        ) : artData.length === 0 ? (
           <div className="pt-4">
             <EmptyContent />
           </div>
         ) : (
           <div className="flex gap-2.5 overflow-x-auto px-5 pb-4 [&::-webkit-scrollbar]:hidden">
             {artData.slice(0, 8).map(artwork => (
-              <ContentCard key={artwork.id} title={artwork.title} imageUrl={artwork.imageUrl} />
+              <ContentCard
+                key={artwork.id}
+                title={artwork.title}
+                imageUrl={artwork.imageUrl}
+                href={artwork.href}
+              />
             ))}
           </div>
         )}
@@ -58,14 +112,18 @@ export default function RecommendTab({ artData, spaceData }: RecommendTabProps) 
           )}
         </div>
 
-        {spaceData.length === 0 ? (
+        {isSpaceLoading ? (
+          <LoadingRow />
+        ) : spaceErrorMessage ? (
+          <ErrorState message={spaceErrorMessage} onRetry={onRetrySpace} />
+        ) : spaceData.length === 0 ? (
           <div className="pt-4">
             <EmptyContent />
           </div>
         ) : (
           <div className="flex gap-2.5 overflow-x-auto px-5 pb-4 [&::-webkit-scrollbar]:hidden">
             {spaceData.slice(0, 8).map(space => (
-              <ContentCard key={space.id} title={space.title} imageUrl={space.imageUrl} />
+              <ContentCard key={space.id} title={space.title} imageUrl={space.imageUrl} href={space.href} />
             ))}
           </div>
         )}

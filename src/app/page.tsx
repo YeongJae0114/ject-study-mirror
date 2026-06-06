@@ -6,7 +6,14 @@ import { useState } from "react";
 import RecommendTab from "@/components/home/RecommendTab";
 import ArtTab from "@/components/home/ArtTab";
 import SpaceTab from "@/components/home/SpaceTab";
-import { mockArtworks, mockEmptyData } from "./profile/mockData";
+import {
+  useArtworkFeed,
+  useArtworkRecommendation,
+  useSpaceFeed,
+  useSpaceRecommendation,
+} from "@/hooks/usePublicFeeds";
+import type { ArtworkFeedItem, FeedCardItem, SpaceFeedItem } from "@/types/feed";
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 const tabs = [
   { label: "추천", value: "recommend" },
@@ -14,8 +21,47 @@ const tabs = [
   { label: "공간", value: "space" },
 ];
 
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "피드를 불러오지 못했습니다.";
+}
+
+function toArtworkCard(item: ArtworkFeedItem): FeedCardItem {
+  return {
+    id: `artwork-${item.id}`,
+    title: item.title,
+    imageUrl: normalizeImageUrl(item.thumbnailUrl),
+    author: item.ownerNickname,
+    type: item.artworkType,
+    href: `/art/${item.id}`,
+  };
+}
+
+function toSpaceCard(item: SpaceFeedItem): FeedCardItem {
+  return {
+    id: `space-${item.id}`,
+    title: item.title,
+    imageUrl: normalizeImageUrl(item.thumbnailUrl),
+    author: item.ownerNickname,
+    type: "공간",
+    href: `/space/${item.id}`,
+  };
+}
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState("recommend");
+  const artworkRecommendationQuery = useArtworkRecommendation(8);
+  const spaceRecommendationQuery = useSpaceRecommendation(8);
+  const artworkFeedQuery = useArtworkFeed(20);
+  const spaceFeedQuery = useSpaceFeed(20);
+
+  const recommendedArtworks = (artworkRecommendationQuery.data?.items ?? []).map(toArtworkCard);
+  const recommendedSpaces = (spaceRecommendationQuery.data?.items ?? []).map(toSpaceCard);
+  const artworkFeed = (artworkFeedQuery.data?.pages ?? [])
+    .flatMap(page => page.items)
+    .map(toArtworkCard);
+  const spaceFeed = (spaceFeedQuery.data?.pages ?? [])
+    .flatMap(page => page.items)
+    .map(toSpaceCard);
 
   return (
     <div className="pb-10">
@@ -35,10 +81,43 @@ export default function Home() {
       {/* 탭 */}
       <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
       {activeTab === "recommend" && (
-        <RecommendTab artData={mockArtworks} spaceData={mockEmptyData} />
+        <RecommendTab
+          artData={recommendedArtworks}
+          spaceData={recommendedSpaces}
+          isArtLoading={artworkRecommendationQuery.isLoading}
+          isSpaceLoading={spaceRecommendationQuery.isLoading}
+          artErrorMessage={
+            artworkRecommendationQuery.error ? getErrorMessage(artworkRecommendationQuery.error) : null
+          }
+          spaceErrorMessage={
+            spaceRecommendationQuery.error ? getErrorMessage(spaceRecommendationQuery.error) : null
+          }
+          onRetryArt={() => void artworkRecommendationQuery.refetch()}
+          onRetrySpace={() => void spaceRecommendationQuery.refetch()}
+        />
       )}
-      {activeTab === "artwork" && <ArtTab artData={mockArtworks} />}
-      {activeTab === "space" && <SpaceTab spaceData={mockEmptyData} />}
+      {activeTab === "artwork" && (
+        <ArtTab
+          artData={artworkFeed}
+          isLoading={artworkFeedQuery.isLoading}
+          errorMessage={artworkFeedQuery.error ? getErrorMessage(artworkFeedQuery.error) : null}
+          hasMore={artworkFeedQuery.hasNextPage}
+          isLoadingMore={artworkFeedQuery.isFetchingNextPage}
+          onRetry={() => void artworkFeedQuery.refetch()}
+          onLoadMore={() => void artworkFeedQuery.fetchNextPage()}
+        />
+      )}
+      {activeTab === "space" && (
+        <SpaceTab
+          spaceData={spaceFeed}
+          isLoading={spaceFeedQuery.isLoading}
+          errorMessage={spaceFeedQuery.error ? getErrorMessage(spaceFeedQuery.error) : null}
+          hasMore={spaceFeedQuery.hasNextPage}
+          isLoadingMore={spaceFeedQuery.isFetchingNextPage}
+          onRetry={() => void spaceFeedQuery.refetch()}
+          onLoadMore={() => void spaceFeedQuery.fetchNextPage()}
+        />
+      )}
     </div>
   );
 }
