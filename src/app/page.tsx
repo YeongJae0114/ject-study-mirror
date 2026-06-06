@@ -1,10 +1,12 @@
 "use client";
 
-import Image from "next/image";
-import Tabs from "@/components/common/Tab";
 import { useState } from "react";
-import RecommendTab from "@/components/home/RecommendTab";
+
+import Image from "next/image";
+
+import Tabs from "@/components/common/Tab";
 import ArtTab from "@/components/home/ArtTab";
+import RecommendTab from "@/components/home/RecommendTab";
 import SpaceTab from "@/components/home/SpaceTab";
 import {
   useArtworkFeed,
@@ -59,9 +61,7 @@ export default function Home() {
   const artworkFeed = (artworkFeedQuery.data?.pages ?? [])
     .flatMap(page => page.items)
     .map(toArtworkCard);
-  const spaceFeed = (spaceFeedQuery.data?.pages ?? [])
-    .flatMap(page => page.items)
-    .map(toSpaceCard);
+  const spaceFeed = (spaceFeedQuery.data?.pages ?? []).flatMap(page => page.items).map(toSpaceCard);
 
   return (
     <div className="pb-10">
@@ -87,7 +87,9 @@ export default function Home() {
           isArtLoading={artworkRecommendationQuery.isLoading}
           isSpaceLoading={spaceRecommendationQuery.isLoading}
           artErrorMessage={
-            artworkRecommendationQuery.error ? getErrorMessage(artworkRecommendationQuery.error) : null
+            artworkRecommendationQuery.error
+              ? getErrorMessage(artworkRecommendationQuery.error)
+              : null
           }
           spaceErrorMessage={
             spaceRecommendationQuery.error ? getErrorMessage(spaceRecommendationQuery.error) : null

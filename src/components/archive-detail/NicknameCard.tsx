@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
@@ -26,9 +27,16 @@ export default function NicknameCard({
       className="border-border-primary mt-2.5 flex cursor-pointer items-center justify-between rounded-lg border px-4 py-3 transition-colors hover:bg-gray-50"
     >
       <div className="flex items-center gap-3.5">
-        <div className="bg-object-secondary-light text-caption text-text-primary-brand flex h-10.5 w-10.5 items-center justify-center overflow-hidden rounded-full font-medium">
+        <div className="bg-object-secondary-light text-caption text-text-primary-brand relative flex h-10.5 w-10.5 items-center justify-center overflow-hidden rounded-full font-medium">
           {displayImageUrl ? (
-            <img src={displayImageUrl} alt="" className="h-full w-full object-cover" />
+            <Image
+              src={displayImageUrl}
+              alt=""
+              fill
+              unoptimized
+              className="object-cover"
+              sizes="42px"
+            />
           ) : (
             fallbackLabel
           )}

@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 
+import { useMutation } from "@tanstack/react-query";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 import ArtTooltip from "@/components/archive-form/ArtToolTip";
 import DatePicker from "@/components/archive-form/DayPicker";
 import Dropdown from "@/components/archive-form/Dropdown";
@@ -14,14 +18,16 @@ import Textarea from "@/components/archive-form/Textarea";
 import ToggleButton from "@/components/archive-form/ToggleButton";
 import Header from "@/components/common/Header";
 import { ART_TYPES } from "@/constants/art";
-import { useImageStore } from "@/stores/useImageStore";
 import { useUploadImage } from "@/hooks/useImageUploader";
-import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
 import { createArtwork } from "@/services/artworks";
+import { useImageStore } from "@/stores/useImageStore";
 
 function FieldWrapper({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-2">{children}</div>;
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "작품 등록에 실패했습니다.";
 }
 
 export default function ArtCreatePage() {
@@ -47,6 +53,8 @@ export default function ArtCreatePage() {
   const [notes, setNotes] = useState("");
 
   const [isPublic, setIsPublic] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
 
   const isFormValid =
     images.length > 0 &&
@@ -62,6 +70,11 @@ export default function ArtCreatePage() {
   });
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitErrorMessage(null);
+
     try {
       const uploadedImages = await Promise.all(images.map(image => uploadImage(image.file)));
 
@@ -91,7 +104,9 @@ export default function ArtCreatePage() {
       clearImages();
       router.push("/");
     } catch (error) {
-      console.error(error);
+      setSubmitErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
     }
   };
   return (
@@ -112,9 +127,11 @@ export default function ArtCreatePage() {
           <div className="flex justify-between">
             <Label required>작품 유형</Label>
             <div className="relative">
-              <img
+              <Image
                 src="/info-icon.svg"
                 alt="작품 유형"
+                width={20}
+                height={20}
                 className="mr-2 cursor-pointer"
                 onClick={() => setIsTooltipOpen(!isTooltipOpen)}
               />
@@ -202,16 +219,21 @@ export default function ArtCreatePage() {
 
       {/* Bottom Button () */}
       <div className="border-border-primary fixed right-0 bottom-4 left-0 h-24.5 border-t bg-white px-5 py-4">
+        {submitErrorMessage && (
+          <p role="alert" className="text-caption text-error-default mb-2">
+            {submitErrorMessage}
+          </p>
+        )}
         <button
-          disabled={!isFormValid}
+          disabled={!isFormValid || isSubmitting}
           onClick={handleSubmit}
           className={`text-body-1 h-12.5 w-full rounded-lg font-medium transition-colors ${
-            isFormValid
+            isFormValid && !isSubmitting
               ? "bg-object-primary text-text-invert cursor-pointer"
               : "bg-object-disabled text-text-disabled cursor-not-allowed"
           }`}
         >
-          추가하기
+          {isSubmitting ? "등록 중..." : "추가하기"}
         </button>
       </div>
     </main>

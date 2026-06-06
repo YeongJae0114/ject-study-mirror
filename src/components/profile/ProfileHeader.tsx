@@ -1,6 +1,7 @@
+import Image from "next/image";
+
 import { ProfileHeaderProps } from "@/types/profile";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
-import Image from "next/image";
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ avatarUrl, role, name }) => {
   const displayAvatarUrl = normalizeImageUrl(avatarUrl);

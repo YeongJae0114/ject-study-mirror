@@ -27,7 +27,7 @@ export interface Session {
 
 /** reactive 세션 훅(단발 조회는 getAccessToken/getMyUserId 직접 호출). */
 export function useSession(): Session {
-  const accessToken = useAuthStore((s) => s.accessToken);
-  const myUserId = useAuthStore((s) => s.userId);
+  const accessToken = useAuthStore(s => s.accessToken);
+  const myUserId = useAuthStore(s => s.userId);
   return { accessToken, myUserId };
 }

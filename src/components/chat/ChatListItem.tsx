@@ -1,7 +1,8 @@
 import { UserRound } from "lucide-react";
+
+import type { ChatRoomListItem } from "@/types/chat";
 import { formatRelativeTime } from "@/utils/formatChatTime";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
-import type { ChatRoomListItem } from "@/types/chat";
 
 interface ChatListItemProps {
   room: ChatRoomListItem;

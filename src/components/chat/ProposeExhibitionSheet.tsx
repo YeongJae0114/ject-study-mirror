@@ -25,10 +25,13 @@ interface ProposeExhibitionSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   contextType: ChatContextType;
-  /** 희망 전시 작품/공간 후보. 추후 내 작품·공간 목록 API 연동(현재는 빈 배열). */
-  targetOptions?: { label: string }[];
-  /** 완료 시 호출. 미지정이면 닫기만(전송은 백엔드 연동 후). */
-  onSubmit?: (draft: ProposeExhibitionDraft) => void;
+  targetLabel?: string;
+  targetPlaceholder?: string;
+  targetMessage?: string;
+  targetOptions?: { label: string; value: string; description?: string }[];
+  isSubmitting?: boolean;
+  submitError?: string | null;
+  onSubmit?: (draft: ProposeExhibitionDraft) => Promise<void> | void;
 }
 
 function FieldWrapper({ children }: { children: React.ReactNode }) {
@@ -39,18 +42,23 @@ export default function ProposeExhibitionSheet({
   open,
   onOpenChange,
   contextType,
+  targetLabel,
+  targetPlaceholder,
+  targetMessage,
   targetOptions = [],
+  isSubmitting = false,
+  submitError = null,
   onSubmit,
 }: ProposeExhibitionSheetProps) {
   const targetConfig = PROPOSE_EXHIBITION_TARGET[contextType];
 
-  const [target, setTarget] = useState("");
+  const [targetId, setTargetId] = useState("");
   const [title, setTitle] = useState("");
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
 
   const reset = () => {
-    setTarget("");
+    setTargetId("");
     setTitle("");
     setStartDate(undefined);
     setEndDate(undefined);
@@ -60,19 +68,27 @@ export default function ProposeExhibitionSheet({
   const dateError = Boolean(startDate && endDate && endDate < startDate);
   // 상단 내용 모두 입력 시 완료 버튼 활성화
   const isComplete =
-    Boolean(target) && titleValid && Boolean(startDate) && Boolean(endDate) && !dateError;
+    Boolean(targetId) &&
+    titleValid &&
+    Boolean(startDate) &&
+    Boolean(endDate) &&
+    !dateError &&
+    !isSubmitting;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!isComplete || !startDate || !endDate) return;
 
-    onSubmit?.({
-      target,
-      title: title.trim(),
-      startDate: format(startDate, "yyyy-MM-dd"),
-      endDate: format(endDate, "yyyy-MM-dd"),
-    });
-
-    onOpenChange(false);
+    try {
+      await onSubmit?.({
+        targetId: Number(targetId),
+        title: title.trim(),
+        startDate: format(startDate, "yyyy-MM-dd"),
+        endDate: format(endDate, "yyyy-MM-dd"),
+      });
+      onOpenChange(false);
+    } catch {
+      // submitError prop으로 실패 메시지를 표시한다.
+    }
   };
 
   return (
@@ -104,14 +120,17 @@ export default function ProposeExhibitionSheet({
           <div className="flex flex-col gap-6 pt-6">
             {/* 희망 전시 작품/공간 */}
             <FieldWrapper>
-              <Label required>{targetConfig.label}</Label>
+              <Label required>{targetLabel ?? targetConfig.label}</Label>
               <Dropdown
                 required
-                placeholder={targetConfig.placeholder}
+                placeholder={targetPlaceholder ?? targetConfig.placeholder}
                 options={targetOptions}
-                value={target}
-                onChange={setTarget}
+                value={targetId}
+                onChange={setTargetId}
               />
+              {targetMessage && (
+                <div className="text-caption text-text-secondary">{targetMessage}</div>
+              )}
             </FieldWrapper>
 
             {/* 전시 이름 */}
@@ -144,6 +163,8 @@ export default function ProposeExhibitionSheet({
             </FieldWrapper>
           </div>
 
+          {submitError && <div className="text-caption text-error-default pt-4">{submitError}</div>}
+
           {/* 완료 */}
           <button
             type="button"
@@ -155,7 +176,7 @@ export default function ProposeExhibitionSheet({
                 : "bg-object-disabled text-text-disabled"
             } `}
           >
-            {PROPOSE_EXHIBITION_SUBMIT_LABEL}
+            {isSubmitting ? "전송 중" : PROPOSE_EXHIBITION_SUBMIT_LABEL}
           </button>
         </Drawer.Content>
       </Drawer.Portal>

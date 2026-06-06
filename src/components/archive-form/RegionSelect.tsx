@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Check, ChevronDown } from "lucide-react";
+import Image from "next/image";
 import { Drawer } from "vaul";
 
 import { SEOUL_REGIONS } from "@/constants/region";
@@ -162,7 +163,7 @@ export default function RegionBottomSheet({ value, onChange }: RegionBottomSheet
                 </div>
               ) : (
                 <div className="flex h-full flex-col items-center justify-center gap-6">
-                  <img src="/empty-icon.svg" alt="empty" className="h-20 w-20" />
+                  <Image src="/empty-icon.svg" alt="empty" width={80} height={80} />
                   <p className="text-body-1 text-text-disabled font-medium">
                     아쉽지만 지금은 일부 지역에서만 운영 중이에요.
                   </p>

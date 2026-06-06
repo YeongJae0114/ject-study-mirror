@@ -23,7 +23,8 @@ export function useArtworkFeed(size = 20) {
     queryKey: ["public-feed", "artworks", size],
     queryFn: ({ pageParam }) => getArtworkFeed({ size, cursor: pageParam as string | undefined }),
     initialPageParam: undefined as string | undefined,
-    getNextPageParam: lastPage => (lastPage.hasNext ? (lastPage.nextCursor ?? undefined) : undefined),
+    getNextPageParam: lastPage =>
+      lastPage.hasNext ? (lastPage.nextCursor ?? undefined) : undefined,
   });
 }
 
@@ -32,6 +33,7 @@ export function useSpaceFeed(size = 20) {
     queryKey: ["public-feed", "spaces", size],
     queryFn: ({ pageParam }) => getSpaceFeed({ size, cursor: pageParam as string | undefined }),
     initialPageParam: undefined as string | undefined,
-    getNextPageParam: lastPage => (lastPage.hasNext ? (lastPage.nextCursor ?? undefined) : undefined),
+    getNextPageParam: lastPage =>
+      lastPage.hasNext ? (lastPage.nextCursor ?? undefined) : undefined,
   });
 }

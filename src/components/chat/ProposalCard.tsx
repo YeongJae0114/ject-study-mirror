@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageIcon } from "lucide-react";
+
 import {
   PROPOSAL_ACCEPT_LABEL,
   PROPOSAL_CARD_ARTWORK_LABEL,

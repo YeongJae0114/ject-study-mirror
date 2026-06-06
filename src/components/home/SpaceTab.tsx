@@ -1,7 +1,8 @@
+import type { FeedCardItem } from "@/types/feed";
+
 import ContentCard from "./ContentCard";
 import SortDropdown from "./SortDropdown";
 import { EmptyContent } from "../common/EmptyContent";
-import type { FeedCardItem } from "@/types/feed";
 
 interface SpaceTabProps {
   spaceData: FeedCardItem[];

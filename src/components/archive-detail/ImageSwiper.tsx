@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+
+import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import "swiper/css";
@@ -31,11 +33,14 @@ export default function ImageSwiper({
           onRealIndexChange={swiper => setActiveIndex(swiper.realIndex)}
         >
           {images.map((src, index) => (
-            <SwiperSlide key={index}>
-              <img
+            <SwiperSlide key={index} className="relative">
+              <Image
                 src={src}
                 alt={`${altPrefix} ${index + 1}`}
-                className="h-full w-full object-cover"
+                fill
+                unoptimized
+                className="object-cover"
+                sizes="100vw"
               />
             </SwiperSlide>
           ))}

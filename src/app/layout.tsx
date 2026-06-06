@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { Alata } from "next/font/google";
 import localFont from "next/font/local";
 
-import Providers from "./providers";
-import "./globals.css";
 import Navbar from "@/components/common/Navbar";
+
+import Providers from "./providers";
+
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "ReFit",

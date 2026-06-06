@@ -5,10 +5,7 @@ interface AuthSocialButtonsProps {
   onNaverLogin?: () => void;
 }
 
-export default function AuthSocialButtons({
-  onGoogleLogin,
-  onNaverLogin,
-}: AuthSocialButtonsProps) {
+export default function AuthSocialButtons({ onGoogleLogin, onNaverLogin }: AuthSocialButtonsProps) {
   return (
     <div className="mx-auto flex w-65.5 flex-col gap-3">
       <button

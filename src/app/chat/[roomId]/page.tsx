@@ -1,14 +1,15 @@
 "use client";
 
 import { use, useEffect, useMemo } from "react";
+
 import ChatHeader from "@/components/chat/ChatHeader";
 import ChatInput from "@/components/chat/ChatInput";
 import ChatRoomInfo from "@/components/chat/ChatRoomInfo";
 import MessageList from "@/components/chat/MessageList";
 import { useChatRoom } from "@/hooks/useChatRoom";
 import { useChatRooms } from "@/hooks/useChatRooms";
-import { useMessages } from "@/hooks/useMessages";
 import { useChatSocket } from "@/hooks/useChatSocket";
+import { useMessages } from "@/hooks/useMessages";
 import { useSession } from "@/services/session";
 
 interface ChatRoomPageProps {
@@ -26,8 +27,8 @@ export default function ChatRoomPage({ params }: ChatRoomPageProps) {
   const { data: roomDetail } = useChatRoom(id);
   const { data: roomsData } = useChatRooms();
   const roomListItem = useMemo(
-    () => roomsData?.pages.flatMap((page) => page.items).find((r) => r.id === id),
-    [roomsData, id],
+    () => roomsData?.pages.flatMap(page => page.items).find(r => r.id === id),
+    [roomsData, id]
   );
 
   const roomContext = roomDetail?.context ?? roomListItem?.context ?? null;
@@ -35,8 +36,7 @@ export default function ChatRoomPage({ params }: ChatRoomPageProps) {
   // 상대 닉네임: 상세엔 counterparty가 없어 artist/host 중 내가 아닌 쪽으로 계산, 목록은 counterparty 직접 사용.
   const counterpartyNickname = useMemo(() => {
     if (roomDetail) {
-      const counterpart =
-        roomDetail.artist.id === myUserId ? roomDetail.host : roomDetail.artist;
+      const counterpart = roomDetail.artist.id === myUserId ? roomDetail.host : roomDetail.artist;
       return counterpart.nickname;
     }
     return roomListItem?.counterparty.nickname ?? null;
@@ -53,8 +53,8 @@ export default function ChatRoomPage({ params }: ChatRoomPageProps) {
   const { sendMessage, markAsRead, lastError, isConnected } = useChatSocket(id);
 
   const messages = useMemo(
-    () => messagesData?.pages.flatMap((page) => page.items) ?? [],
-    [messagesData],
+    () => messagesData?.pages.flatMap(page => page.items) ?? [],
+    [messagesData]
   );
 
   // 읽음 처리는 연결 완료 후에만 발행(stompjs v7은 미연결 시 publish()가 동기 throw).
@@ -65,15 +65,15 @@ export default function ChatRoomPage({ params }: ChatRoomPageProps) {
   }, [id, isConnected]);
 
   return (
-    <div className="flex h-screen flex-col bg-bg-primary">
+    <div className="bg-bg-primary flex h-screen flex-col">
       <ChatHeader title={counterpartyNickname} />
 
-      {roomContext && <ChatRoomInfo context={roomContext} />}
+      {roomContext && <ChatRoomInfo roomId={id} context={roomContext} />}
 
       {lastError && (
         <div
           role="alert"
-          className="bg-error-light px-4 py-2 text-label font-medium text-error-default"
+          className="bg-error-light text-label text-error-default px-4 py-2 font-medium"
         >
           {lastError.error.message}
         </div>
@@ -81,9 +81,7 @@ export default function ChatRoomPage({ params }: ChatRoomPageProps) {
 
       {isLoading ? (
         <div className="flex flex-1 items-center justify-center">
-          <div className="text-body-1 text-text-secondary">
-            메시지를 불러오는 중...
-          </div>
+          <div className="text-body-1 text-text-secondary">메시지를 불러오는 중...</div>
         </div>
       ) : (
         <MessageList
