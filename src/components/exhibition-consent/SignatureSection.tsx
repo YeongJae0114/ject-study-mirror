@@ -1,7 +1,6 @@
 "use client";
 
 import { RefreshCw } from "lucide-react";
-import Image from "next/image";
 
 import SignaturePad from "@/components/exhibition-consent/SignaturePad";
 import type { ConsentMode } from "@/types/exhibitionConsent";
@@ -62,13 +61,11 @@ export default function SignatureSection({
       {isReadOnly ? (
         <div className="bg-bg-primary-darker border-border-primary flex h-[152px] items-center justify-center overflow-hidden rounded-lg border">
           {displaySignatureUrl ? (
-            <Image
-              src={displaySignatureUrl}
-              alt="저장된 서명"
-              width={320}
-              height={152}
-              unoptimized
-              className="h-full w-full object-contain"
+            <div
+              role="img"
+              aria-label="저장된 서명"
+              className="h-full w-full bg-contain bg-center bg-no-repeat"
+              style={{ backgroundImage: `url("${displaySignatureUrl}")` }}
             />
           ) : (
             <p className="text-body-2 text-text-secondary">저장된 서명이 없습니다.</p>
