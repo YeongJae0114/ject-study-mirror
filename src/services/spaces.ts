@@ -1,4 +1,5 @@
 import { apiClient } from "./apiClient";
+import type { SpaceDetail } from "@/types/archiveDetail";
 import type { FeedPage, SpaceFeedItem } from "@/types/feed";
 
 export interface CreateSpaceRequest {
@@ -27,4 +28,8 @@ export const getSpaceFeed = (params: GetSpaceFeedParams = {}, signal?: AbortSign
     },
     signal
   );
+};
+
+export const getSpaceDetail = (spaceId: string | number, signal?: AbortSignal) => {
+  return apiClient.get<SpaceDetail>(`/api/v1/spaces/${spaceId}`, undefined, signal);
 };

@@ -1,4 +1,5 @@
 import { apiClient } from "./apiClient";
+import type { ArtworkDetail } from "@/types/archiveDetail";
 import type { ArtworkFeedItem, FeedPage } from "@/types/feed";
 
 export interface CreateArtworkRequest {
@@ -45,4 +46,8 @@ export const getArtworkFeed = (params: GetArtworkFeedParams = {}, signal?: Abort
     },
     signal
   );
+};
+
+export const getArtworkDetail = (artworkId: string | number, signal?: AbortSignal) => {
+  return apiClient.get<ArtworkDetail>(`/api/v1/artworks/${artworkId}`, undefined, signal);
 };
