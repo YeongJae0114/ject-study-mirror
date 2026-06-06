@@ -86,7 +86,7 @@ function Badge({ children, size = "medium" }: BadgeProps) {
 function MypageHeader() {
   return (
     <>
-      <header className="bg-bg-primary fixed top-0 right-0 left-0 z-10 flex h-14 w-full items-center justify-between px-5">
+      <header className="bg-bg-primary mobile:w-97.5 fixed top-0 left-1/2 z-10 flex h-14 w-full -translate-x-1/2 items-center justify-between px-5">
         <h1 className="text-headline-1 text-text-primary font-semibold">마이페이지</h1>
         <Link
           href="/mypage/settings"
