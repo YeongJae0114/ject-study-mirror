@@ -23,6 +23,10 @@ function FieldWrapper({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-2">{children}</div>;
 }
 
+function toOptionalNumber(value: string) {
+  return value.trim() === "" ? undefined : Number(value);
+}
+
 export default function SpaceCreatePage() {
   const router = useRouter();
 
@@ -66,7 +70,13 @@ export default function SpaceCreatePage() {
 
       await createSpaceMutation({
         title,
+        spaceType: artType,
+        address,
         description,
+        caution: notes,
+        widthCm: toOptionalNumber(width),
+        heightCm: toOptionalNumber(height),
+        depthCm: toOptionalNumber(depth),
         isPublic,
         imageIds: uploadedImages.map(image => image.imageId),
       });

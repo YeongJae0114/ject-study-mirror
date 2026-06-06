@@ -4,7 +4,13 @@ import type { FeedPage, SpaceFeedItem } from "@/types/feed";
 
 export interface CreateSpaceRequest {
   title: string;
+  spaceType: string;
+  address: string;
   description: string;
+  caution?: string;
+  widthCm?: number;
+  heightCm?: number;
+  depthCm?: number;
   isPublic?: boolean;
   imageIds: number[];
 }

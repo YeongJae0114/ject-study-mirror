@@ -9,15 +9,22 @@ import { EmptyContent } from "@/components/common/EmptyContent";
 interface ProfileActivityListProps {
   userId: number;
   activities: Activity[];
+  hasMore?: boolean;
 }
 
-export const ProfileActivityList: React.FC<ProfileActivityListProps> = ({ userId, activities }) => {
+export const ProfileActivityList: React.FC<ProfileActivityListProps> = ({
+  userId,
+  activities,
+  hasMore = false,
+}) => {
   const router = useRouter();
+  const showViewAll = activities.length > 0 || hasMore;
+
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-heading-2 text-text-primary font-medium">활동 정보</h2>
-        {activities.length > 4 && (
+        {showViewAll && (
           <button
             onClick={() => router.push(`/profile/${userId}/activity`)}
             className="text-label text-text-secondary flex items-center gap-0.5 font-medium"

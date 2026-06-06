@@ -1,6 +1,8 @@
 export interface ArtworkDetail {
   id: number;
   ownerId: number;
+  ownerNickname: string | null;
+  ownerProfileImageUrl: string | null;
   title: string;
   artworkType: string;
   description: string | null;
@@ -22,8 +24,16 @@ export interface ArtworkDetail {
 export interface SpaceDetail {
   id: number;
   ownerId: number;
+  ownerNickname: string | null;
+  ownerProfileImageUrl: string | null;
   title: string;
+  spaceType: string | null;
+  address: string | null;
   description: string | null;
+  caution: string | null;
+  widthCm: number | null;
+  heightCm: number | null;
+  depthCm: number | null;
   isPublic: boolean;
   imageIds: number[];
   imageUrls: string[];

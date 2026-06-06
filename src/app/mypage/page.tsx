@@ -205,34 +205,41 @@ function ArtworkCard({ artwork }: ArtworkCardProps) {
   return (
     <Link href={artwork.href} className="block min-w-0">
       <article className="flex h-55.5 min-w-0 flex-col">
-      <div className="border-border-primary relative h-33.5 overflow-hidden rounded-lg border">
-        {artwork.imageUrl ? (
-          <Image src={artwork.imageUrl} alt="" fill sizes="168px" className="object-cover" />
-        ) : (
-          <ImageFallback>
-            <Images size={28} />
-          </ImageFallback>
-        )}
-
-        {artwork.isPrivate && (
-          <>
-            <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[rgba(26,26,30,0.5)] to-transparent" />
-            <LockKeyhole
-              size={20}
-              className="text-text-invert absolute top-3 left-3"
-              strokeWidth={2.2}
+        <div className="border-border-primary relative h-33.5 overflow-hidden rounded-lg border">
+          {artwork.imageUrl ? (
+            <Image
+              src={artwork.imageUrl}
+              alt=""
+              fill
+              sizes="168px"
+              className="object-cover"
+              unoptimized
             />
-          </>
-        )}
-      </div>
+          ) : (
+            <ImageFallback>
+              <Images size={28} />
+            </ImageFallback>
+          )}
 
-      <div className="flex w-full flex-col items-start gap-1 pt-2 pr-3.5 pb-3 pl-1">
-        {artwork.statusLabel && <Badge size="small">{artwork.statusLabel}</Badge>}
-        <div className="flex w-full flex-col gap-0.5">
-          <p className="text-body-1 text-text-primary truncate font-semibold">{artwork.title}</p>
-          <p className="text-label text-text-secondary font-regular truncate">{artwork.type}</p>
+          {artwork.isPrivate && (
+            <>
+              <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[rgba(26,26,30,0.5)] to-transparent" />
+              <LockKeyhole
+                size={20}
+                className="text-text-invert absolute top-3 left-3"
+                strokeWidth={2.2}
+              />
+            </>
+          )}
         </div>
-      </div>
+
+        <div className="flex w-full flex-col items-start gap-1 pt-2 pr-3.5 pb-3 pl-1">
+          {artwork.statusLabel && <Badge size="small">{artwork.statusLabel}</Badge>}
+          <div className="flex w-full flex-col gap-0.5">
+            <p className="text-body-1 text-text-primary truncate font-semibold">{artwork.title}</p>
+            <p className="text-label text-text-secondary font-regular truncate">{artwork.type}</p>
+          </div>
+        </div>
       </article>
     </Link>
   );
