@@ -39,6 +39,9 @@ const config: Config = {
         pretendard: ["var(--font-pretendard)", "sans-serif"],
         alata: ["var(--font-alata)", "sans-serif"],
       },
+      screens: {
+        mobile: "430px",
+      },
     },
   },
   plugins: [],

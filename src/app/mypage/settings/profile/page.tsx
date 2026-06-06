@@ -219,7 +219,7 @@ export default function MyPageProfileSettingsPage() {
       <Header title="회원정보 변경" showBack />
 
       <section className="fixed top-15 right-0 bottom-[82px] left-0 overflow-y-auto">
-        <div className="flex w-full flex-col gap-6 px-5 py-6">
+        <div className="mobile:w-97.5 mx-auto flex w-full flex-col gap-6 px-5 py-6">
           <ProfileImageInput
             initialImageUrl={meQuery.data?.profileImageUrl}
             onChange={file => {

@@ -37,7 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${pretendard.className} ${alata.variable} h-full antialiased`}>
       {/* <body className="flex min-h-full flex-col"> */}
-      <body className="mx-auto min-h-screen w-full max-w-97.5 bg-white">
+      <body className="mobile:w-97.5 mx-auto min-h-screen w-full bg-white">
         <Providers>{children}</Providers>
         <Suspense fallback={null}>
           <ScrollManager />
