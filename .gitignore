@@ -50,3 +50,4 @@ public/workbox-*.js
 /.claude/
 /.ai-context/
 /.idea/
+/screenshot/
