@@ -3,7 +3,8 @@ import { EmptyContent } from "@/components/common/EmptyContent";
 
 export const ProfileInfo = ({ bio, snsLink }: ProfileInfoProps) => {
   const hasBio = Boolean(bio?.trim());
-  const hasSnsLink = Boolean(snsLink?.trim());
+  const displaySnsLink = snsLink?.trim();
+  const hasSnsLink = Boolean(displaySnsLink);
 
   return (
     <div>
@@ -28,12 +29,12 @@ export const ProfileInfo = ({ bio, snsLink }: ProfileInfoProps) => {
               <div className="text-body-2 text-text-secondary mb-1 font-semibold">SNS 링크</div>
 
               <a
-                href={snsLink}
+                href={displaySnsLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-text-primary-brand text-body-2 font-regular cursor-pointer break-all"
               >
-                {snsLink}
+                {displaySnsLink}
               </a>
             </div>
           )}

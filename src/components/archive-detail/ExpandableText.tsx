@@ -42,13 +42,12 @@ export default function ExpandableText({ title, content, maxLines = 3 }: Expanda
         )}
       </div>
 
-      {/* 더보기 버튼 */}
-      {showButton && (
+      {showButton && !isExpanded && (
         <button
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={() => setIsExpanded(true)}
           className="text-body-1 border-border-primary text-text-secondary mt-3.5 flex w-full cursor-pointer items-center justify-center rounded-lg border py-3 font-medium hover:bg-gray-50"
         >
-          {isExpanded ? "접기" : "더 보기"}
+          더보기
         </button>
       )}
     </div>

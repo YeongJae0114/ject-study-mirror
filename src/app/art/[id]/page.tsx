@@ -8,6 +8,7 @@ import SizeText from "@/components/archive-detail/SizeText";
 import RegionText from "@/components/archive-detail/RegionText";
 import ImageSwiper from "@/components/archive-detail/ImageSwiper";
 import NicknameCard from "@/components/archive-detail/NicknameCard";
+import { useCreateChatRoom } from "@/hooks/useCreateChatRoom";
 import { getArtworkDetail } from "@/services/artworks";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
@@ -16,10 +17,15 @@ function formatDate(date: string | null) {
   return date.replaceAll("-", ".");
 }
 
+function hasText(value?: string | null) {
+  return Boolean(value?.trim());
+}
+
 export default function ArtDetailPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const artworkId = params.id;
+  const createChatRoom = useCreateChatRoom();
 
   const query = useQuery({
     queryKey: ["artwork-detail", artworkId],
@@ -28,11 +34,29 @@ export default function ArtDetailPage() {
   });
 
   const artwork = query.data;
+  const numericArtworkId = Number(artworkId);
   const artworkImages =
     artwork?.imageUrls?.flatMap(url => {
       const normalized = normalizeImageUrl(url);
       return normalized ? [normalized] : [];
     }) ?? [];
+  const ownerNickname =
+    artwork?.ownerNickname?.trim() || `크리에이터 ${artwork?.ownerId ?? ""}`.trim();
+  const hasCreatedDate = Boolean(artwork?.createdDate);
+  const hasDescription = hasText(artwork?.description);
+  const hasCaution = hasText(artwork?.caution);
+
+  const handleInquiryClick = () => {
+    if (!Number.isFinite(numericArtworkId)) return;
+
+    createChatRoom.mutate(
+      { targetType: "ARTWORK", targetId: numericArtworkId },
+      {
+        onSuccess: room => router.push(`/chat/${room.id}`),
+        onError: error => alert(error.message || "전시 문의를 시작하지 못했습니다."),
+      }
+    );
+  };
 
   return (
     <div className="min-h-screen bg-white pb-32">
@@ -73,16 +97,23 @@ export default function ArtDetailPage() {
 
             <RegionText regions={artwork.availableRegions} />
 
-            <NicknameCard nickname={`크리에이터 ${artwork.ownerId}`} />
+            <NicknameCard
+              href={`/profile/${artwork.ownerId}`}
+              nickname={ownerNickname}
+              profileImageUrl={artwork.ownerProfileImageUrl}
+              fallbackLabel="C"
+            />
           </div>
 
           <div className="bg-bg-primary-darker h-1" />
 
           <div className="text-text-primary flex flex-col gap-8 px-5 py-6">
-            <div className="text-text-primary flex flex-col gap-2">
-              <div className="text-heading-2 font-medium">작품 제작일</div>
-              <p className="text-body-2 font-regular">{formatDate(artwork.createdDate)}</p>
-            </div>
+            {hasCreatedDate && (
+              <div className="text-text-primary flex flex-col gap-2">
+                <div className="text-heading-2 font-medium">작품 제작일</div>
+                <p className="text-body-2 font-regular">{formatDate(artwork.createdDate)}</p>
+              </div>
+            )}
 
             <SizeText
               title="필요한 전시 공간 사이즈"
@@ -91,25 +122,26 @@ export default function ArtDetailPage() {
               depth={artwork.depthCm ?? undefined}
             />
 
-            <ExpandableText
-              title="작품 상세"
-              content={artwork.description?.trim() || "등록된 작품 상세 설명이 없습니다."}
-              maxLines={4}
-            />
+            {hasDescription && (
+              <ExpandableText
+                title="작품 상세"
+                content={artwork.description!.trim()}
+                maxLines={4}
+              />
+            )}
 
-            <ExpandableText
-              title="주의사항"
-              content={artwork.caution?.trim() || "등록된 주의사항이 없습니다."}
-              maxLines={4}
-            />
+            {hasCaution && (
+              <ExpandableText title="주의사항" content={artwork.caution!.trim()} maxLines={4} />
+            )}
           </div>
 
           <div className="border-border-primary bg-bg-primary fixed right-0 bottom-0 left-0 z-50 border-t px-5 pt-3 pb-9">
             <button
-              onClick={() => alert("전시 문의 프로세스 시작")}
-              className="bg-object-primary text-body-1 text-text-invert flex h-12.5 w-full items-center justify-center rounded-lg font-medium"
+              onClick={handleInquiryClick}
+              disabled={createChatRoom.isPending}
+              className="bg-object-primary text-body-1 text-text-invert flex h-12.5 w-full items-center justify-center rounded-lg font-medium disabled:opacity-50"
             >
-              전시 문의하기
+              {createChatRoom.isPending ? "이동 중..." : "전시 문의하기"}
             </button>
           </div>
         </>

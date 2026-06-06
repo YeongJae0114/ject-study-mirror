@@ -12,12 +12,17 @@ export default function SizeText({ title, width, height, depth }: SizeTextProps)
     { label: "가로", value: width },
     { label: "세로", value: height },
     { label: "높이", value: depth },
-  ];
+  ].filter(item => item.value !== undefined && item.value !== null && item.value !== "");
+
+  if (dimensions.length === 0) return null;
 
   return (
     <div>
       <h3 className="text-heading-2 text-text-primary mb-3 font-medium">{title}</h3>
-      <div className="font-regular grid grid-cols-3 gap-2">
+      <div
+        className="font-regular grid gap-2"
+        style={{ gridTemplateColumns: `repeat(${dimensions.length}, minmax(0, 1fr))` }}
+      >
         {dimensions.map((item, idx) => (
           <div
             key={idx}

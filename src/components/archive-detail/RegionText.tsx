@@ -13,11 +13,11 @@ export default function RegionText({ regions }: RegionTextProps) {
   const hasRegions = regions && regions.length > 0;
   if (!hasRegions) return null;
 
-  const isSeoulAll = regions.length === 1 && regions[0] === "서울 전체";
+  const isSeoulAll = regions.length === 1 && ["서울 전체", "서울특별시 전체"].includes(regions[0]);
   const hasAccordion = !isSeoulAll && regions.length > 3;
 
   const regionText = isSeoulAll
-    ? "서울 전체"
+    ? "서울특별시 전체"
     : hasAccordion
       ? `서울특별시 ${regions.slice(0, 3).join(", ")} 외 ${regions.length - 3}개`
       : `서울특별시 ${regions.join(", ")}`;
@@ -45,7 +45,7 @@ export default function RegionText({ regions }: RegionTextProps) {
       {hasAccordion && isOpen && (
         <div className="animate-fadeIn bg-object-gray mt-2 rounded-lg p-3.5">
           <p className="text-label font-regular text-text-secondary leading-relaxed">
-            서울특별시 {regions.join(", ")}
+            {isSeoulAll ? "서울특별시 전체" : `서울특별시 ${regions.join(", ")}`}
           </p>
         </div>
       )}

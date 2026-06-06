@@ -34,7 +34,14 @@ function FeedCard({ item }: { item: MypageArtwork }) {
       <article className="flex h-55.5 min-w-0 flex-col">
         <div className="border-border-primary relative h-33.5 overflow-hidden rounded-lg border">
           {item.imageUrl ? (
-            <Image src={item.imageUrl} alt="" fill sizes="168px" className="object-cover" />
+            <Image
+              src={item.imageUrl}
+              alt=""
+              fill
+              sizes="168px"
+              className="object-cover"
+              unoptimized
+            />
           ) : (
             <div className="bg-bg-primary-darker text-text-disabled flex size-full items-center justify-center">
               <Images size={28} />
@@ -86,9 +93,7 @@ export default function MypageFeedPage() {
 
   if (!isAuthReady || !isAuthenticated) return null;
 
-  const feedItems = (feedQuery.data?.pages ?? [])
-    .flatMap(page => page.items)
-    .map(toMypageFeedItem);
+  const feedItems = (feedQuery.data?.pages ?? []).flatMap(page => page.items).map(toMypageFeedItem);
 
   const handleCreateClick = () => {
     if (meQuery.data?.role === "CREATOR") {
@@ -124,11 +129,15 @@ export default function MypageFeedPage() {
 
       <section className="px-5 py-6">
         {feedQuery.isLoading ? (
-          <p className="text-body-2 text-text-secondary font-regular py-2">피드를 불러오는 중입니다.</p>
+          <p className="text-body-2 text-text-secondary font-regular py-2">
+            피드를 불러오는 중입니다.
+          </p>
         ) : feedQuery.error ? (
           <div className="py-2">
             <p className="text-body-2 text-error-default">
-              {feedQuery.error instanceof Error ? feedQuery.error.message : "피드를 불러오지 못했습니다."}
+              {feedQuery.error instanceof Error
+                ? feedQuery.error.message
+                : "피드를 불러오지 못했습니다."}
             </p>
             <button
               type="button"
@@ -157,7 +166,9 @@ export default function MypageFeedPage() {
             )}
           </>
         ) : (
-          <p className="text-body-2 text-text-secondary font-regular py-2">등록된 피드가 없습니다.</p>
+          <p className="text-body-2 text-text-secondary font-regular py-2">
+            등록된 피드가 없습니다.
+          </p>
         )}
       </section>
     </main>
