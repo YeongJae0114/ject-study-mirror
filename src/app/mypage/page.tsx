@@ -7,10 +7,17 @@ import { ChevronRight, Images, LockKeyhole } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { useExhibitions } from "@/hooks/useExhibitions";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { getMe } from "@/services/authApi";
+import { getMypageFeed } from "@/services/mypageApi";
 import { getNicknamePolicy } from "@/services/userApi";
-import type { MypageArtwork, MypageData, MypageExhibition, MypageProfile } from "@/types/mypage";
+import type {
+  MypageArtwork,
+  MypageExhibition,
+  MypageFeedApiItem,
+  MypageProfile,
+} from "@/types/mypage";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 interface BadgeProps {
@@ -32,14 +39,6 @@ interface ArtworkCardProps {
   artwork: MypageArtwork;
 }
 
-// 현재 백엔드 명세로 연결 가능한 프로필 정보만 API에서 채우고,
-// 활동 정보와 피드는 더미 데이터 없이 빈 상태로 노출합니다.
-const EMPTY_MYPAGE_DATA: MypageData = {
-  profile: null,
-  exhibitions: [],
-  artworks: [],
-};
-
 const ROLE_LABEL: Record<string, string> = {
   CREATOR: "크리에이터",
   SPACE_PARTNER: "공간 파트너",
@@ -49,6 +48,28 @@ const getRoleLabel = (role?: string) => {
   if (!role || role === "PENDING") return null;
   return ROLE_LABEL[role] ?? role;
 };
+
+function formatDate(date: string) {
+  return date.replaceAll("-", ".");
+}
+
+function formatPeriod(startDate: string, endDate: string) {
+  return `${formatDate(startDate)}-${formatDate(endDate)}`;
+}
+
+function toMypageFeedItem(item: MypageFeedApiItem): MypageArtwork {
+  const basePath = item.targetType === "ARTWORK" ? "art" : "space";
+  return {
+    id: `${item.targetType.toLowerCase()}-${item.id}`,
+    targetType: item.targetType,
+    imageUrl: normalizeImageUrl(item.thumbnailUrl),
+    title: item.title,
+    type: item.type,
+    statusLabel: item.isPublic ? "공개" : "비공개",
+    isPrivate: !item.isPublic,
+    href: `/${basePath}/${item.id}`,
+  };
+}
 
 function Badge({ children, size = "medium" }: BadgeProps) {
   return (
@@ -182,7 +203,8 @@ function ExhibitionItem({ exhibition, hasDivider = false }: ExhibitionItemProps)
 
 function ArtworkCard({ artwork }: ArtworkCardProps) {
   return (
-    <article className="flex h-55.5 min-w-0 flex-col">
+    <Link href={artwork.href} className="block min-w-0">
+      <article className="flex h-55.5 min-w-0 flex-col">
       <div className="border-border-primary relative h-33.5 overflow-hidden rounded-lg border">
         {artwork.imageUrl ? (
           <Image src={artwork.imageUrl} alt="" fill sizes="168px" className="object-cover" />
@@ -211,7 +233,8 @@ function ArtworkCard({ artwork }: ArtworkCardProps) {
           <p className="text-label text-text-secondary font-regular truncate">{artwork.type}</p>
         </div>
       </div>
-    </article>
+      </article>
+    </Link>
   );
 }
 
@@ -228,6 +251,12 @@ export default function MypagePage() {
     queryFn: ({ signal }) => getNicknamePolicy(signal),
     enabled: canFetchProfile,
   });
+  const mypageFeedQuery = useQuery({
+    queryKey: ["mypage", "feed", 0, 4],
+    queryFn: () => getMypageFeed({ page: 0, size: 4 }),
+    enabled: canFetchProfile,
+  });
+  const activitiesQuery = useExhibitions("CONFIRMED", 0, 3);
 
   if (!canFetchProfile) return null;
 
@@ -241,7 +270,14 @@ export default function MypagePage() {
           snsUrl: meQuery.data?.snsUrl ?? null,
         }
       : null;
-  const { exhibitions, artworks } = EMPTY_MYPAGE_DATA;
+  const artworks = (mypageFeedQuery.data?.items ?? []).map(toMypageFeedItem);
+  const exhibitions: MypageExhibition[] = (activitiesQuery.data?.items ?? []).map(exhibition => ({
+    id: String(exhibition.id),
+    imageUrl: normalizeImageUrl(exhibition.thumbnailUrl),
+    title: exhibition.title,
+    period: formatPeriod(exhibition.startDate, exhibition.endDate),
+    place: exhibition.spaceName,
+  }));
   const isProfileLoading = meQuery.isLoading || nicknamePolicyQuery.isLoading;
 
   return (
@@ -287,7 +323,9 @@ export default function MypagePage() {
         <section className="flex flex-col gap-4">
           <SectionHeader title="피드" moreHref="/mypage/feed" />
 
-          {artworks.length > 0 ? (
+          {mypageFeedQuery.isLoading ? (
+            <EmptyState message="피드를 불러오는 중입니다." />
+          ) : artworks.length > 0 ? (
             <div className="grid grid-cols-2 gap-x-3.5 gap-y-3.5">
               {artworks.map(artwork => (
                 <ArtworkCard key={artwork.id} artwork={artwork} />
@@ -301,7 +339,9 @@ export default function MypagePage() {
         <section className="flex flex-col gap-2">
           <SectionHeader title="활동 정보" moreHref="/mypage/activities" />
 
-          {exhibitions.length > 0 ? (
+          {activitiesQuery.isLoading ? (
+            <EmptyState message="활동 정보를 불러오는 중입니다." />
+          ) : exhibitions.length > 0 ? (
             <div className="flex flex-col gap-4 py-4">
               {exhibitions.map((exhibition, index) => (
                 <ExhibitionItem

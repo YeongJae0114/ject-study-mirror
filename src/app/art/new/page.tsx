@@ -79,6 +79,8 @@ export default function ArtCreatePage() {
 
         createdDate: date?.toISOString().split("T")[0],
 
+        isPublic,
+
         imageIds: uploadedImages.map(image => image.imageId),
 
         thumbnailIndex: 0,
