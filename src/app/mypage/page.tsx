@@ -7,6 +7,7 @@ import { ChevronRight, Images, LockKeyhole } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { getMe } from "@/services/authApi";
 import { getNicknamePolicy } from "@/services/userApi";
 import type { MypageArtwork, MypageData, MypageExhibition, MypageProfile } from "@/types/mypage";
@@ -215,14 +216,20 @@ function ArtworkCard({ artwork }: ArtworkCardProps) {
 }
 
 export default function MypagePage() {
+  const { isAuthReady, isAuthenticated } = useRequireAuth();
+  const canFetchProfile = isAuthReady && isAuthenticated;
   const meQuery = useQuery({
     queryKey: ["auth", "me"],
-    queryFn: getMe,
+    queryFn: ({ signal }) => getMe(signal),
+    enabled: canFetchProfile,
   });
   const nicknamePolicyQuery = useQuery({
     queryKey: ["users", "me", "nickname-policy"],
-    queryFn: getNicknamePolicy,
+    queryFn: ({ signal }) => getNicknamePolicy(signal),
+    enabled: canFetchProfile,
   });
+
+  if (!canFetchProfile) return null;
 
   const profile: MypageProfile | null =
     meQuery.data || nicknamePolicyQuery.data

@@ -62,12 +62,12 @@ export default function MyPageProfileSettingsPage() {
   const [isToastOpen, setIsToastOpen] = useState(false);
   const meQuery = useQuery({
     queryKey: ["auth", "me"],
-    queryFn: getMe,
+    queryFn: ({ signal }) => getMe(signal),
     enabled: canFetchProfile,
   });
   const nicknamePolicyQuery = useQuery({
     queryKey: ["users", "me", "nickname-policy"],
-    queryFn: getNicknamePolicy,
+    queryFn: ({ signal }) => getNicknamePolicy(signal),
     enabled: canFetchProfile,
   });
   const isNicknameLimitExceeded =

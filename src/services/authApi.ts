@@ -16,8 +16,8 @@ export function exchangeToken(resultKey: string): Promise<OAuthLoginResult> {
 }
 
 /** 내 정보 조회. */
-export function getMe(): Promise<MeResult> {
-  return apiClient.get<MeResult>("/api/v1/auth/me");
+export function getMe(signal?: AbortSignal): Promise<MeResult> {
+  return apiClient.get<MeResult>("/api/v1/auth/me", undefined, signal);
 }
 
 /** 로그아웃 — 서버가 Redis에서 토큰 무효화. */
