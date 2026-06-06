@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 import Header from "@/components/common/Header";
@@ -14,6 +14,10 @@ import { withdrawMe } from "@/services/userApi";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 type ModalType = "logout" | "withdraw" | null;
+const USER_QUERY_KEYS = [
+  ["auth", "me"],
+  ["users", "me", "nickname-policy"],
+] as const;
 
 const MODAL_CONTENT = {
   logout: {
@@ -32,28 +36,48 @@ const MODAL_CONTENT = {
 
 export default function MyPageSettingsPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { isAuthReady, isAuthenticated } = useRequireAuth();
   const clearAuth = useAuthStore(state => state.clearAuth);
   const [modalType, setModalType] = useState<ModalType>(null);
+  const [logoutErrorMessage, setLogoutErrorMessage] = useState<string | null>(null);
   const modalContent = modalType ? MODAL_CONTENT[modalType] : null;
+
+  const clearUserSession = async () => {
+    await Promise.all(USER_QUERY_KEYS.map(queryKey => queryClient.cancelQueries({ queryKey })));
+    USER_QUERY_KEYS.forEach(queryKey => {
+      queryClient.removeQueries({ queryKey });
+    });
+    clearAuth();
+  };
+
   const logoutMutation = useMutation({
     mutationFn: logout,
-    onSettled: () => {
-      clearAuth();
+    onMutate: () => {
+      setLogoutErrorMessage(null);
+    },
+    onSuccess: async () => {
+      await clearUserSession();
       setModalType(null);
       router.push("/auth");
+    },
+    onError: error => {
+      setLogoutErrorMessage(
+        error instanceof Error ? error.message : "로그아웃에 실패했습니다. 다시 시도해주세요."
+      );
     },
   });
   const withdrawMutation = useMutation({
     mutationFn: withdrawMe,
-    onSuccess: () => {
-      clearAuth();
+    onSuccess: async () => {
+      await clearUserSession();
       setModalType(null);
       router.push("/auth");
     },
   });
 
   const closeModal = () => {
+    setLogoutErrorMessage(null);
     setModalType(null);
   };
 
@@ -93,6 +117,7 @@ export default function MyPageSettingsPage() {
           description={modalContent.description}
           confirmText={modalContent.confirmText}
           tone={modalContent.tone}
+          errorMessage={modalType === "logout" ? logoutErrorMessage : null}
           isConfirmLoading={
             (modalType === "logout" && logoutMutation.isPending) ||
             (modalType === "withdraw" && withdrawMutation.isPending)

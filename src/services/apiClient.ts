@@ -37,6 +37,7 @@ interface RequestOptions {
   body?: unknown;
   /** 쿼리스트링 파라미터. undefined/null 값은 제외된다. */
   query?: Record<string, string | number | undefined | null>;
+  signal?: AbortSignal;
 }
 
 function buildUrl(path: string, query?: RequestOptions["query"]): string {
@@ -87,7 +88,7 @@ async function reissueAccessToken(): Promise<string | null> {
 
 /** 성공 시 ApiEnvelope<T>의 `.data` 반환, 실패 시 ApiError throw. */
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = "GET", body, query } = options;
+  const { method = "GET", body, query, signal } = options;
 
   const headers: Record<string, string> = {};
   const token = getAccessToken();
@@ -101,6 +102,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     headers,
     body: requestBody,
     credentials: "include",
+    signal,
   });
 
   if (response.status === 401 && token && path !== REISSUE_PATH) {
@@ -115,6 +117,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
         },
         body: requestBody,
         credentials: "include",
+        signal,
       });
     } else {
       useAuthStore.getState().clearAuth();
@@ -143,8 +146,8 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 }
 
 export const apiClient = {
-  get: <T>(path: string, query?: RequestOptions["query"]) =>
-    request<T>(path, { method: "GET", query }),
+  get: <T>(path: string, query?: RequestOptions["query"], signal?: AbortSignal) =>
+    request<T>(path, { method: "GET", query, signal }),
   post: <T>(path: string, body?: unknown) => request<T>(path, { method: "POST", body }),
   put: <T>(path: string, body?: unknown) => request<T>(path, { method: "PUT", body }),
   patch: <T>(path: string, body?: unknown) => request<T>(path, { method: "PATCH", body }),

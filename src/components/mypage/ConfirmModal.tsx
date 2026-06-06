@@ -7,6 +7,7 @@ interface ConfirmModalProps {
   confirmText: string;
   tone?: "default" | "danger";
   isConfirmLoading?: boolean;
+  errorMessage?: string | null;
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -18,6 +19,7 @@ export default function ConfirmModal({
   confirmText,
   tone = "default",
   isConfirmLoading = false,
+  errorMessage = null,
   onCancel,
   onConfirm,
 }: ConfirmModalProps) {
@@ -42,6 +44,9 @@ export default function ConfirmModal({
 
           <h2 className="text-headline-1 text-text-primary font-semibold">{title}</h2>
           <p className="text-body-2 text-text-secondary mt-2 whitespace-pre-line">{description}</p>
+          {errorMessage && (
+            <p className="text-body-2 text-error-default mt-3 font-medium">{errorMessage}</p>
+          )}
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-2">
