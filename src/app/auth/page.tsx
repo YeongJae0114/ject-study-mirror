@@ -10,7 +10,11 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleClose = () => {
-    router.push("/");
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
   };
 
   return (
