@@ -1,25 +1,79 @@
-import React, { useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 
 import Image from "next/image";
 
+const ALLOWED_PROFILE_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const MAX_PROFILE_IMAGE_SIZE = 10 * 1024 * 1024;
+
 interface ProfileAvatarInputProps {
+  file?: File | null;
+  error?: string;
   onImageChange?: (file: File | null) => void;
+  onErrorChange?: (message: string | null) => void;
 }
 
-export default function ProfileAvatarInput({ onImageChange }: ProfileAvatarInputProps) {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+function validateProfileImage(file: File) {
+  if (!ALLOWED_PROFILE_IMAGE_TYPES.has(file.type)) {
+    return "프로필 이미지는 JPG, PNG, WEBP 형식만 업로드할 수 있습니다.";
+  }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setImageUrl(url);
-      onImageChange?.(file);
+  if (file.size > MAX_PROFILE_IMAGE_SIZE) {
+    return "프로필 이미지는 10MB 이하만 업로드할 수 있습니다.";
+  }
+
+  return null;
+}
+
+export default function ProfileAvatarInput({
+  file = null,
+  error,
+  onImageChange,
+  onErrorChange,
+}: ProfileAvatarInputProps) {
+  const [imageUrl, setImageUrl] = useState<string | null>(() =>
+    file ? URL.createObjectURL(file) : null
+  );
+  const imageUrlRef = useRef(imageUrl);
+
+  const replaceImageUrl = (nextImageUrl: string | null) => {
+    if (imageUrlRef.current) {
+      URL.revokeObjectURL(imageUrlRef.current);
     }
+
+    imageUrlRef.current = nextImageUrl;
+    setImageUrl(nextImageUrl);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (imageUrlRef.current) {
+        URL.revokeObjectURL(imageUrlRef.current);
+      }
+    };
+  }, []);
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+
+    if (!file) return;
+
+    const validationMessage = validateProfileImage(file);
+    if (validationMessage) {
+      replaceImageUrl(null);
+      onImageChange?.(null);
+      onErrorChange?.(validationMessage);
+      return;
+    }
+
+    replaceImageUrl(URL.createObjectURL(file));
+    onErrorChange?.(null);
+    onImageChange?.(file);
   };
 
   const handleRemove = () => {
-    setImageUrl(null);
+    replaceImageUrl(null);
+    onErrorChange?.(null);
     onImageChange?.(null);
   };
 
@@ -42,7 +96,12 @@ export default function ProfileAvatarInput({ onImageChange }: ProfileAvatarInput
         </div>
 
         <label className="absolute inset-0 cursor-pointer" aria-label="프로필 이미지 변경">
-          <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleFileChange}
+            className="hidden"
+          />
         </label>
       </div>
 
@@ -54,6 +113,12 @@ export default function ProfileAvatarInput({ onImageChange }: ProfileAvatarInput
         >
           이미지 제거
         </button>
+      )}
+
+      {error && (
+        <p className="text-caption font-regular text-error-default text-center" role="alert">
+          {error}
+        </p>
       )}
     </div>
   );

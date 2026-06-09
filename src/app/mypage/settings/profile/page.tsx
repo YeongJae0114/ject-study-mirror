@@ -13,7 +13,7 @@ import { PROFILE_VALIDATION_MESSAGES } from "@/constants/profile";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { ApiError } from "@/services/apiClient";
 import { getMe } from "@/services/authApi";
-import { issueImageUploadUrl, uploadImageToStorage } from "@/services/imageApi";
+import { confirmImageUpload, issueImageUploadUrl, uploadImageToStorage } from "@/services/imageApi";
 import {
   checkNickname,
   getNicknamePolicy,
@@ -128,7 +128,9 @@ export default function MyPageProfileSettingsPage() {
           throw new Error("프로필 이미지 업로드 중 오류가 발생했습니다.");
         }
 
-        profileBody.profileImageUrl = uploadInfo.imageUrl;
+        const confirmedImage = await confirmImageUpload(uploadInfo.imageId);
+
+        profileBody.profileImageUrl = confirmedImage.imageUrl;
       }
 
       return updateProfile(profileBody);
