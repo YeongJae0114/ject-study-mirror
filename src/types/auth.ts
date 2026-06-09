@@ -12,9 +12,10 @@ export type SignupStep = "OAUTH_VERIFIED" | "PROFILE_REQUIRED" | "COMPLETED";
 /** POST /api/v1/auth/token 응답 data */
 export interface OAuthLoginResult {
   loginStatus: LoginStatus;
-  userId: number;
+  userId: number | null;
   registered: boolean;
   signupStep: SignupStep;
+  signupToken: string | null;
   accessToken: string | null; // LOGIN_METHOD_GUIDE 면 null
   guideMessage: string | null; // LOGIN_METHOD_GUIDE 일 때만
   registeredProviders: string[] | null; // LOGIN_METHOD_GUIDE 일 때만
@@ -28,5 +29,6 @@ export interface MeResult {
   bio: string | null;
   profileImageUrl?: string | null;
   role: string;
+  signupStep: SignupStep;
   snsUrl: string | null;
 }

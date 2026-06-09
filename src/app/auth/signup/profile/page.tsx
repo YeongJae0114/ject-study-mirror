@@ -10,12 +10,14 @@ import AuthLayout from "@/components/auth/AuthLayout";
 import AuthTextField from "@/components/auth/AuthTextField";
 import ProfileAvatarInput from "@/components/auth/ProfileAvatarInput";
 import { PROFILE_VALIDATION_MESSAGES } from "@/constants/profile";
+import { useOnboardingGuard } from "@/hooks/useOnboardingGuard";
 import { ApiError } from "@/services/apiClient";
 import { checkNickname } from "@/services/userApi";
 import { useAuthSignupStore } from "@/stores/authSignupStore";
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { canRender } = useOnboardingGuard();
   const { nickname, bio, profileImage, setNickname, setBio, setProfileImage } =
     useAuthSignupStore();
 
@@ -92,6 +94,8 @@ export default function ProfilePage() {
   const handleProfileImageErrorChange = (message: string | null) => {
     setErrors(prev => ({ ...prev, profileImage: message ?? undefined }));
   };
+
+  if (!canRender) return null;
 
   return (
     <AuthLayout

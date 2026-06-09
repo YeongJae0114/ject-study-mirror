@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { ApiError } from "@/services/apiClient";
 import { exchangeToken } from "@/services/authApi";
+import { useAuthSignupStore } from "@/stores/authSignupStore";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 interface Guide {
@@ -16,6 +17,9 @@ interface Guide {
 export default function AuthCallbackPage() {
   const router = useRouter();
   const setAuth = useAuthStore(s => s.setAuth);
+  const clearAuth = useAuthStore(s => s.clearAuth);
+  const resetSignup = useAuthSignupStore(s => s.reset);
+  const setSignupToken = useAuthSignupStore(s => s.setSignupToken);
   const [guide, setGuide] = useState<Guide | null>(null);
   const handled = useRef(false);
 
@@ -33,11 +37,15 @@ export default function AuthCallbackPage() {
       .then(res => {
         switch (res.loginStatus) {
           case "LOGIN_SUCCESS":
-            if (res.accessToken) setAuth({ accessToken: res.accessToken, userId: res.userId });
+            resetSignup();
+            if (res.accessToken && res.userId) {
+              setAuth({ accessToken: res.accessToken, userId: res.userId });
+            }
             router.replace("/");
             break;
           case "SIGNUP_REQUIRED":
-            if (res.accessToken) setAuth({ accessToken: res.accessToken, userId: res.userId });
+            clearAuth();
+            setSignupToken(res.signupToken);
             router.replace("/auth/signup/profile");
             break;
           case "LOGIN_METHOD_GUIDE":
@@ -56,7 +64,7 @@ export default function AuthCallbackPage() {
         const code = err instanceof ApiError ? err.code : "UNKNOWN_ERROR";
         router.replace(`/auth/error?error.code=${encodeURIComponent(code)}`);
       });
-  }, [router, setAuth]);
+  }, [clearAuth, resetSignup, router, setAuth, setSignupToken]);
 
   if (guide) {
     return (
