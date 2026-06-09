@@ -13,6 +13,7 @@ import SizeText from "@/components/archive-detail/SizeText";
 import { useCreateChatRoom } from "@/hooks/useCreateChatRoom";
 import { getArtworkDetail } from "@/services/artworks";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 
 function formatDate(date: string | null) {
   if (!date) return "-";
@@ -32,6 +33,7 @@ export default function ArtDetailPage() {
   const params = useParams<{ id: string }>();
   const artworkId = params.id;
   const createChatRoom = useCreateChatRoom();
+  const { isAuthReady, isAuthenticated } = useRequireAuth("/auth");
   const [inquiryErrorMessage, setInquiryErrorMessage] = useState<string | null>(null);
 
   const query = useQuery({
@@ -55,6 +57,8 @@ export default function ArtDetailPage() {
 
   const handleInquiryClick = () => {
     if (!Number.isFinite(numericArtworkId)) return;
+
+    if (!isAuthReady || !isAuthenticated) return;
 
     setInquiryErrorMessage(null);
     createChatRoom.mutate(

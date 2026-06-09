@@ -12,6 +12,7 @@ import SizeText from "@/components/archive-detail/SizeText";
 import { useCreateChatRoom } from "@/hooks/useCreateChatRoom";
 import { getSpaceDetail } from "@/services/spaces";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 
 function hasText(value?: string | null) {
   return Boolean(value?.trim());
@@ -26,6 +27,7 @@ export default function SpaceDetailPage() {
   const params = useParams<{ id: string }>();
   const spaceId = params.id;
   const createChatRoom = useCreateChatRoom();
+  const { isAuthReady, isAuthenticated } = useRequireAuth("/auth");
   const [inquiryErrorMessage, setInquiryErrorMessage] = useState<string | null>(null);
 
   const query = useQuery({
@@ -50,6 +52,8 @@ export default function SpaceDetailPage() {
 
   const handleInquiryClick = () => {
     if (!Number.isFinite(numericSpaceId)) return;
+
+    if (!isAuthReady || !isAuthenticated) return;
 
     setInquiryErrorMessage(null);
     createChatRoom.mutate(
