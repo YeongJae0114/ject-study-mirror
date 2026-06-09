@@ -16,9 +16,12 @@ import { useAuthSignupStore } from "@/stores/authSignupStore";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { nickname, bio, setNickname, setBio, setProfileImage } = useAuthSignupStore();
+  const { nickname, bio, profileImage, setNickname, setBio, setProfileImage } =
+    useAuthSignupStore();
 
-  const [errors, setErrors] = useState<{ nickname?: string; bio?: string }>({});
+  const [errors, setErrors] = useState<{ nickname?: string; bio?: string; profileImage?: string }>(
+    {}
+  );
   const nicknameCheckMutation = useMutation({
     mutationFn: checkNickname,
     onSuccess: (data, checkedNickname) => {
@@ -86,6 +89,10 @@ export default function ProfilePage() {
     }
   };
 
+  const handleProfileImageErrorChange = (message: string | null) => {
+    setErrors(prev => ({ ...prev, profileImage: message ?? undefined }));
+  };
+
   return (
     <AuthLayout
       title="프로필 설정하기"
@@ -95,7 +102,12 @@ export default function ProfilePage() {
       onBack={handleBack}
     >
       <div className="space-y-3">
-        <ProfileAvatarInput onImageChange={setProfileImage} />
+        <ProfileAvatarInput
+          file={profileImage}
+          error={errors.profileImage}
+          onImageChange={setProfileImage}
+          onErrorChange={handleProfileImageErrorChange}
+        />
 
         <AuthTextField
           label="닉네임 (최대 10자)"

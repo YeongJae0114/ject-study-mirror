@@ -9,7 +9,7 @@ import AuthButton from "@/components/auth/AuthButton";
 import AuthLayout from "@/components/auth/AuthLayout";
 import RoleSelect from "@/components/auth/RoleSelect";
 import { ApiError } from "@/services/apiClient";
-import { issueImageUploadUrl, uploadImageToStorage } from "@/services/imageApi";
+import { confirmImageUpload, issueImageUploadUrl, uploadImageToStorage } from "@/services/imageApi";
 import { completeWelcome } from "@/services/userApi";
 import { useAuthSignupStore } from "@/stores/authSignupStore";
 
@@ -37,6 +37,8 @@ export default function RolePage() {
         if (!uploadResponse.ok) {
           throw new Error("프로필 이미지 업로드 중 오류가 발생했습니다.");
         }
+
+        await confirmImageUpload(uploadInfo.imageId);
 
         profileImageId = uploadInfo.imageId;
       }

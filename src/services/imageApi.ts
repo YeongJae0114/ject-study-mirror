@@ -14,6 +14,14 @@ export interface ImageUploadUrlResponse {
   expiresInSeconds: number;
 }
 
+export interface ImageConfirmResponse {
+  imageId: number;
+  status: "UPLOADED";
+  fileKey: string;
+  imageUrl: string;
+  uploadedAt: string;
+}
+
 export const issueImageUploadUrl = (body: ImageUploadUrlRequest) =>
   apiClient.post<ImageUploadUrlResponse>("/api/v1/images/upload-url", body);
 
@@ -25,3 +33,6 @@ export const uploadImageToStorage = (uploadUrl: string, file: File) =>
     },
     body: file,
   });
+
+export const confirmImageUpload = (imageId: number) =>
+  apiClient.post<ImageConfirmResponse>(`/api/v1/images/${imageId}/confirm`);
