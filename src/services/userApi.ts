@@ -28,6 +28,7 @@ export interface UserProfileUpdateResponse {
 }
 
 export interface WelcomeRequest {
+  signupToken: string;
   nickname: string;
   bio: string;
   role: UserRole;
@@ -40,6 +41,7 @@ export interface WelcomeResponse {
   nickname: string;
   bio: string | null;
   role: string;
+  accessToken: string;
   profileImageUrl?: string | null;
 }
 
