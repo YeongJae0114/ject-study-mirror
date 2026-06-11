@@ -2,7 +2,7 @@
 
 import { Suspense, use, useEffect, useMemo, useRef, useState } from "react";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import Header from "@/components/common/Header";
 import AgreementContentSection from "@/components/exhibition-consent/AgreementContentSection";
@@ -54,15 +54,12 @@ function ConsentPageFallback() {
 
 function ConsentPageContent({ params }: ConsentPageProps) {
   const { exhibitionId } = use(params);
-  const searchParams = useSearchParams();
   const router = useRouter();
   const { isAuthReady, isAuthenticated } = useRequireAuth();
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const id = Number(exhibitionId);
   const isValidId = Number.isFinite(id);
-  const requestedReadOnly = searchParams.get("mode") === "readonly";
-
   const { data, isLoading, error, refetch } = useExhibitionConsent(id);
   const submitMutation = useSubmitExhibitionConsent(id);
   const consentData = data;
@@ -76,10 +73,9 @@ function ConsentPageContent({ params }: ConsentPageProps) {
   const [toastMessage, setToastMessage] = useState("동의서 작성이 완료되었습니다.");
 
   const mode: ConsentMode = useMemo(() => {
-    if (requestedReadOnly) return "readonly";
     if (consentData?.mode === "READONLY" || consentData?.canSubmit === false) return "readonly";
     return "write";
-  }, [consentData?.canSubmit, consentData?.mode, requestedReadOnly]);
+  }, [consentData?.canSubmit, consentData?.mode]);
 
   const isReadOnly = mode === "readonly";
 
