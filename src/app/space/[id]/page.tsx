@@ -11,7 +11,8 @@ import ImageSwiper from "@/components/archive-detail/ImageSwiper";
 import NicknameCard from "@/components/archive-detail/NicknameCard";
 import SizeText from "@/components/archive-detail/SizeText";
 import { useCreateChatRoom } from "@/hooks/useCreateChatRoom";
-import { getSpaceDetail } from "@/services/spaces";
+import { ApiError } from "@/services/apiClient";
+import { getMySpaceDetail, getSpaceDetail } from "@/services/spaces";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
@@ -23,6 +24,10 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "전시 문의를 시작하지 못했습니다.";
 }
 
+function isSpaceNotFound(error: unknown) {
+  return error instanceof ApiError && error.code === "SPACE_NOT_FOUND";
+}
+
 export default function SpaceDetailPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
@@ -32,8 +37,17 @@ export default function SpaceDetailPage() {
   const [inquiryErrorMessage, setInquiryErrorMessage] = useState<string | null>(null);
 
   const query = useQuery({
-    queryKey: ["space-detail", spaceId],
-    queryFn: ({ signal }) => getSpaceDetail(spaceId, signal),
+    queryKey: ["space-detail", spaceId, Boolean(accessToken)],
+    queryFn: async ({ signal }) => {
+      try {
+        return await getSpaceDetail(spaceId, signal);
+      } catch (error) {
+        if (accessToken && isSpaceNotFound(error)) {
+          return getMySpaceDetail(spaceId, signal);
+        }
+        throw error;
+      }
+    },
     enabled: Boolean(spaceId),
   });
 

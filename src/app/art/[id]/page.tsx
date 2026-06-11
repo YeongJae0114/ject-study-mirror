@@ -12,7 +12,8 @@ import NicknameCard from "@/components/archive-detail/NicknameCard";
 import RegionText from "@/components/archive-detail/RegionText";
 import SizeText from "@/components/archive-detail/SizeText";
 import { useCreateChatRoom } from "@/hooks/useCreateChatRoom";
-import { getArtworkDetail } from "@/services/artworks";
+import { ApiError } from "@/services/apiClient";
+import { getArtworkDetail, getMyArtworkDetail } from "@/services/artworks";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
@@ -29,6 +30,10 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "전시 문의를 시작하지 못했습니다.";
 }
 
+function isArtworkNotFound(error: unknown) {
+  return error instanceof ApiError && error.code === "ARTWORK_NOT_FOUND";
+}
+
 export default function ArtDetailPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
@@ -38,8 +43,17 @@ export default function ArtDetailPage() {
   const [inquiryErrorMessage, setInquiryErrorMessage] = useState<string | null>(null);
 
   const query = useQuery({
-    queryKey: ["artwork-detail", artworkId],
-    queryFn: ({ signal }) => getArtworkDetail(artworkId, signal),
+    queryKey: ["artwork-detail", artworkId, Boolean(accessToken)],
+    queryFn: async ({ signal }) => {
+      try {
+        return await getArtworkDetail(artworkId, signal);
+      } catch (error) {
+        if (accessToken && isArtworkNotFound(error)) {
+          return getMyArtworkDetail(artworkId, signal);
+        }
+        throw error;
+      }
+    },
     enabled: Boolean(artworkId),
   });
 
