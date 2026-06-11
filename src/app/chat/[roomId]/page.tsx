@@ -17,6 +17,11 @@ interface ChatRoomPageProps {
   params: Promise<{ roomId: string }>;
 }
 
+function getRoomAccessErrorMessage(error: unknown) {
+  if (error instanceof Error && error.message) return error.message;
+  return "채팅방을 볼 수 없습니다.";
+}
+
 export default function ChatRoomPage({ params }: ChatRoomPageProps) {
   const { roomId } = use(params);
   const id = Number(roomId);
@@ -24,7 +29,7 @@ export default function ChatRoomPage({ params }: ChatRoomPageProps) {
   const { myUserId } = useSession();
 
   // 방 정보: 딥링크/새로고침 대비 상세 조회(useChatRoom) 우선, 없으면 방 목록 캐시 폴백.
-  const { data: roomDetail } = useChatRoom(id);
+  const { data: roomDetail, isError: isRoomError, error: roomError } = useChatRoom(id);
   const { data: roomsData } = useChatRooms();
   const roomListItem = useMemo(
     () => roomsData?.pages.flatMap(page => page.items).find(r => r.id === id),
@@ -48,9 +53,13 @@ export default function ChatRoomPage({ params }: ChatRoomPageProps) {
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
+    isError: isMessagesError,
+    error: messagesError,
+    refetch: refetchMessages,
   } = useMessages(id);
 
-  const { sendMessage, markAsRead, lastError, isConnected } = useChatSocket(id);
+  const canConnectSocket = Boolean(roomDetail || roomListItem);
+  const { sendMessage, markAsRead, lastError, isConnected } = useChatSocket(id, canConnectSocket);
 
   const messages = useMemo(
     () => messagesData?.pages.flatMap(page => page.items) ?? [],
@@ -63,6 +72,24 @@ export default function ChatRoomPage({ params }: ChatRoomPageProps) {
     // markAsRead는 socketRef 기반으로 안정적이라 deps에서 제외.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isConnected]);
+
+  if (!Number.isFinite(id) || isRoomError) {
+    return (
+      <div className="bg-bg-primary flex h-screen flex-col">
+        <ChatHeader title={null} />
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 px-5 text-center">
+          <p className="text-body-1 text-text-primary font-medium">
+            {!Number.isFinite(id)
+              ? "올바르지 않은 채팅방입니다."
+              : getRoomAccessErrorMessage(roomError)}
+          </p>
+          <p className="text-body-2 text-text-secondary">
+            채팅방 참여자만 대화 내용을 볼 수 있습니다.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-bg-primary flex h-screen flex-col">
@@ -82,6 +109,19 @@ export default function ChatRoomPage({ params }: ChatRoomPageProps) {
       {isLoading ? (
         <div className="flex flex-1 items-center justify-center">
           <div className="text-body-1 text-text-secondary">메시지를 불러오는 중...</div>
+        </div>
+      ) : isMessagesError ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 px-5 text-center">
+          <p className="text-body-1 text-text-primary font-medium">
+            {getRoomAccessErrorMessage(messagesError)}
+          </p>
+          <button
+            type="button"
+            onClick={() => void refetchMessages()}
+            className="border-border-primary text-body-2 text-text-primary h-9 rounded-lg border px-4 font-medium"
+          >
+            다시 불러오기
+          </button>
         </div>
       ) : (
         <MessageList

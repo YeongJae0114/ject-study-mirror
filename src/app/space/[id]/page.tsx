@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
+import { ChevronLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 
 import ExpandableText from "@/components/archive-detail/ExpandableText";
@@ -11,8 +12,8 @@ import NicknameCard from "@/components/archive-detail/NicknameCard";
 import SizeText from "@/components/archive-detail/SizeText";
 import { useCreateChatRoom } from "@/hooks/useCreateChatRoom";
 import { getSpaceDetail } from "@/services/spaces";
-import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 function hasText(value?: string | null) {
   return Boolean(value?.trim());
@@ -70,14 +71,14 @@ export default function SpaceDetailPage() {
 
   return (
     <div className="min-h-screen bg-white pb-32">
-      <header className="fixed top-0 right-0 left-0 z-50 flex h-15 w-full min-w-[320px] px-4">
-        <div className="flex items-center">
+      <header className="pointer-events-none fixed top-0 right-0 left-0 z-50 h-15 min-w-[320px]">
+        <div className="mx-auto flex h-full w-full max-w-97.5 items-center px-4">
           <button
             aria-label="뒤로가기"
             onClick={() => router.back()}
-            className="flex cursor-pointer items-center font-bold text-white drop-shadow-md"
+            className="pointer-events-auto -ml-2 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)]"
           >
-            ←
+            <ChevronLeft size={28} strokeWidth={2.5} />
           </button>
         </div>
       </header>

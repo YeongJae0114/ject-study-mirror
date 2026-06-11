@@ -35,6 +35,7 @@ export interface MypageFeedResponse {
 
 export interface MypageArtwork {
   id: string;
+  targetId: number;
   targetType: MypageFeedTargetType;
   imageUrl?: string | null;
   title: string;

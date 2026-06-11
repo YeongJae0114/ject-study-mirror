@@ -16,6 +16,19 @@ export interface CreateSpaceRequest {
   imageIds: number[];
 }
 
+export interface UpdateSpaceRequest {
+  title?: string;
+  spaceType?: string;
+  address?: string;
+  description?: string;
+  caution?: string;
+  widthCm?: number;
+  heightCm?: number;
+  depthCm?: number;
+  isPublic?: boolean;
+  imageIds?: number[];
+}
+
 interface GetSpaceFeedParams {
   size?: number;
   cursor?: string;
@@ -39,4 +52,16 @@ export const getSpaceFeed = (params: GetSpaceFeedParams = {}, signal?: AbortSign
 
 export const getSpaceDetail = (spaceId: string | number, signal?: AbortSignal) => {
   return apiClient.get<SpaceDetail>(`/api/v1/spaces/${spaceId}`, undefined, signal);
+};
+
+export const getMySpaceDetail = (spaceId: string | number, signal?: AbortSignal) => {
+  return apiClient.get<SpaceDetail>(`/api/v1/mypage/spaces/${spaceId}`, undefined, signal);
+};
+
+export const updateSpace = (spaceId: string | number, payload: UpdateSpaceRequest) => {
+  return apiClient.patch<void>(`/api/v1/spaces/${spaceId}`, payload);
+};
+
+export const deleteSpace = (spaceId: string | number) => {
+  return apiClient.delete<void>(`/api/v1/spaces/${spaceId}`);
 };

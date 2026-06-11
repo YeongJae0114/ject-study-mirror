@@ -46,7 +46,7 @@ export interface UseChatSocketResult {
   markAsRead: () => void;
 }
 
-export function useChatSocket(roomId: number): UseChatSocketResult {
+export function useChatSocket(roomId: number, enabled = true): UseChatSocketResult {
   const queryClient = useQueryClient();
   const { accessToken, myUserId } = useSession();
   const socketRef = useRef<ChatRoomSocket | null>(null);
@@ -55,7 +55,7 @@ export function useChatSocket(roomId: number): UseChatSocketResult {
 
   useEffect(() => {
     // 토큰/유저 없으면 연결하지 않는다(WEBSOCKET_UNAUTHORIZED 방지).
-    if (!accessToken || myUserId === null || !Number.isFinite(roomId)) {
+    if (!enabled || !accessToken || myUserId === null || !Number.isFinite(roomId)) {
       return;
     }
 
@@ -86,7 +86,7 @@ export function useChatSocket(roomId: number): UseChatSocketResult {
       void socket.dispose();
     };
     // roomId/인증이 바뀌면 재연결. queryClient는 안정적.
-  }, [roomId, accessToken, myUserId, queryClient]);
+  }, [roomId, enabled, accessToken, myUserId, queryClient]);
 
   return {
     isConnected,

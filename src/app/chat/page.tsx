@@ -7,9 +7,22 @@ import EmptyChat from "@/components/chat/EmptyChat";
 import { CHAT_LIST_TITLE, CHAT_LOADING_MESSAGE } from "@/constants/chat";
 import { useChatRooms } from "@/hooks/useChatRooms";
 
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "채팅 목록을 불러오지 못했습니다.";
+}
+
 export default function ChatListPage() {
   const router = useRouter();
-  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useChatRooms();
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    refetch,
+  } = useChatRooms();
 
   const rooms = data?.pages.flatMap(page => page.items) ?? [];
 
@@ -22,6 +35,17 @@ export default function ChatListPage() {
       {isLoading ? (
         <div className="flex flex-1 items-center justify-center">
           <div className="text-body-1 text-text-secondary">{CHAT_LOADING_MESSAGE}</div>
+        </div>
+      ) : isError ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 px-5 text-center">
+          <p className="text-body-1 text-text-primary font-medium">{getErrorMessage(error)}</p>
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="border-border-primary text-body-2 text-text-primary h-9 rounded-lg border px-4 font-medium"
+          >
+            다시 불러오기
+          </button>
         </div>
       ) : rooms.length === 0 ? (
         <EmptyChat />

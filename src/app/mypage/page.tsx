@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 
 import { useQuery } from "@tanstack/react-query";
-import { ChevronRight, Images, LockKeyhole } from "lucide-react";
+import { ChevronRight, Images } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -61,6 +61,7 @@ function toMypageFeedItem(item: MypageFeedApiItem): MypageArtwork {
   const basePath = item.targetType === "ARTWORK" ? "art" : "space";
   return {
     id: `${item.targetType.toLowerCase()}-${item.id}`,
+    targetId: item.id,
     targetType: item.targetType,
     imageUrl: normalizeImageUrl(item.thumbnailUrl),
     title: item.title,
@@ -231,10 +232,12 @@ function ArtworkCard({ artwork }: ArtworkCardProps) {
           {artwork.isPrivate && (
             <>
               <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[rgba(26,26,30,0.5)] to-transparent" />
-              <LockKeyhole
-                size={20}
-                className="text-text-invert absolute top-3 left-3"
-                strokeWidth={2.2}
+              <Image
+                src="/icon-private-lock.svg"
+                alt=""
+                width={14}
+                height={18}
+                className="absolute top-3 left-3"
               />
             </>
           )}
