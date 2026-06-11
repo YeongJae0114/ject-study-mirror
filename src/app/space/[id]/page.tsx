@@ -15,6 +15,7 @@ import { ApiError } from "@/services/apiClient";
 import { getMySpaceDetail, getSpaceDetail } from "@/services/spaces";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
+import BottomActionButton from "@/components/common/BottomActionButton";
 
 function hasText(value?: string | null) {
   return Boolean(value?.trim());
@@ -157,23 +158,13 @@ export default function SpaceDetailPage() {
             )}
           </div>
 
-          <div className="border-border-primary bg-bg-primary fixed right-0 bottom-0 left-0 z-50 border-t px-5 pt-3 pb-9">
-            {inquiryErrorMessage && (
-              <p
-                role="alert"
-                className="text-caption text-error-default mx-auto mb-2 max-w-[430px]"
-              >
-                {inquiryErrorMessage}
-              </p>
-            )}
-            <button
-              onClick={handleInquiryClick}
-              disabled={createChatRoom.isPending}
-              className="bg-object-primary text-body-1 text-text-invert flex h-12.5 w-full items-center justify-center rounded-lg font-medium disabled:opacity-50"
-            >
-              {createChatRoom.isPending ? "이동 중..." : "전시 문의하기"}
-            </button>
-          </div>
+          <BottomActionButton
+            text="전시 문의하기"
+            loadingText="이동 중..."
+            isPending={createChatRoom.isPending}
+            errorMessage={inquiryErrorMessage}
+            onClick={handleInquiryClick}
+          />
         </>
       )}
     </div>
