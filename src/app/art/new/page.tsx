@@ -218,23 +218,25 @@ export default function ArtCreatePage() {
       </section>
 
       {/* Bottom Button () */}
-      <div className="border-border-primary fixed right-0 bottom-4 left-0 h-24.5 border-t bg-white px-5 py-4">
+      <div className="border-border-primary fixed right-0 bottom-0 left-0 h-24.5 border-t bg-white">
         {submitErrorMessage && (
           <p role="alert" className="text-caption text-error-default mb-2">
             {submitErrorMessage}
           </p>
         )}
-        <button
-          disabled={!isFormValid || isSubmitting}
-          onClick={handleSubmit}
-          className={`text-body-1 h-12.5 w-full rounded-lg font-medium transition-colors ${
-            isFormValid && !isSubmitting
-              ? "bg-object-primary text-text-invert cursor-pointer"
-              : "bg-object-disabled text-text-disabled cursor-not-allowed"
-          }`}
-        >
-          {isSubmitting ? "등록 중..." : "추가하기"}
-        </button>
+        <div className="mobile:w-97.5 mx-auto px-5 py-4">
+          <button
+            disabled={!isFormValid || isSubmitting}
+            onClick={handleSubmit}
+            className={`text-body-1 h-12.5 w-full rounded-lg font-medium transition-colors ${
+              isFormValid && !isSubmitting
+                ? "bg-object-primary text-text-invert cursor-pointer"
+                : "bg-object-disabled text-text-disabled cursor-not-allowed"
+            }`}
+          >
+            {isSubmitting ? "등록 중..." : "추가하기"}
+          </button>
+        </div>
       </div>
     </main>
   );
