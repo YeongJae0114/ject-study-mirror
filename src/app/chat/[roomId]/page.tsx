@@ -10,6 +10,7 @@ import { useChatRoom } from "@/hooks/useChatRoom";
 import { useChatRooms } from "@/hooks/useChatRooms";
 import { useChatSocket } from "@/hooks/useChatSocket";
 import { useMessages } from "@/hooks/useMessages";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { useSession } from "@/services/session";
 
 interface ChatRoomPageProps {
@@ -27,10 +28,12 @@ export default function ChatRoomPage({ params }: ChatRoomPageProps) {
   const id = Number(roomId);
 
   const { myUserId } = useSession();
+  const { isAuthReady, isAuthenticated } = useRequireAuth();
+  const canFetchRoom = isAuthReady && isAuthenticated && Number.isFinite(id);
 
   // 방 정보: 딥링크/새로고침 대비 상세 조회(useChatRoom) 우선, 없으면 방 목록 캐시 폴백.
-  const { data: roomDetail, isError: isRoomError, error: roomError } = useChatRoom(id);
-  const { data: roomsData } = useChatRooms();
+  const { data: roomDetail, isError: isRoomError, error: roomError } = useChatRoom(id, canFetchRoom);
+  const { data: roomsData } = useChatRooms(undefined, canFetchRoom);
   const roomListItem = useMemo(
     () => roomsData?.pages.flatMap(page => page.items).find(r => r.id === id),
     [roomsData, id]
@@ -56,9 +59,9 @@ export default function ChatRoomPage({ params }: ChatRoomPageProps) {
     isError: isMessagesError,
     error: messagesError,
     refetch: refetchMessages,
-  } = useMessages(id);
+  } = useMessages(id, undefined, canFetchRoom);
 
-  const canConnectSocket = Boolean(roomDetail || roomListItem);
+  const canConnectSocket = canFetchRoom && Boolean(roomDetail || roomListItem);
   const { sendMessage, markAsRead, lastError, isConnected } = useChatSocket(id, canConnectSocket);
 
   const messages = useMemo(
@@ -106,7 +109,7 @@ export default function ChatRoomPage({ params }: ChatRoomPageProps) {
         </div>
       )}
 
-      {isLoading ? (
+      {!canFetchRoom || isLoading ? (
         <div className="flex flex-1 items-center justify-center">
           <div className="text-body-1 text-text-secondary">메시지를 불러오는 중...</div>
         </div>

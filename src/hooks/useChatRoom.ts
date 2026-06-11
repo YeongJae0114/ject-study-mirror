@@ -13,11 +13,11 @@ export function chatRoomKey(roomId: number) {
   return ["chat", "room", roomId] as const;
 }
 
-export function useChatRoom(roomId: number) {
+export function useChatRoom(roomId: number, enabled = true) {
   return useQuery<ChatRoom>({
     queryKey: chatRoomKey(roomId),
     queryFn: () => getChatRoom(roomId),
     // 토큰 없으면 401 확정, roomId 유효성도 함께 게이팅.
-    enabled: Boolean(getAccessToken()) && Number.isFinite(roomId),
+    enabled: enabled && Boolean(getAccessToken()) && Number.isFinite(roomId),
   });
 }

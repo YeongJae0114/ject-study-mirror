@@ -8,7 +8,7 @@ import type { ChatRoomListItem, CursorPage } from "@/types/chat";
 
 export const CHAT_ROOMS_KEY = ["chat", "rooms"] as const;
 
-export function useChatRooms(size?: number) {
+export function useChatRooms(size?: number, enabled = true) {
   const { accessToken } = useSession();
 
   return useInfiniteQuery<CursorPage<ChatRoomListItem>>({
@@ -18,6 +18,6 @@ export function useChatRooms(size?: number) {
     getNextPageParam: lastPage =>
       lastPage.hasNext ? (lastPage.nextCursor ?? undefined) : undefined,
     // 토큰이 없으면 401이 뻔하므로 호출하지 않는다.
-    enabled: Boolean(accessToken),
+    enabled: enabled && Boolean(accessToken),
   });
 }

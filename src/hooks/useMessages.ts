@@ -13,7 +13,7 @@ export function messagesKey(roomId: number) {
   return ["chat", "messages", roomId] as const;
 }
 
-export function useMessages(roomId: number, size?: number) {
+export function useMessages(roomId: number, size?: number, enabled = true) {
   const { accessToken } = useSession();
 
   return useInfiniteQuery<CursorPage<Message>>({
@@ -22,6 +22,6 @@ export function useMessages(roomId: number, size?: number) {
     initialPageParam: undefined as string | undefined,
     getNextPageParam: lastPage =>
       lastPage.hasNext ? (lastPage.nextCursor ?? undefined) : undefined,
-    enabled: Boolean(accessToken) && Number.isFinite(roomId),
+    enabled: enabled && Boolean(accessToken) && Number.isFinite(roomId),
   });
 }
