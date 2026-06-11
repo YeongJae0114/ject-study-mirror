@@ -26,6 +26,22 @@ export interface CreateArtworkRequest {
   availableRegions: string[];
 }
 
+export interface UpdateArtworkRequest {
+  title?: string;
+  artworkType?: string;
+  description?: string;
+  caution?: string;
+  sizeType?: "STANDARD" | "CUSTOM";
+  widthCm?: number;
+  heightCm?: number;
+  depthCm?: number;
+  createdDate?: string;
+  isPublic?: boolean;
+  imageIds?: number[];
+  thumbnailIndex?: number;
+  availableRegions?: string[];
+}
+
 interface GetArtworkFeedParams {
   type?: string;
   size?: number;
@@ -51,4 +67,16 @@ export const getArtworkFeed = (params: GetArtworkFeedParams = {}, signal?: Abort
 
 export const getArtworkDetail = (artworkId: string | number, signal?: AbortSignal) => {
   return apiClient.get<ArtworkDetail>(`/api/v1/artworks/${artworkId}`, undefined, signal);
+};
+
+export const getMyArtworkDetail = (artworkId: string | number, signal?: AbortSignal) => {
+  return apiClient.get<ArtworkDetail>(`/api/v1/mypage/artworks/${artworkId}`, undefined, signal);
+};
+
+export const updateArtwork = (artworkId: string | number, payload: UpdateArtworkRequest) => {
+  return apiClient.patch<void>(`/api/v1/artworks/${artworkId}`, payload);
+};
+
+export const deleteArtwork = (artworkId: string | number) => {
+  return apiClient.delete<void>(`/api/v1/artworks/${artworkId}`);
 };

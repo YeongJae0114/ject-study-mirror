@@ -1,16 +1,21 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { Images, LockKeyhole, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Images, MoreVertical, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import Header from "@/components/common/Header";
+import ConfirmModal from "@/components/mypage/ConfirmModal";
+import Toast from "@/components/mypage/Toast";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
+import { deleteArtwork } from "@/services/artworks";
 import { getMe } from "@/services/authApi";
 import { getMypageFeed } from "@/services/mypageApi";
+import { deleteSpace } from "@/services/spaces";
 import type { MypageArtwork, MypageFeedApiItem, MypageFeedResponse } from "@/types/mypage";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
@@ -18,6 +23,7 @@ function toMypageFeedItem(item: MypageFeedApiItem): MypageArtwork {
   const basePath = item.targetType === "ARTWORK" ? "art" : "space";
   return {
     id: `${item.targetType.toLowerCase()}-${item.id}`,
+    targetId: item.id,
     targetType: item.targetType,
     imageUrl: normalizeImageUrl(item.thumbnailUrl),
     title: item.title,
@@ -28,10 +34,26 @@ function toMypageFeedItem(item: MypageFeedApiItem): MypageArtwork {
   };
 }
 
-function FeedCard({ item }: { item: MypageArtwork }) {
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "요청 처리 중 오류가 발생했습니다.";
+}
+
+function FeedCard({
+  item,
+  menuOpen,
+  onMenuToggle,
+  onEdit,
+  onDelete,
+}: {
+  item: MypageArtwork;
+  menuOpen: boolean;
+  onMenuToggle: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
   return (
-    <Link href={item.href} className="block min-w-0">
-      <article className="flex h-55.5 min-w-0 flex-col">
+    <article className="relative flex h-55.5 min-w-0 flex-col">
+      <Link href={item.href} className="block min-w-0">
         <div className="border-border-primary relative h-33.5 overflow-hidden rounded-lg border">
           {item.imageUrl ? (
             <Image
@@ -51,15 +73,32 @@ function FeedCard({ item }: { item: MypageArtwork }) {
           {item.isPrivate && (
             <>
               <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[rgba(26,26,30,0.5)] to-transparent" />
-              <LockKeyhole
-                size={20}
-                className="text-text-invert absolute top-3 left-3"
-                strokeWidth={2.2}
+              <Image
+                src="/icon-private-lock.svg"
+                alt=""
+                width={14}
+                height={18}
+                className="absolute top-3 left-3"
               />
             </>
           )}
-        </div>
 
+          <button
+            type="button"
+            aria-label="피드 메뉴"
+            onClick={event => {
+              event.preventDefault();
+              event.stopPropagation();
+              onMenuToggle();
+            }}
+            className="text-text-invert absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)]"
+          >
+            <MoreVertical size={22} strokeWidth={2.4} />
+          </button>
+        </div>
+      </Link>
+
+      <Link href={item.href} className="block min-w-0">
         <div className="flex w-full flex-col items-start gap-1 pt-2 pr-3.5 pb-3 pl-1">
           <span className="bg-object-primary-light text-text-primary-brand text-caption inline-flex h-5 items-center justify-center rounded px-1.5 py-0.5 font-medium">
             {item.statusLabel}
@@ -69,19 +108,54 @@ function FeedCard({ item }: { item: MypageArtwork }) {
             <p className="text-label text-text-secondary font-regular truncate">{item.type}</p>
           </div>
         </div>
-      </article>
-    </Link>
+      </Link>
+
+      {menuOpen && (
+        <div className="shadow-spread-low absolute top-10 right-3 z-20 w-22 overflow-hidden rounded-lg bg-white">
+          <button
+            type="button"
+            onClick={onEdit}
+            className="hover:bg-bg-primary-darker text-body-2 text-text-primary-brand h-10 w-full px-4 text-left font-medium"
+          >
+            수정
+          </button>
+          <button
+            type="button"
+            onClick={onDelete}
+            className="hover:bg-bg-primary-darker text-body-2 text-text-primary h-10 w-full px-4 text-left font-medium"
+          >
+            삭제
+          </button>
+        </div>
+      )}
+    </article>
   );
 }
 
 export default function MypageFeedPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { isAuthReady, isAuthenticated } = useRequireAuth();
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<MypageArtwork | null>(null);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastOpen, setToastOpen] = useState(false);
   const canFetchMe = isAuthReady && isAuthenticated;
   const meQuery = useQuery({
     queryKey: ["auth", "me"],
     queryFn: ({ signal }) => getMe(signal),
     enabled: canFetchMe,
+  });
+  const deleteMutation = useMutation({
+    mutationFn: (item: MypageArtwork) =>
+      item.targetType === "ARTWORK" ? deleteArtwork(item.targetId) : deleteSpace(item.targetId),
+    onSuccess: () => {
+      setDeleteTarget(null);
+      setOpenMenuId(null);
+      setToastMessage("삭제되었습니다.");
+      setToastOpen(true);
+      void queryClient.invalidateQueries({ queryKey: ["mypage", "feed"] });
+    },
   });
   const feedQuery = useInfiniteQuery<MypageFeedResponse>({
     queryKey: ["mypage", "feed", 20],
@@ -90,6 +164,16 @@ export default function MypageFeedPage() {
     getNextPageParam: lastPage => (lastPage.hasNext ? lastPage.page + 1 : undefined),
     enabled: canFetchMe,
   });
+
+  useEffect(() => {
+    if (!toastOpen) return;
+
+    const timer = window.setTimeout(() => {
+      setToastOpen(false);
+    }, 2000);
+
+    return () => window.clearTimeout(timer);
+  }, [toastOpen]);
 
   if (!isAuthReady || !isAuthenticated) return null;
 
@@ -107,6 +191,24 @@ export default function MypageFeedPage() {
     }
 
     router.push("/auth/signup/profile");
+  };
+
+  const handleEditClick = (item: MypageArtwork) => {
+    setOpenMenuId(null);
+    const path =
+      item.targetType === "ARTWORK" ? `/art/${item.targetId}/edit` : `/space/${item.targetId}/edit`;
+    router.push(path);
+  };
+
+  const handleDeleteClick = (item: MypageArtwork) => {
+    deleteMutation.reset();
+    setOpenMenuId(null);
+    setDeleteTarget(item);
+  };
+
+  const closeDeleteModal = () => {
+    if (deleteMutation.isPending) return;
+    setDeleteTarget(null);
   };
 
   return (
@@ -151,7 +253,14 @@ export default function MypageFeedPage() {
           <>
             <div className="grid grid-cols-2 gap-x-3.5 gap-y-3.5">
               {feedItems.map(item => (
-                <FeedCard key={item.id} item={item} />
+                <FeedCard
+                  key={item.id}
+                  item={item}
+                  menuOpen={openMenuId === item.id}
+                  onMenuToggle={() => setOpenMenuId(prev => (prev === item.id ? null : item.id))}
+                  onEdit={() => handleEditClick(item)}
+                  onDelete={() => handleDeleteClick(item)}
+                />
               ))}
             </div>
             {feedQuery.hasNextPage && (
@@ -171,6 +280,21 @@ export default function MypageFeedPage() {
           </p>
         )}
       </section>
+
+      <ConfirmModal
+        open={Boolean(deleteTarget)}
+        title="피드를 삭제할까요?"
+        description="삭제한 작품/공간은 되돌릴 수 없습니다."
+        confirmText="삭제"
+        tone="danger"
+        isConfirmLoading={deleteMutation.isPending}
+        errorMessage={deleteMutation.error ? getErrorMessage(deleteMutation.error) : null}
+        onCancel={closeDeleteModal}
+        onConfirm={() => {
+          if (deleteTarget) deleteMutation.mutate(deleteTarget);
+        }}
+      />
+      <Toast open={toastOpen} message={toastMessage} />
     </main>
   );
 }
