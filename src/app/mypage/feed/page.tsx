@@ -115,14 +115,14 @@ function FeedCard({
           <button
             type="button"
             onClick={onEdit}
-            className="hover:bg-bg-primary-darker text-body-2 text-text-primary-brand h-10 w-full px-4 text-left font-medium"
+            className="text-body-2 text-text-primary hover:bg-object-primary-light hover:text-text-primary-brand focus-visible:bg-object-primary-light focus-visible:text-text-primary-brand active:bg-object-primary-light h-10 w-full cursor-pointer px-4 text-left font-medium transition-colors outline-none"
           >
             수정
           </button>
           <button
             type="button"
             onClick={onDelete}
-            className="hover:bg-bg-primary-darker text-body-2 text-text-primary h-10 w-full px-4 text-left font-medium"
+            className="text-body-2 text-text-primary hover:bg-error-light hover:text-error-default focus-visible:bg-error-light focus-visible:text-error-default active:bg-error-light h-10 w-full cursor-pointer px-4 text-left font-medium transition-colors outline-none"
           >
             삭제
           </button>
