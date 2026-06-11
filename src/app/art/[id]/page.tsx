@@ -17,6 +17,7 @@ import { getArtworkDetail, getMyArtworkDetail } from "@/services/artworks";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 import BottomActionButton from "@/components/common/BottomActionButton";
+import ArchiveTypeBadge from "@/components/common/ArchiveTypeBadge";
 
 function formatDate(date: string | null) {
   if (!date) return "-";
@@ -121,9 +122,7 @@ export default function ArtDetailPage() {
         <>
           <ImageSwiper images={artworkImages} altPrefix="작품 이미지" />
           <div className="text-text-primary flex flex-col gap-1.5 px-5 py-6">
-            <div className="text-caption bg-object-secondary-light h-6 w-fit min-w-14 rounded-sm px-1.5 py-1 font-medium">
-              {artwork.artworkType}
-            </div>
+            <ArchiveTypeBadge type={artwork.artworkType} />
             <div className="text-title-3 font-semibold">{artwork.title}</div>
 
             <RegionText regions={artwork.availableRegions} />

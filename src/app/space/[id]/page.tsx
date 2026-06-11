@@ -16,6 +16,7 @@ import { getMySpaceDetail, getSpaceDetail } from "@/services/spaces";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 import BottomActionButton from "@/components/common/BottomActionButton";
+import ArchiveTypeBadge from "@/components/common/ArchiveTypeBadge";
 
 function hasText(value?: string | null) {
   return Boolean(value?.trim());
@@ -117,11 +118,7 @@ export default function SpaceDetailPage() {
           <ImageSwiper images={spaceImages} altPrefix="공간 이미지" />
 
           <div className="text-text-primary flex flex-col gap-1.5 px-5 py-6">
-            {hasSpaceType && (
-              <div className="text-caption bg-object-secondary-light h-6 w-fit min-w-14 rounded-sm px-1.5 py-1 font-medium">
-                {space.spaceType}
-              </div>
-            )}
+            {hasSpaceType && <ArchiveTypeBadge type={space.spaceType} />}
             <div className="text-title-3 font-semibold">{space.title}</div>
 
             {hasAddress && (
