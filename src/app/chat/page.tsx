@@ -6,6 +6,7 @@ import ChatListItem from "@/components/chat/ChatListItem";
 import EmptyChat from "@/components/chat/EmptyChat";
 import { CHAT_LIST_TITLE, CHAT_LOADING_MESSAGE } from "@/constants/chat";
 import { useChatRooms } from "@/hooks/useChatRooms";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "채팅 목록을 불러오지 못했습니다.";
@@ -13,6 +14,8 @@ function getErrorMessage(error: unknown) {
 
 export default function ChatListPage() {
   const router = useRouter();
+  const { isAuthReady, isAuthenticated } = useRequireAuth();
+  const canFetchChatRooms = isAuthReady && isAuthenticated;
   const {
     data,
     isLoading,
@@ -22,7 +25,7 @@ export default function ChatListPage() {
     hasNextPage,
     fetchNextPage,
     refetch,
-  } = useChatRooms();
+  } = useChatRooms(undefined, canFetchChatRooms);
 
   const rooms = data?.pages.flatMap(page => page.items) ?? [];
 
@@ -32,7 +35,7 @@ export default function ChatListPage() {
         <h1 className="text-headline-1 text-text-primary font-semibold">{CHAT_LIST_TITLE}</h1>
       </header>
 
-      {isLoading ? (
+      {!canFetchChatRooms || isLoading ? (
         <div className="flex flex-1 items-center justify-center">
           <div className="text-body-1 text-text-secondary">{CHAT_LOADING_MESSAGE}</div>
         </div>
