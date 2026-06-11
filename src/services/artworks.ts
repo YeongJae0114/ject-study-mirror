@@ -9,7 +9,7 @@ export interface CreateArtworkRequest {
   description: string;
   caution?: string;
 
-  sizeType: "STANDARD";
+  sizeType?: "STANDARD" | "CUSTOM";
 
   widthCm?: number;
   heightCm?: number;
@@ -21,9 +21,9 @@ export interface CreateArtworkRequest {
 
   imageIds: number[];
 
-  thumbnailIndex: number;
+  thumbnailIndex?: number;
 
-  availableRegions: string[];
+  availableRegions?: string[];
 }
 
 export interface UpdateArtworkRequest {
