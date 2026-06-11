@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
+import { getMe, reissue } from "@/services/authApi";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 const AUTH_STORAGE_KEY = "refit-auth";
+let restoreAuthPromise: Promise<boolean> | null = null;
 
 interface StoredAuthState {
   accessToken: string | null;
@@ -36,6 +38,31 @@ function getStoredAuthState(): StoredAuthState | null {
   }
 }
 
+function restoreAuthFromRefreshCookie() {
+  if (!restoreAuthPromise) {
+    restoreAuthPromise = (async () => {
+      try {
+        const tokenData = await reissue();
+        if (!tokenData.accessToken) return false;
+
+        useAuthStore.setState({ accessToken: tokenData.accessToken });
+
+        const me = await getMe();
+        useAuthStore.setState({ userId: me.userId });
+
+        return true;
+      } catch {
+        useAuthStore.getState().clearAuth();
+        return false;
+      }
+    })().finally(() => {
+      restoreAuthPromise = null;
+    });
+  }
+
+  return restoreAuthPromise;
+}
+
 export function useRequireAuth(redirectTo = "/auth") {
   const router = useRouter();
   const accessToken = useAuthStore(state => state.accessToken);
@@ -43,20 +70,34 @@ export function useRequireAuth(redirectTo = "/auth") {
   const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+
     const syncStoredAuth = () => {
       const storedAuth = getStoredAuthState();
       const currentAuth = useAuthStore.getState();
 
+      if (currentAuth.accessToken) {
+        setHasStoredAccessToken(false);
+        setIsAuthReady(true);
+        return;
+      }
+
       setHasStoredAccessToken(Boolean(storedAuth?.accessToken));
 
-      if (!currentAuth.accessToken && storedAuth?.accessToken) {
+      if (storedAuth?.accessToken) {
         useAuthStore.setState({
           accessToken: storedAuth.accessToken,
           userId: storedAuth.userId,
         });
+        setIsAuthReady(true);
+        return;
       }
 
-      setIsAuthReady(true);
+      void restoreAuthFromRefreshCookie().finally(() => {
+        if (!cancelled) {
+          setIsAuthReady(true);
+        }
+      });
     };
 
     const unsubscribe = useAuthStore.persist?.onFinishHydration?.(syncStoredAuth);
@@ -68,7 +109,10 @@ export function useRequireAuth(redirectTo = "/auth") {
       useAuthStore.persist?.rehydrate?.();
     }
 
-    return unsubscribe;
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, []);
 
   useEffect(() => {
