@@ -1,6 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { getExhibitionConsent, submitExhibitionConsent } from "@/services/exhibitionConsentApi";
+import {
+  getExhibitionConsent,
+  getReadonlyExhibitionConsent,
+  submitExhibitionConsent,
+} from "@/services/exhibitionConsentApi";
 import { useSession } from "@/services/session";
 import type {
   ExhibitionConsent,
@@ -8,8 +12,8 @@ import type {
   SubmitExhibitionConsentResult,
 } from "@/types/exhibitionConsent";
 
-export function exhibitionConsentKey(exhibitionId: number) {
-  return ["exhibition", "consent", exhibitionId] as const;
+export function exhibitionConsentKey(exhibitionId: number, readonly = false) {
+  return ["exhibition", "consent", exhibitionId, readonly ? "readonly" : "write"] as const;
 }
 
 export function exhibitionStatusListKey() {
@@ -20,12 +24,13 @@ export function exhibitionDetailKey(exhibitionId: number) {
   return ["exhibition", "detail", exhibitionId] as const;
 }
 
-export function useExhibitionConsent(exhibitionId: number) {
+export function useExhibitionConsent(exhibitionId: number, readonly = false) {
   const { accessToken } = useSession();
 
   return useQuery<ExhibitionConsent>({
-    queryKey: exhibitionConsentKey(exhibitionId),
-    queryFn: () => getExhibitionConsent(exhibitionId),
+    queryKey: exhibitionConsentKey(exhibitionId, readonly),
+    queryFn: () =>
+      readonly ? getReadonlyExhibitionConsent(exhibitionId) : getExhibitionConsent(exhibitionId),
     enabled: Boolean(accessToken) && Number.isFinite(exhibitionId),
   });
 }
@@ -36,7 +41,7 @@ export function useSubmitExhibitionConsent(exhibitionId: number) {
   return useMutation<SubmitExhibitionConsentResult, Error, SubmitExhibitionConsentBody>({
     mutationFn: body => submitExhibitionConsent(exhibitionId, body),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: exhibitionConsentKey(exhibitionId) });
+      void queryClient.invalidateQueries({ queryKey: ["exhibition", "consent", exhibitionId] });
       void queryClient.invalidateQueries({ queryKey: exhibitionStatusListKey() });
       void queryClient.invalidateQueries({ queryKey: exhibitionDetailKey(exhibitionId) });
       void queryClient.invalidateQueries({ queryKey: ["profile"] });
