@@ -25,6 +25,14 @@ function formatSignatureDate(value?: string | null) {
   return `${year}.${month}.${day}`;
 }
 
+function formatTodayDate() {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}.${month}.${day}`;
+}
+
 export default function SignatureSection({
   mode,
   signatureDataUrl,
@@ -32,7 +40,7 @@ export default function SignatureSection({
   onSignatureChange,
 }: SignatureSectionProps) {
   const isReadOnly = mode === "readonly";
-  const displayDate = formatSignatureDate(signedAt);
+  const displayDate = isReadOnly ? formatSignatureDate(signedAt) : formatTodayDate();
   const displaySignatureUrl = normalizeImageUrl(signatureDataUrl);
 
   const handleClear = () => {
