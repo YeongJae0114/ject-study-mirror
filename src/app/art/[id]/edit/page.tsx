@@ -3,11 +3,13 @@
 import { useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 
 import DatePicker from "@/components/archive-form/DayPicker";
 import Dropdown from "@/components/archive-form/Dropdown";
+import EditableImageUploader, {
+  type EditableArchiveImage,
+} from "@/components/archive-form/EditableImageUploader";
 import Input from "@/components/archive-form/Input";
 import Label from "@/components/archive-form/Label";
 import RegionSelect from "@/components/archive-form/RegionSelect";
@@ -16,6 +18,7 @@ import Textarea from "@/components/archive-form/Textarea";
 import ToggleButton from "@/components/archive-form/ToggleButton";
 import Header from "@/components/common/Header";
 import { ART_TYPES } from "@/constants/art";
+import { useUploadImage } from "@/hooks/useImageUploader";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { getMyArtworkDetail, updateArtwork } from "@/services/artworks";
 import type { ArtworkDetail } from "@/types/archiveDetail";
@@ -46,9 +49,30 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "작품 수정에 실패했습니다.";
 }
 
+function toEditableImages(artwork: ArtworkDetail): EditableArchiveImage[] {
+  return artwork.imageIds.map((id, index) => ({
+    kind: "existing",
+    id,
+    url: normalizeImageUrl(artwork.imageUrls[index]),
+  }));
+}
+
+function resolveThumbnailIndex(
+  images: EditableArchiveImage[],
+  originalImageIds: number[],
+  originalThumbnailIndex: number | null
+) {
+  const thumbnailImageId = originalImageIds[originalThumbnailIndex ?? 0];
+  const currentThumbnailIndex = images.findIndex(
+    image => image.kind === "existing" && image.id === thumbnailImageId
+  );
+  return currentThumbnailIndex >= 0 ? currentThumbnailIndex : 0;
+}
+
 function ArtEditForm({ artwork, artworkId }: { artwork: ArtworkDetail; artworkId: string }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { mutateAsync: uploadImage } = useUploadImage();
   const [artType, setArtType] = useState(artwork.artworkType ?? "");
   const [title, setTitle] = useState(artwork.title ?? "");
   const [description, setDescription] = useState(artwork.description ?? "");
@@ -59,11 +83,23 @@ function ArtEditForm({ artwork, artworkId }: { artwork: ArtworkDetail; artworkId
   const [height, setHeight] = useState(artwork.heightCm ? String(artwork.heightCm) : "");
   const [notes, setNotes] = useState(artwork.caution ?? "");
   const [isPublic, setIsPublic] = useState(artwork.status === "PUBLISHED");
+  const [images, setImages] = useState<EditableArchiveImage[]>(() => toEditableImages(artwork));
   const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
 
   const updateMutation = useMutation({
-    mutationFn: () =>
-      updateArtwork(artworkId, {
+    mutationFn: async () => {
+      const uploadedImages = await Promise.all(
+        images.filter(image => image.kind === "new").map(image => uploadImage(image.file))
+      );
+      let uploadedImageIndex = 0;
+      const imageIds = images.map(image => {
+        if (image.kind === "existing") {
+          return image.id;
+        }
+        return uploadedImages[uploadedImageIndex++].imageId;
+      });
+
+      return updateArtwork(artworkId, {
         title: title.trim(),
         artworkType: artType,
         description: description.trim(),
@@ -74,10 +110,11 @@ function ArtEditForm({ artwork, artworkId }: { artwork: ArtworkDetail; artworkId
         depthCm: toNullableNumber(depth),
         createdDate: toDateString(date),
         isPublic,
-        imageIds: artwork.imageIds,
-        thumbnailIndex: artwork.thumbnailIndex ?? 0,
+        imageIds,
+        thumbnailIndex: resolveThumbnailIndex(images, artwork.imageIds, artwork.thumbnailIndex),
         availableRegions: selectedRegions,
-      }),
+      });
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["mypage", "feed"] });
       void queryClient.invalidateQueries({ queryKey: ["artwork-detail", artworkId] });
@@ -90,6 +127,7 @@ function ArtEditForm({ artwork, artworkId }: { artwork: ArtworkDetail; artworkId
   });
 
   const isFormValid =
+    images.length > 0 &&
     title.trim() !== "" &&
     artType !== "" &&
     description.trim() !== "" &&
@@ -101,27 +139,7 @@ function ArtEditForm({ artwork, artworkId }: { artwork: ArtworkDetail; artworkId
       <section className="flex flex-col gap-6 px-5 py-6 pb-32">
         <FieldWrapper>
           <Label required>사진</Label>
-          <div className="flex flex-wrap gap-3">
-            {artwork.imageUrls.map((url, index) => {
-              const imageUrl = normalizeImageUrl(url);
-              if (!imageUrl) return null;
-              return (
-                <div
-                  key={`${imageUrl}-${index}`}
-                  className="border-border-primary relative h-18 w-18 overflow-hidden rounded-sm border"
-                >
-                  <Image
-                    src={imageUrl}
-                    alt={`작품 이미지 ${index + 1}`}
-                    fill
-                    sizes="72px"
-                    unoptimized
-                    className="object-cover"
-                  />
-                </div>
-              );
-            })}
-          </div>
+          <EditableImageUploader images={images} onChange={setImages} />
         </FieldWrapper>
 
         <FieldWrapper>

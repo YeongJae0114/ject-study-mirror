@@ -3,11 +3,13 @@
 import { useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 
 import AddressSearch from "@/components/archive-form/AddressSearch";
 import Dropdown from "@/components/archive-form/Dropdown";
+import EditableImageUploader, {
+  type EditableArchiveImage,
+} from "@/components/archive-form/EditableImageUploader";
 import Input from "@/components/archive-form/Input";
 import Label from "@/components/archive-form/Label";
 import SizeInput from "@/components/archive-form/SizeInput";
@@ -15,6 +17,7 @@ import Textarea from "@/components/archive-form/Textarea";
 import ToggleButton from "@/components/archive-form/ToggleButton";
 import Header from "@/components/common/Header";
 import { ART_TYPES } from "@/constants/art";
+import { useUploadImage } from "@/hooks/useImageUploader";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { getMySpaceDetail, updateSpace } from "@/services/spaces";
 import type { SpaceDetail } from "@/types/archiveDetail";
@@ -33,9 +36,18 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "공간 수정에 실패했습니다.";
 }
 
+function toEditableImages(space: SpaceDetail): EditableArchiveImage[] {
+  return space.imageIds.map((id, index) => ({
+    kind: "existing",
+    id,
+    url: normalizeImageUrl(space.imageUrls[index]),
+  }));
+}
+
 function SpaceEditForm({ space, spaceId }: { space: SpaceDetail; spaceId: string }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { mutateAsync: uploadImage } = useUploadImage();
   const [spaceType, setSpaceType] = useState(space.spaceType ?? "");
   const [title, setTitle] = useState(space.title ?? "");
   const [description, setDescription] = useState(space.description ?? "");
@@ -45,11 +57,23 @@ function SpaceEditForm({ space, spaceId }: { space: SpaceDetail; spaceId: string
   const [height, setHeight] = useState(space.heightCm ? String(space.heightCm) : "");
   const [notes, setNotes] = useState(space.caution ?? "");
   const [isPublic, setIsPublic] = useState(space.isPublic);
+  const [images, setImages] = useState<EditableArchiveImage[]>(() => toEditableImages(space));
   const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
 
   const updateMutation = useMutation({
-    mutationFn: () =>
-      updateSpace(spaceId, {
+    mutationFn: async () => {
+      const uploadedImages = await Promise.all(
+        images.filter(image => image.kind === "new").map(image => uploadImage(image.file))
+      );
+      let uploadedImageIndex = 0;
+      const imageIds = images.map(image => {
+        if (image.kind === "existing") {
+          return image.id;
+        }
+        return uploadedImages[uploadedImageIndex++].imageId;
+      });
+
+      return updateSpace(spaceId, {
         title: title.trim(),
         spaceType,
         address: address.trim(),
@@ -59,8 +83,9 @@ function SpaceEditForm({ space, spaceId }: { space: SpaceDetail; spaceId: string
         heightCm: toNullableNumber(height),
         depthCm: toNullableNumber(depth),
         isPublic,
-        imageIds: space.imageIds,
-      }),
+        imageIds,
+      });
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["mypage", "feed"] });
       void queryClient.invalidateQueries({ queryKey: ["space-detail", spaceId] });
@@ -73,6 +98,7 @@ function SpaceEditForm({ space, spaceId }: { space: SpaceDetail; spaceId: string
   });
 
   const isFormValid =
+    images.length > 0 &&
     title.trim() !== "" &&
     spaceType !== "" &&
     address.trim() !== "" &&
@@ -85,27 +111,7 @@ function SpaceEditForm({ space, spaceId }: { space: SpaceDetail; spaceId: string
       <section className="flex flex-col gap-6 px-5 py-6 pb-32">
         <FieldWrapper>
           <Label required>사진</Label>
-          <div className="flex flex-wrap gap-3">
-            {space.imageUrls.map((url, index) => {
-              const imageUrl = normalizeImageUrl(url);
-              if (!imageUrl) return null;
-              return (
-                <div
-                  key={`${imageUrl}-${index}`}
-                  className="border-border-primary relative h-18 w-18 overflow-hidden rounded-sm border"
-                >
-                  <Image
-                    src={imageUrl}
-                    alt={`공간 이미지 ${index + 1}`}
-                    fill
-                    sizes="72px"
-                    unoptimized
-                    className="object-cover"
-                  />
-                </div>
-              );
-            })}
-          </div>
+          <EditableImageUploader images={images} onChange={setImages} />
         </FieldWrapper>
 
         <FieldWrapper>
