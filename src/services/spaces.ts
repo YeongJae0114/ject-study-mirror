@@ -17,16 +17,16 @@ export interface CreateSpaceRequest {
 }
 
 export interface UpdateSpaceRequest {
-  title?: string;
-  spaceType?: string;
-  address?: string;
+  title: string;
+  spaceType: string;
+  address: string;
   description?: string;
   caution?: string;
   widthCm?: number | null;
   heightCm?: number | null;
   depthCm?: number | null;
   isPublic?: boolean;
-  imageIds?: number[];
+  imageIds: number[];
 }
 
 interface GetSpaceFeedParams {
