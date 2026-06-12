@@ -9,11 +9,11 @@ export interface CreateArtworkRequest {
   description: string;
   caution?: string;
 
-  sizeType: "STANDARD";
+  sizeType?: "STANDARD" | "CUSTOM";
 
-  widthCm?: number;
-  heightCm?: number;
-  depthCm?: number;
+  widthCm?: number | null;
+  heightCm?: number | null;
+  depthCm?: number | null;
 
   createdDate?: string;
 
@@ -21,9 +21,9 @@ export interface CreateArtworkRequest {
 
   imageIds: number[];
 
-  thumbnailIndex: number;
+  thumbnailIndex?: number;
 
-  availableRegions: string[];
+  availableRegions?: string[];
 }
 
 export interface UpdateArtworkRequest {
@@ -32,9 +32,9 @@ export interface UpdateArtworkRequest {
   description?: string;
   caution?: string;
   sizeType?: "STANDARD" | "CUSTOM";
-  widthCm?: number;
-  heightCm?: number;
-  depthCm?: number;
+  widthCm?: number | null;
+  heightCm?: number | null;
+  depthCm?: number | null;
   createdDate?: string;
   isPublic?: boolean;
   imageIds?: number[];

@@ -31,6 +31,11 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "작품 등록에 실패했습니다.";
 }
 
+function toNullableNumber(value: string) {
+  const trimmed = value.trim();
+  return trimmed === "" ? null : Number(trimmed);
+}
+
 export default function ArtCreatePage() {
   const router = useRouter();
 
@@ -78,28 +83,19 @@ export default function ArtCreatePage() {
 
     try {
       const uploadedImages = await Promise.all(images.map(image => uploadImage(image.file)));
-
       await createArtworkMutation({
-        title,
+        title: title.trim(),
         artworkType: artType,
-        description,
-        caution: notes,
-
-        sizeType: "STANDARD",
-
-        widthCm: Number(width),
-        heightCm: Number(height),
-        depthCm: Number(depth),
-
-        createdDate: date?.toISOString().split("T")[0],
-
+        description: description.trim(),
+        ...(notes.trim() !== "" ? { caution: notes.trim() } : {}),
+        widthCm: toNullableNumber(width),
+        heightCm: toNullableNumber(height),
+        depthCm: toNullableNumber(depth),
+        ...(date ? { createdDate: date.toISOString().split("T")[0] } : {}),
         isPublic,
-
         imageIds: uploadedImages.map(image => image.imageId),
-
         thumbnailIndex: 0,
-
-        availableRegions: selectedRegions,
+        ...(selectedRegions.length > 0 ? { availableRegions: selectedRegions } : {}),
       });
 
       clearImages();

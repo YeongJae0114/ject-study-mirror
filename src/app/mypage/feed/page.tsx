@@ -53,50 +53,71 @@ function FeedCard({
 }) {
   return (
     <article className="relative flex h-55.5 min-w-0 flex-col">
-      <Link href={item.href} className="block min-w-0">
-        <div className="border-border-primary relative h-33.5 overflow-hidden rounded-lg border">
-          {item.imageUrl ? (
-            <Image
-              src={item.imageUrl}
-              alt=""
-              fill
-              sizes="168px"
-              className="object-cover"
-              unoptimized
-            />
-          ) : (
-            <div className="bg-bg-primary-darker text-text-disabled flex size-full items-center justify-center">
-              <Images size={28} />
-            </div>
-          )}
-
-          {item.isPrivate && (
-            <>
-              <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[rgba(26,26,30,0.5)] to-transparent" />
+      <div className="relative">
+        <Link href={item.href} className="block min-w-0">
+          <div className="border-border-primary relative h-33.5 overflow-hidden rounded-lg border">
+            {item.imageUrl ? (
               <Image
-                src="/icon-private-lock.svg"
+                src={item.imageUrl}
                 alt=""
-                width={14}
-                height={18}
-                className="absolute top-3 left-3"
+                fill
+                sizes="168px"
+                className="object-cover"
+                unoptimized
               />
-            </>
-          )}
+            ) : (
+              <div className="bg-bg-primary-darker text-text-disabled flex size-full items-center justify-center">
+                <Images size={28} />
+              </div>
+            )}
 
-          <button
-            type="button"
-            aria-label="피드 메뉴"
-            onClick={event => {
-              event.preventDefault();
-              event.stopPropagation();
-              onMenuToggle();
-            }}
-            className="text-text-invert absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)]"
-          >
-            <MoreVertical size={22} strokeWidth={2.4} />
-          </button>
-        </div>
-      </Link>
+            {item.isPrivate && (
+              <>
+                <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[rgba(26,26,30,0.5)] to-transparent" />
+                <Image
+                  src="/icon-private-lock.svg"
+                  alt=""
+                  width={14}
+                  height={18}
+                  className="absolute top-3 left-3"
+                />
+              </>
+            )}
+          </div>
+        </Link>
+
+        <button
+          type="button"
+          aria-label="피드 메뉴"
+          onClick={event => {
+            event.preventDefault();
+            event.stopPropagation();
+            onMenuToggle();
+          }}
+          className="text-text-invert absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)]"
+        >
+          <MoreVertical size={22} strokeWidth={2.4} />
+        </button>
+
+        {menuOpen && (
+          <div className="shadow-spread-low absolute top-10 right-2 z-20 w-22 overflow-hidden rounded-lg bg-white">
+            <button
+              type="button"
+              onClick={onEdit}
+              className="text-body-2 text-text-primary hover:bg-object-primary-light hover:text-text-primary-brand focus-visible:bg-object-primary-light focus-visible:text-text-primary-brand active:bg-object-primary-light h-10 w-full cursor-pointer px-4 text-left font-medium transition-colors outline-none"
+            >
+              수정
+            </button>
+            <button
+              type="button"
+              onClick={onDelete}
+              className="text-body-2 text-text-primary hover:bg-error-light hover:text-error-default focus-visible:bg-error-light focus-visible:text-error-default active:bg-error-light h-10 w-full cursor-pointer px-4 text-left font-medium transition-colors outline-none"
+            >
+              삭제
+            </button>
+          </div>
+        )}
+      </div>
 
       <Link href={item.href} className="block min-w-0">
         <div className="flex w-full flex-col items-start gap-1 pt-2 pr-3.5 pb-3 pl-1">
@@ -110,24 +131,6 @@ function FeedCard({
         </div>
       </Link>
 
-      {menuOpen && (
-        <div className="shadow-spread-low absolute top-10 right-3 z-20 w-22 overflow-hidden rounded-lg bg-white">
-          <button
-            type="button"
-            onClick={onEdit}
-            className="text-body-2 text-text-primary hover:bg-object-primary-light hover:text-text-primary-brand focus-visible:bg-object-primary-light focus-visible:text-text-primary-brand active:bg-object-primary-light h-10 w-full cursor-pointer px-4 text-left font-medium transition-colors outline-none"
-          >
-            수정
-          </button>
-          <button
-            type="button"
-            onClick={onDelete}
-            className="text-body-2 text-text-primary hover:bg-error-light hover:text-error-default focus-visible:bg-error-light focus-visible:text-error-default active:bg-error-light h-10 w-full cursor-pointer px-4 text-left font-medium transition-colors outline-none"
-          >
-            삭제
-          </button>
-        </div>
-      )}
     </article>
   );
 }
