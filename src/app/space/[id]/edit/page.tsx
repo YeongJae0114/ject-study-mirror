@@ -59,6 +59,7 @@ function SpaceEditForm({ space, spaceId }: { space: SpaceDetail; spaceId: string
         heightCm: toNullableNumber(height),
         depthCm: toNullableNumber(depth),
         isPublic,
+        imageIds: space.imageIds,
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["mypage", "feed"] });

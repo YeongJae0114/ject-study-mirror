@@ -74,6 +74,8 @@ function ArtEditForm({ artwork, artworkId }: { artwork: ArtworkDetail; artworkId
         depthCm: toNullableNumber(depth),
         createdDate: toDateString(date),
         isPublic,
+        imageIds: artwork.imageIds,
+        thumbnailIndex: artwork.thumbnailIndex ?? 0,
         availableRegions: selectedRegions,
       }),
     onSuccess: () => {

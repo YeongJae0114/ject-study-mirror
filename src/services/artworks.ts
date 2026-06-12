@@ -27,9 +27,9 @@ export interface CreateArtworkRequest {
 }
 
 export interface UpdateArtworkRequest {
-  title?: string;
-  artworkType?: string;
-  description?: string;
+  title: string;
+  artworkType: string;
+  description: string;
   caution?: string;
   sizeType?: "STANDARD" | "CUSTOM";
   widthCm?: number | null;
@@ -37,7 +37,7 @@ export interface UpdateArtworkRequest {
   depthCm?: number | null;
   createdDate?: string;
   isPublic?: boolean;
-  imageIds?: number[];
+  imageIds: number[];
   thumbnailIndex?: number;
   availableRegions?: string[];
 }
