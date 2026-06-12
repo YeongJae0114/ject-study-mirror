@@ -20,6 +20,7 @@ import { ART_TYPES } from "@/constants/art";
 import { useUploadImage } from "@/hooks/useImageUploader";
 import { createSpace } from "@/services/spaces";
 import { useImageStore } from "@/stores/useImageStore";
+import BottomActionButton from "@/components/common/BottomActionButton";
 
 function FieldWrapper({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-2">{children}</div>;
@@ -207,24 +208,14 @@ export default function SpaceCreatePage() {
       </section>
 
       {/* Bottom Button () */}
-      <div className="border-border-primary fixed right-0 bottom-4 left-0 h-24.5 border-t bg-white px-5 py-4">
-        {submitErrorMessage && (
-          <p role="alert" className="text-caption text-error-default mb-2">
-            {submitErrorMessage}
-          </p>
-        )}
-        <button
-          disabled={!isFormValid || isSubmitting}
-          onClick={handleSubmit}
-          className={`text-body-1 h-12.5 w-full rounded-lg font-medium transition-colors ${
-            isFormValid && !isSubmitting
-              ? "bg-object-primary text-text-invert cursor-pointer"
-              : "bg-object-disabled text-text-disabled cursor-not-allowed"
-          }`}
-        >
-          {isSubmitting ? "등록 중..." : "추가하기"}
-        </button>
-      </div>
+      <BottomActionButton
+        text="추가하기"
+        loadingText="등록 중..."
+        isPending={isSubmitting}
+        disabled={!isFormValid}
+        errorMessage={submitErrorMessage}
+        onClick={handleSubmit}
+      />
     </main>
   );
 }

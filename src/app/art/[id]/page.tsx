@@ -16,6 +16,8 @@ import { ApiError } from "@/services/apiClient";
 import { getArtworkDetail, getMyArtworkDetail } from "@/services/artworks";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
+import BottomActionButton from "@/components/common/BottomActionButton";
+import ArchiveTypeBadge from "@/components/common/ArchiveTypeBadge";
 
 function formatDate(date: string | null) {
   if (!date) return "-";
@@ -120,9 +122,7 @@ export default function ArtDetailPage() {
         <>
           <ImageSwiper images={artworkImages} altPrefix="작품 이미지" />
           <div className="text-text-primary flex flex-col gap-1.5 px-5 py-6">
-            <div className="text-caption bg-object-secondary-light h-6 w-fit min-w-14 rounded-sm px-1.5 py-1 font-medium">
-              {artwork.artworkType}
-            </div>
+            <ArchiveTypeBadge type={artwork.artworkType} />
             <div className="text-title-3 font-semibold">{artwork.title}</div>
 
             <RegionText regions={artwork.availableRegions} />
@@ -165,23 +165,13 @@ export default function ArtDetailPage() {
             )}
           </div>
 
-          <div className="border-border-primary bg-bg-primary fixed right-0 bottom-0 left-0 z-50 border-t px-5 pt-3 pb-9">
-            {inquiryErrorMessage && (
-              <p
-                role="alert"
-                className="text-caption text-error-default mx-auto mb-2 max-w-[430px]"
-              >
-                {inquiryErrorMessage}
-              </p>
-            )}
-            <button
-              onClick={handleInquiryClick}
-              disabled={createChatRoom.isPending}
-              className="bg-object-primary text-body-1 text-text-invert flex h-12.5 w-full items-center justify-center rounded-lg font-medium disabled:opacity-50"
-            >
-              {createChatRoom.isPending ? "이동 중..." : "전시 문의하기"}
-            </button>
-          </div>
+          <BottomActionButton
+            text="전시 문의하기"
+            loadingText="이동 중..."
+            isPending={createChatRoom.isPending}
+            errorMessage={inquiryErrorMessage}
+            onClick={handleInquiryClick}
+          />
         </>
       )}
     </div>

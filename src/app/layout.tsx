@@ -38,14 +38,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${pretendard.className} ${alata.variable} h-full antialiased`}>
       {/* <body className="flex min-h-full flex-col"> */}
-      <body className="mobile:w-97.5 mx-auto min-h-screen w-full bg-white">
-        <Providers>{children}</Providers>
-        <Suspense fallback={null}>
-          <ScrollManager />
-        </Suspense>
-        <Navbar />
-        <Script id="clarity" strategy="afterInteractive">
-          {`
+      <body>
+        <div className="mobile:w-97.5 mx-auto min-h-screen w-full bg-white">
+          <Providers>{children}</Providers>
+          <Suspense fallback={null}>
+            <ScrollManager />
+          </Suspense>
+          <Navbar />
+          <Script id="clarity" strategy="afterInteractive">
+            {`
             (function(c,l,a,r,i,t,y){
               c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
               t=l.createElement(r);
@@ -55,7 +56,8 @@ export default function RootLayout({
               y.parentNode.insertBefore(t,y);
             })(window, document, "clarity", "script", "${process.env.NEXT_PUBLIC_CLARITY_ID}");
           `}
-        </Script>
+          </Script>
+        </div>
       </body>
     </html>
   );
