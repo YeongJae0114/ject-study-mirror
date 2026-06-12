@@ -69,11 +69,12 @@ export default function SignatureSection({
       {isReadOnly ? (
         <div className="bg-bg-primary-darker border-border-primary flex h-[152px] items-center justify-center overflow-hidden rounded-lg border">
           {displaySignatureUrl ? (
-            <div
-              role="img"
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={displaySignatureUrl}
+              alt="저장된 서명"
               aria-label="저장된 서명"
-              className="h-full w-full bg-contain bg-center bg-no-repeat"
-              style={{ backgroundImage: `url("${displaySignatureUrl}")` }}
+              className="h-full w-full object-contain"
             />
           ) : (
             <p className="text-body-2 text-text-secondary">저장된 서명이 없습니다.</p>

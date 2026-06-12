@@ -10,9 +10,9 @@ export function getExhibitionConsent(exhibitionId: number): Promise<ExhibitionCo
 }
 
 export function getReadonlyExhibitionConsent(exhibitionId: number): Promise<ExhibitionConsent> {
-  return apiClient.get<ExhibitionConsent>(
-    `/api/v1/exhibitions/${exhibitionId}/consent?mode=readonly`
-  );
+  return apiClient.get<ExhibitionConsent>(`/api/v1/exhibitions/${exhibitionId}/consent`, {
+    mode: "readonly",
+  });
 }
 
 export function submitExhibitionConsent(
