@@ -45,7 +45,7 @@ export default function RootLayout({
             <ScrollManager />
           </Suspense>
           <Navbar />
-          <Script id="clarity" strategy="afterInteractive">
+          <Script id="ms-clarity" strategy="afterInteractive">
             {`
             (function(c,l,a,r,i,t,y){
               c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
