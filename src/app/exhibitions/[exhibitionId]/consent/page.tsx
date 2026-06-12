@@ -75,10 +75,9 @@ function ConsentPageContent({ params }: ConsentPageProps) {
   const [toastMessage, setToastMessage] = useState("동의서 작성이 완료되었습니다.");
 
   const mode: ConsentMode = useMemo(() => {
-    if (readonlyRequested || consentData?.mode === "READONLY" || consentData?.canSubmit === false)
-      return "readonly";
+    if (consentData?.mode === "READONLY" || consentData?.canSubmit === false) return "readonly";
     return "write";
-  }, [consentData?.canSubmit, consentData?.mode, readonlyRequested]);
+  }, [consentData?.canSubmit, consentData?.mode]);
 
   const isReadOnly = mode === "readonly";
 
@@ -99,11 +98,14 @@ function ConsentPageContent({ params }: ConsentPageProps) {
   const activeDraft = draft.exhibitionId === id ? draft : null;
 
   const checkedMap = useMemo(
-    () => ({
-      ...serverCheckedMap,
-      ...(activeDraft?.checkedMap ?? {}),
-    }),
-    [activeDraft?.checkedMap, serverCheckedMap]
+    () =>
+      isReadOnly
+        ? serverCheckedMap
+        : {
+            ...serverCheckedMap,
+            ...(activeDraft?.checkedMap ?? {}),
+          },
+    [activeDraft?.checkedMap, isReadOnly, serverCheckedMap]
   );
 
   const signatureDataUrl = isReadOnly
