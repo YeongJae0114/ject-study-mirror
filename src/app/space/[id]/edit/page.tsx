@@ -24,8 +24,9 @@ function FieldWrapper({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-2">{children}</div>;
 }
 
-function toOptionalNumber(value: string) {
-  return value.trim() === "" ? undefined : Number(value);
+function toNullableNumber(value: string) {
+  const trimmed = value.trim();
+  return trimmed === "" ? null : Number(trimmed);
 }
 
 function getErrorMessage(error: unknown) {
@@ -54,9 +55,9 @@ function SpaceEditForm({ space, spaceId }: { space: SpaceDetail; spaceId: string
         address: address.trim(),
         description: description.trim(),
         caution: notes.trim(),
-        widthCm: toOptionalNumber(width),
-        heightCm: toOptionalNumber(height),
-        depthCm: toOptionalNumber(depth),
+        widthCm: toNullableNumber(width),
+        heightCm: toNullableNumber(height),
+        depthCm: toNullableNumber(depth),
         isPublic,
       }),
     onSuccess: () => {

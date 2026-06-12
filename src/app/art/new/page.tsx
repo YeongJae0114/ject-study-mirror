@@ -30,9 +30,9 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : "작품 등록에 실패했습니다.";
 }
 
-function toOptionalNumber(value: string) {
+function toNullableNumber(value: string) {
   const trimmed = value.trim();
-  return trimmed === "" ? undefined : Number(trimmed);
+  return trimmed === "" ? null : Number(trimmed);
 }
 
 export default function ArtCreatePage() {
@@ -82,18 +82,14 @@ export default function ArtCreatePage() {
 
     try {
       const uploadedImages = await Promise.all(images.map(image => uploadImage(image.file)));
-      const widthCm = toOptionalNumber(width);
-      const heightCm = toOptionalNumber(height);
-      const depthCm = toOptionalNumber(depth);
-
       await createArtworkMutation({
         title: title.trim(),
         artworkType: artType,
         description: description.trim(),
         ...(notes.trim() !== "" ? { caution: notes.trim() } : {}),
-        ...(widthCm !== undefined ? { widthCm } : {}),
-        ...(heightCm !== undefined ? { heightCm } : {}),
-        ...(depthCm !== undefined ? { depthCm } : {}),
+        widthCm: toNullableNumber(width),
+        heightCm: toNullableNumber(height),
+        depthCm: toNullableNumber(depth),
         ...(date ? { createdDate: date.toISOString().split("T")[0] } : {}),
         isPublic,
         imageIds: uploadedImages.map(image => image.imageId),

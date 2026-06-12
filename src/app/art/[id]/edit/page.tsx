@@ -25,8 +25,9 @@ function FieldWrapper({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-2">{children}</div>;
 }
 
-function toOptionalNumber(value: string) {
-  return value.trim() === "" ? undefined : Number(value);
+function toNullableNumber(value: string) {
+  const trimmed = value.trim();
+  return trimmed === "" ? null : Number(trimmed);
 }
 
 function toDate(value: string | null) {
@@ -68,9 +69,9 @@ function ArtEditForm({ artwork, artworkId }: { artwork: ArtworkDetail; artworkId
         description: description.trim(),
         caution: notes.trim(),
         sizeType: artwork.sizeType ?? "STANDARD",
-        widthCm: toOptionalNumber(width),
-        heightCm: toOptionalNumber(height),
-        depthCm: toOptionalNumber(depth),
+        widthCm: toNullableNumber(width),
+        heightCm: toNullableNumber(height),
+        depthCm: toNullableNumber(depth),
         createdDate: toDateString(date),
         isPublic,
         availableRegions: selectedRegions,

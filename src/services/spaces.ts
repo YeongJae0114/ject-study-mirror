@@ -9,9 +9,9 @@ export interface CreateSpaceRequest {
   address: string;
   description: string;
   caution?: string;
-  widthCm?: number;
-  heightCm?: number;
-  depthCm?: number;
+  widthCm?: number | null;
+  heightCm?: number | null;
+  depthCm?: number | null;
   isPublic?: boolean;
   imageIds: number[];
 }
@@ -22,9 +22,9 @@ export interface UpdateSpaceRequest {
   address?: string;
   description?: string;
   caution?: string;
-  widthCm?: number;
-  heightCm?: number;
-  depthCm?: number;
+  widthCm?: number | null;
+  heightCm?: number | null;
+  depthCm?: number | null;
   isPublic?: boolean;
   imageIds?: number[];
 }

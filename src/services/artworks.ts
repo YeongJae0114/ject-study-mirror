@@ -11,9 +11,9 @@ export interface CreateArtworkRequest {
 
   sizeType?: "STANDARD" | "CUSTOM";
 
-  widthCm?: number;
-  heightCm?: number;
-  depthCm?: number;
+  widthCm?: number | null;
+  heightCm?: number | null;
+  depthCm?: number | null;
 
   createdDate?: string;
 
@@ -32,9 +32,9 @@ export interface UpdateArtworkRequest {
   description?: string;
   caution?: string;
   sizeType?: "STANDARD" | "CUSTOM";
-  widthCm?: number;
-  heightCm?: number;
-  depthCm?: number;
+  widthCm?: number | null;
+  heightCm?: number | null;
+  depthCm?: number | null;
   createdDate?: string;
   isPublic?: boolean;
   imageIds?: number[];
