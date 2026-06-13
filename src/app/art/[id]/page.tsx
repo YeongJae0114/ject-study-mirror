@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -13,7 +11,6 @@ import RegionText from "@/components/archive-detail/RegionText";
 import SizeText from "@/components/archive-detail/SizeText";
 import ArchiveTypeBadge from "@/components/common/ArchiveTypeBadge";
 import BottomActionButton from "@/components/common/BottomActionButton";
-import { useCreateChatRoom } from "@/hooks/useCreateChatRoom";
 import { useMyRole } from "@/hooks/useMyRole";
 import { ApiError } from "@/services/apiClient";
 import { getArtworkDetail, getMyArtworkDetail } from "@/services/artworks";
@@ -29,10 +26,6 @@ function hasText(value?: string | null) {
   return Boolean(value?.trim());
 }
 
-function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "전시 문의를 시작하지 못했습니다.";
-}
-
 function isArtworkNotFound(error: unknown) {
   return error instanceof ApiError && error.code === "ARTWORK_NOT_FOUND";
 }
@@ -41,10 +34,8 @@ export default function ArtDetailPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const artworkId = params.id;
-  const createChatRoom = useCreateChatRoom();
   const accessToken = useAuthStore(state => state.accessToken);
   const { role, isLoggedIn } = useMyRole();
-  const [inquiryErrorMessage, setInquiryErrorMessage] = useState<string | null>(null);
 
   // 작품 전시 문의는 공간주(SPACE_PARTNER)만 가능. 크리에이터끼리 문의 차단.
   // 비로그인 시에는 노출하고 클릭 시 로그인 페이지로 유도한다.
@@ -86,14 +77,8 @@ export default function ArtDetailPage() {
       return;
     }
 
-    setInquiryErrorMessage(null);
-    createChatRoom.mutate(
-      { targetType: "ARTWORK", targetId: numericArtworkId },
-      {
-        onSuccess: room => router.push(`/chat/${room.id}`),
-        onError: error => setInquiryErrorMessage(getErrorMessage(error)),
-      }
-    );
+    // 방은 첫 메시지 전송 시 생성된다(lazy). 대기 채팅 화면으로 진입.
+    router.push(`/chat/new?type=ARTWORK&targetId=${numericArtworkId}`);
   };
 
   return (
@@ -171,15 +156,7 @@ export default function ArtDetailPage() {
             )}
           </div>
 
-          {canInquire && (
-            <BottomActionButton
-              text="전시 문의하기"
-              loadingText="이동 중..."
-              isPending={createChatRoom.isPending}
-              errorMessage={inquiryErrorMessage}
-              onClick={handleInquiryClick}
-            />
-          )}
+          {canInquire && <BottomActionButton text="전시 문의하기" onClick={handleInquiryClick} />}
         </>
       )}
     </div>

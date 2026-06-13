@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { CHAT_ROOMS_KEY } from "@/hooks/useChatRooms";
 import { createChatRoom } from "@/services/chatApi";
-import type { ChatContextType, ChatRoom } from "@/types/chat";
+import type { ChatContextType, CreateChatRoomResult } from "@/types/chat";
 
 export interface CreateChatRoomArgs {
   targetType: ChatContextType;
@@ -14,7 +14,7 @@ export interface CreateChatRoomArgs {
 export function useCreateChatRoom() {
   const queryClient = useQueryClient();
 
-  return useMutation<ChatRoom, Error, CreateChatRoomArgs>({
+  return useMutation<CreateChatRoomResult, Error, CreateChatRoomArgs>({
     mutationFn: ({ targetType, targetId }) => createChatRoom(targetType, targetId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });

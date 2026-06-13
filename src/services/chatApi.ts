@@ -7,16 +7,27 @@ import type {
   ChatRoom,
   ChatRoomListItem,
   CreateChatRoomBody,
+  CreateChatRoomResult,
   CursorPage,
   Message,
+  SendFirstMessageBody,
+  SendFirstMessageResult,
 } from "@/types/chat";
 
 const BASE = "/api/v1/chat-rooms";
 
-// 멱등: 동일 (targetType, targetId)면 같은 방 반환(신규 201 / 기존 200).
-export function createChatRoom(targetType: ChatContextType, targetId: number): Promise<ChatRoom> {
+// 멱등: 동일 (targetType, targetId)면 같은 방 반환. 단, lazy 생성 정책상 방이 아직 없으면 id=null.
+export function createChatRoom(
+  targetType: ChatContextType,
+  targetId: number
+): Promise<CreateChatRoomResult> {
   const body: CreateChatRoomBody = { targetType, targetId };
-  return apiClient.post<ChatRoom>(BASE, body);
+  return apiClient.post<CreateChatRoomResult>(BASE, body);
+}
+
+// 첫 메시지는 STOMP가 아니라 REST로 보내며 방을 생성한다(lazy). 응답 chatRoomId로 이후 STOMP 구독.
+export function sendFirstMessage(body: SendFirstMessageBody): Promise<SendFirstMessageResult> {
+  return apiClient.post<SendFirstMessageResult>(`${BASE}/messages`, body);
 }
 
 // 방 목록(커서). 정렬 lastMessageAt DESC NULLS LAST, id DESC. cursor=직전 nextCursor, size 1~50(기본 20).
