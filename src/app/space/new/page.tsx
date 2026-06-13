@@ -55,7 +55,7 @@ export default function SpaceCreatePage() {
 
   const [notes, setNotes] = useState("");
 
-  const [isPublic, setIsPublic] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
 
