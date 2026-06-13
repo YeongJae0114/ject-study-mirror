@@ -11,13 +11,14 @@ import ImageSwiper from "@/components/archive-detail/ImageSwiper";
 import NicknameCard from "@/components/archive-detail/NicknameCard";
 import RegionText from "@/components/archive-detail/RegionText";
 import SizeText from "@/components/archive-detail/SizeText";
+import ArchiveTypeBadge from "@/components/common/ArchiveTypeBadge";
+import BottomActionButton from "@/components/common/BottomActionButton";
 import { useCreateChatRoom } from "@/hooks/useCreateChatRoom";
+import { useMyRole } from "@/hooks/useMyRole";
 import { ApiError } from "@/services/apiClient";
 import { getArtworkDetail, getMyArtworkDetail } from "@/services/artworks";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
-import BottomActionButton from "@/components/common/BottomActionButton";
-import ArchiveTypeBadge from "@/components/common/ArchiveTypeBadge";
 
 function formatDate(date: string | null) {
   if (!date) return "-";
@@ -42,7 +43,12 @@ export default function ArtDetailPage() {
   const artworkId = params.id;
   const createChatRoom = useCreateChatRoom();
   const accessToken = useAuthStore(state => state.accessToken);
+  const { role, isLoggedIn } = useMyRole();
   const [inquiryErrorMessage, setInquiryErrorMessage] = useState<string | null>(null);
+
+  // 작품 전시 문의는 공간주(SPACE_PARTNER)만 가능. 크리에이터끼리 문의 차단.
+  // 비로그인 시에는 노출하고 클릭 시 로그인 페이지로 유도한다.
+  const canInquire = !isLoggedIn || role === "SPACE_PARTNER";
 
   const query = useQuery({
     queryKey: ["artwork-detail", artworkId, Boolean(accessToken)],
@@ -165,13 +171,15 @@ export default function ArtDetailPage() {
             )}
           </div>
 
-          <BottomActionButton
-            text="전시 문의하기"
-            loadingText="이동 중..."
-            isPending={createChatRoom.isPending}
-            errorMessage={inquiryErrorMessage}
-            onClick={handleInquiryClick}
-          />
+          {canInquire && (
+            <BottomActionButton
+              text="전시 문의하기"
+              loadingText="이동 중..."
+              isPending={createChatRoom.isPending}
+              errorMessage={inquiryErrorMessage}
+              onClick={handleInquiryClick}
+            />
+          )}
         </>
       )}
     </div>
