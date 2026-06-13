@@ -32,6 +32,32 @@ export interface ChatRoom {
   createdAt: string;
 }
 
+/**
+ * POST /chat-rooms 응답. 백엔드가 lazy 생성으로 바뀌어 방이 아직 없으면 id=null.
+ * id=null이면 첫 메시지(POST /chat-rooms/messages) 전송 시 방이 생성된다.
+ * context·artist·host는 id 유무와 무관하게 항상 포함되어 대기 화면 렌더에 사용한다.
+ */
+export interface CreateChatRoomResult {
+  id: number | null;
+  context: ChatContext;
+  artist: Participant;
+  host: Participant;
+  lastMessageAt?: string | null;
+  createdAt?: string;
+}
+
+/** 첫 메시지 전송 본문(REST). 방이 없을 때 targetType/targetId로 방을 생성하며 전송. */
+export interface SendFirstMessageBody {
+  targetType: ChatContextType;
+  targetId: number;
+  content: string;
+}
+
+/** 첫 메시지 전송 응답. 생성된 방 id를 chatRoomId로 반환 → 이후 STOMP 구독에 사용. */
+export interface SendFirstMessageResult {
+  chatRoomId: number;
+}
+
 /** 채팅방 목록 item. counterparty=요청자 기준 상대방. lastMessage(항상 null)·unreadCount(항상 0)는 백엔드 미구현(시안 갭). */
 export interface ChatRoomListItem {
   id: number;
