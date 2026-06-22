@@ -137,7 +137,7 @@ export default function Home() {
       {isLoggedIn && (
         <button
           type="button"
-          className="bg-object-primary fixed bottom-24 left-1/2 z-50 flex h-12.5 w-29 translate-x-20 items-center gap-1 rounded-full px-4 text-white"
+          className="bg-object-primary fixed bottom-24 left-1/2 z-50 flex h-12.5 w-29 translate-x-20 cursor-pointer items-center gap-1 rounded-full px-4 text-white"
           onClick={handleRegisterClick}
         >
           <Plus size={20} />
