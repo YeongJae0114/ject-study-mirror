@@ -16,6 +16,9 @@ import {
 } from "@/hooks/usePublicFeeds";
 import type { ArtworkFeedItem, FeedCardItem, SpaceFeedItem } from "@/types/feed";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
+import { useMyRole } from "@/hooks/useMyRole";
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const tabs = [
   { label: "추천", value: "recommend" },
@@ -51,10 +54,13 @@ function toSpaceCard(item: SpaceFeedItem): FeedCardItem {
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("recommend");
+  const router = useRouter();
+
   const artworkRecommendationQuery = useArtworkRecommendation(8);
   const spaceRecommendationQuery = useSpaceRecommendation(8);
   const artworkFeedQuery = useArtworkFeed(20);
   const spaceFeedQuery = useSpaceFeed(20);
+  const { role, isLoggedIn } = useMyRole();
 
   const recommendedArtworks = (artworkRecommendationQuery.data?.items ?? []).map(toArtworkCard);
   const recommendedSpaces = (spaceRecommendationQuery.data?.items ?? []).map(toSpaceCard);
@@ -63,6 +69,13 @@ export default function Home() {
     .map(toArtworkCard);
   const spaceFeed = (spaceFeedQuery.data?.pages ?? []).flatMap(page => page.items).map(toSpaceCard);
 
+  const handleRegisterClick = () => {
+    if (role === "CREATOR") {
+      router.push("/art/new");
+    } else {
+      router.push("/space/new");
+    }
+  };
   return (
     <div className="pb-[calc(5rem+env(safe-area-inset-bottom))]">
       <div className="px-5 py-4">
@@ -119,6 +132,17 @@ export default function Home() {
           onRetry={() => void spaceFeedQuery.refetch()}
           onLoadMore={() => void spaceFeedQuery.fetchNextPage()}
         />
+      )}
+      {/* 작품/공간 등록 버튼 */}
+      {isLoggedIn && (
+        <button
+          type="button"
+          className="bg-object-primary fixed bottom-24 left-1/2 z-50 flex h-12.5 w-29 translate-x-20 cursor-pointer items-center gap-1 rounded-full px-4 text-white"
+          onClick={handleRegisterClick}
+        >
+          <Plus size={20} />
+          <span className="text-body-1 font-medium">작품 등록</span>
+        </button>
       )}
     </div>
   );
