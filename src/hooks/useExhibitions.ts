@@ -20,21 +20,21 @@ export function exhibitionDetailKey(exhibitionId: number) {
   return ["exhibition", "detail", exhibitionId] as const;
 }
 
-export function useExhibitions(filter: ExhibitionStatusFilter, page = 0, size = 20) {
+export function useExhibitions(filter?: ExhibitionStatusFilter, page = 0, size = 20) {
   const { accessToken } = useSession();
 
   return useQuery<ExhibitionListResponse>({
-    queryKey: [...exhibitionStatusListKey(filter), page, size],
+    queryKey: ["exhibitions", filter ?? "ALL", page, size],
     queryFn: () => getMyExhibitions({ filter, page, size }),
     enabled: Boolean(accessToken),
   });
 }
 
-export function useInfiniteExhibitions(filter: ExhibitionStatusFilter, size = 20) {
+export function useInfiniteExhibitions(filter?: ExhibitionStatusFilter, size = 20) {
   const { accessToken } = useSession();
 
   return useInfiniteQuery<ExhibitionListResponse>({
-    queryKey: [...exhibitionStatusListKey(filter), "infinite", size],
+    queryKey: ["exhibitions", filter ?? "ALL", "infinite", size],
     queryFn: ({ pageParam }) => getMyExhibitions({ filter, page: pageParam as number, size }),
     initialPageParam: 0,
     getNextPageParam: lastPage => (lastPage.hasNext ? lastPage.page + 1 : undefined),
