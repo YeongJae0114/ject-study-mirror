@@ -8,7 +8,7 @@ import type {
 } from "@/types/exhibition";
 
 interface GetMyExhibitionsParams {
-  filter: ExhibitionStatusFilter;
+  filter?: ExhibitionStatusFilter;
   page?: number;
   size?: number;
 }

@@ -17,11 +17,11 @@ const FILTER_PARAM_TO_API: Record<ExhibitionStatusFilterParam, ExhibitionStatusF
   canceled: "CANCELED",
 };
 
-function getFilterParam(value: string | null): ExhibitionStatusFilterParam {
+function getFilterParam(value: string | null): ExhibitionStatusFilterParam | undefined {
   if (value === "confirmed" || value === "canceled" || value === "consent-writing") {
     return value;
   }
-  return "consent-writing";
+  return undefined;
 }
 
 function getErrorMessage(error: unknown) {
@@ -33,7 +33,7 @@ function ExhibitionStatusContent() {
   const { isAuthReady, isAuthenticated } = useRequireAuth();
 
   const activeFilter = getFilterParam(searchParams.get("filter"));
-  const query = useExhibitions(FILTER_PARAM_TO_API[activeFilter]);
+  const query = useExhibitions(activeFilter ? FILTER_PARAM_TO_API[activeFilter] : undefined);
   const exhibitions = query.data?.items ?? [];
   const isLoading = !isAuthReady || (isAuthenticated && query.isLoading);
   const errorMessage = query.error ? getErrorMessage(query.error) : null;
@@ -67,7 +67,9 @@ function ExhibitionStatusFallback() {
 export default function ExhibitionStatusPage() {
   return (
     <div className="bg-bg-primary min-h-dvh">
-      <Header title="전시 현황" showBorder={false} />
+      <header className="bg-bg-primary mobile:w-97.5 z-10 flex h-14 w-full items-center justify-between px-5">
+        <h1 className="text-headline-1 text-text-primary font-semibold">전시 현황</h1>
+      </header>
       <Suspense fallback={<ExhibitionStatusFallback />}>
         <ExhibitionStatusContent />
       </Suspense>
