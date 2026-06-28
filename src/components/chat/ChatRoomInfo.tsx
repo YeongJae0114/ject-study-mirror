@@ -11,6 +11,7 @@ import { useCreateProposal } from "@/hooks/useCreateProposal";
 import { getProposalOptions } from "@/services/proposalApi";
 import type { ChatContext, ProposeExhibitionDraft } from "@/types/chat";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
+import { useRouter } from "next/navigation";
 
 interface ChatRoomInfoProps {
   /** 방이 아직 생성되지 않은 대기 화면(/chat/new)에서는 null → 전시 제안 버튼 숨김. */
@@ -19,15 +20,15 @@ interface ChatRoomInfoProps {
 }
 
 export default function ChatRoomInfo({ roomId, context }: ChatRoomInfoProps) {
+  const router = useRouter();
   const [proposeOpen, setProposeOpen] = useState(false);
   const thumbnailUrl = normalizeImageUrl(context.thumbnailUrl);
   const createProposal = useCreateProposal();
   // 방이 생성되기 전에는 전시 제안이 불가하다(제안은 방 컨텍스트에 종속).
-  const canPropose = roomId !== null;
   const optionsQuery = useQuery({
     queryKey: ["proposal", "options", roomId],
     queryFn: () => getProposalOptions(roomId as number),
-    enabled: proposeOpen && canPropose,
+    enabled: proposeOpen,
   });
 
   const proposalOptions = optionsQuery.data;
@@ -72,7 +73,7 @@ export default function ChatRoomInfo({ roomId, context }: ChatRoomInfoProps) {
     const body =
       proposalOptions.contextType === "ARTWORK"
         ? {
-            chatRoomId: roomId,
+            ...(roomId !== null && { chatRoomId: roomId }),
             artworkId: proposalOptions.fixedTarget.id,
             spaceId: draft.targetId,
             exhibitionTitle: draft.title,
@@ -80,7 +81,7 @@ export default function ChatRoomInfo({ roomId, context }: ChatRoomInfoProps) {
             endDate: draft.endDate,
           }
         : {
-            chatRoomId: roomId,
+            ...(roomId !== null && { chatRoomId: roomId }),
             artworkId: draft.targetId,
             spaceId: proposalOptions.fixedTarget.id,
             exhibitionTitle: draft.title,
@@ -88,7 +89,11 @@ export default function ChatRoomInfo({ roomId, context }: ChatRoomInfoProps) {
             endDate: draft.endDate,
           };
 
-    await createProposal.mutateAsync(body);
+    const result = await createProposal.mutateAsync(body);
+
+    if (roomId === null) {
+      router.replace(`/chat/${result.chatRoomId}`);
+    }
   };
 
   return (
@@ -115,30 +120,26 @@ export default function ChatRoomInfo({ roomId, context }: ChatRoomInfoProps) {
         </div>
       </div>
 
-      {canPropose && (
-        <>
-          <button
-            type="button"
-            onClick={() => setProposeOpen(true)}
-            className="bg-object-primary text-label text-text-invert hover:bg-object-primary-hover active:bg-object-primary-pressed shrink-0 rounded-lg px-4 py-2 font-semibold transition-colors"
-          >
-            {CHAT_PROPOSE_EXHIBITION_LABEL}
-          </button>
+      <button
+        type="button"
+        onClick={() => setProposeOpen(true)}
+        className="bg-object-primary text-label text-text-invert hover:bg-object-primary-hover active:bg-object-primary-pressed shrink-0 rounded-lg px-4 py-2 font-semibold transition-colors"
+      >
+        {CHAT_PROPOSE_EXHIBITION_LABEL}
+      </button>
 
-          <ProposeExhibitionSheet
-            open={proposeOpen}
-            onOpenChange={handleOpenChange}
-            contextType={context.type}
-            targetLabel={proposalOptions?.selection.label}
-            targetPlaceholder={proposalOptions?.selection.placeholder}
-            targetOptions={targetOptions}
-            targetMessage={targetMessage}
-            isSubmitting={createProposal.isPending}
-            submitError={submitError}
-            onSubmit={handleSubmit}
-          />
-        </>
-      )}
+      <ProposeExhibitionSheet
+        open={proposeOpen}
+        onOpenChange={handleOpenChange}
+        contextType={context.type}
+        targetLabel={proposalOptions?.selection.label}
+        targetPlaceholder={proposalOptions?.selection.placeholder}
+        targetOptions={targetOptions}
+        targetMessage={targetMessage}
+        isSubmitting={createProposal.isPending}
+        submitError={submitError}
+        onSubmit={handleSubmit}
+      />
     </div>
   );
 }

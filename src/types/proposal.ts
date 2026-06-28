@@ -66,7 +66,7 @@ export interface Proposal {
 
 /** 제안 생성 요청. exhibitionTitle 1~100자, endDate >= startDate. */
 export interface CreateProposalBody {
-  chatRoomId: number;
+  chatRoomId?: number;
   artworkId: number;
   spaceId: number;
   exhibitionTitle: string;
