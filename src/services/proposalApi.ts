@@ -24,8 +24,27 @@ export function getProposal(id: number): Promise<Proposal> {
 }
 
 /** 채팅방 기준 전시 제안 선택 후보 조회. */
-export function getProposalOptions(chatRoomId: number): Promise<ProposalOptions> {
-  return apiClient.get<ProposalOptions>(`${BASE}/options`, { chatRoomId });
+interface GetProposalOptionsParams {
+  chatRoomId?: number;
+  targetType?: "SPACE" | "ARTWORK";
+  targetId?: number;
+}
+
+export function getProposalOptions({
+  chatRoomId,
+  targetType,
+  targetId,
+}: GetProposalOptionsParams): Promise<ProposalOptions> {
+  if (chatRoomId !== undefined) {
+    return apiClient.get(`${BASE}/options`, {
+      chatRoomId,
+    });
+  }
+
+  return apiClient.get(`${BASE}/options`, {
+    targetType,
+    targetId,
+  });
 }
 
 /** 수락(받은 사람만). 합의서 DRAFT 생성 + AGREEMENT_LINK 메시지 발행. */
