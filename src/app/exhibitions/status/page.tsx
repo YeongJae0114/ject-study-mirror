@@ -38,7 +38,7 @@ function ExhibitionStatusContent() {
   const errorMessage = query.error ? getErrorMessage(query.error) : null;
 
   return (
-    <main className="mx-auto min-h-[calc(100dvh-60px)] w-full max-w-97.5 min-w-[320px]">
+    <main className="bg-bg-primary-darker mx-auto min-h-[calc(100dvh-60px)] w-full max-w-97.5 min-w-[320px]">
       <StatusFilterTabs activeFilter={activeFilter} />
       <ExhibitionStatusList
         exhibitions={exhibitions}
@@ -65,7 +65,7 @@ function ExhibitionStatusFallback() {
 
 export default function ExhibitionStatusPage() {
   return (
-    <div className="bg-bg-primary min-h-dvh">
+    <div className="bg-bg-primary-darker min-h-dvh">
       <header className="bg-bg-primary mobile:w-97.5 z-10 flex h-14 w-full items-center justify-between px-5">
         <h1 className="text-headline-1 text-text-primary font-semibold">전시 현황</h1>
       </header>
