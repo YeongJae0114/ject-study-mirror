@@ -7,13 +7,15 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/common/Header";
 import CancelExhibitionDialog from "@/components/exhibition-status/CancelExhibitionDialog";
 import ExhibitionDetailSummary from "@/components/exhibition-status/ExhibitionDetailSummary";
-import ExhibitionInfoSection, {
-  InfoRow,
-} from "@/components/exhibition-status/ExhibitionInfoSection";
+import ExhibitionInfoSection from "@/components/exhibition-status/ExhibitionInfoSection";
 import StickyActionBar from "@/components/exhibition-status/StickyActionBar";
 import Toast from "@/components/mypage/Toast";
 import { useCancelExhibition, useExhibitionDetail } from "@/hooks/useExhibitions";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
+import { useExhibitionConsent } from "@/hooks/useExhibitionConsent";
+import { ExhibitionDetailUserInfo } from "@/components/exhibition-status/ExhibitionDetailUserInfo";
+import { ExhibitionDetailSpaceInfo } from "@/components/exhibition-status/ExhibitionDetailSpaceInfo";
+import { ExhibitionDetailArtInfo } from "@/components/exhibition-status/ExhibitionDetailArtInfo";
 
 interface ExhibitionDetailPageProps {
   params: Promise<{ exhibitionId: string }>;
@@ -46,10 +48,18 @@ export default function ExhibitionDetailPage({ params }: ExhibitionDetailPagePro
   const { isAuthReady, isAuthenticated } = useRequireAuth();
 
   const query = useExhibitionDetail(id);
+  const exhibition = query.data;
+
+  const { data: consentData } = useExhibitionConsent(exhibition?.id);
+
   const cancelMutation = useCancelExhibition(id);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [toastOpen, setToastOpen] = useState(false);
+
+  const isLoading = !isAuthReady || (isAuthenticated && query.isLoading);
+  const detailErrorMessage = query.error ? getErrorMessage(query.error) : null;
+  const cancelErrorMessage = cancelMutation.error ? getErrorMessage(cancelMutation.error) : null;
 
   useEffect(() => {
     return () => {
@@ -69,11 +79,6 @@ export default function ExhibitionDetailPage({ params }: ExhibitionDetailPagePro
       </div>
     );
   }
-
-  const exhibition = query.data;
-  const isLoading = !isAuthReady || (isAuthenticated && query.isLoading);
-  const detailErrorMessage = query.error ? getErrorMessage(query.error) : null;
-  const cancelErrorMessage = cancelMutation.error ? getErrorMessage(cancelMutation.error) : null;
 
   const primaryLabel = exhibition?.actions.canWriteConsent
     ? "동의서 작성"
@@ -111,7 +116,7 @@ export default function ExhibitionDetailPage({ params }: ExhibitionDetailPagePro
 
   return (
     <div className="bg-bg-primary min-h-dvh">
-      <Header title="전시 상세" showBack />
+      <Header title="전시 현황" showBack />
 
       <main className="mx-auto min-h-[calc(100dvh-60px)] w-full max-w-97.5 min-w-[320px] pb-24">
         {isLoading ? (
@@ -133,23 +138,37 @@ export default function ExhibitionDetailPage({ params }: ExhibitionDetailPagePro
           <>
             <ExhibitionDetailSummary exhibition={exhibition} />
 
-            <ExhibitionInfoSection title="공간 정보">
-              <InfoRow label="공간명">{exhibition.space.name}</InfoRow>
-              <InfoRow label="주소">{exhibition.space.address}</InfoRow>
-              <InfoRow label="파트너">{exhibition.space.ownerNickname}</InfoRow>
+            <ExhibitionInfoSection title="전시 공간">
+              <ExhibitionDetailSpaceInfo
+                thumbnail={exhibition.space.thumbnailUrl}
+                name={exhibition.space.name}
+                address={exhibition.space.address}
+              />
+              <ExhibitionDetailUserInfo
+                image={exhibition.space.ownerProfileImageUrl}
+                nickname={exhibition.space.ownerNickname}
+                action={consentData?.spaceOwnerConsentSubmitted}
+              />
             </ExhibitionInfoSection>
 
-            <ExhibitionInfoSection title="작품 정보">
-              <InfoRow label="작품명">{exhibition.artwork.title}</InfoRow>
-              <InfoRow label="유형">{exhibition.artwork.type}</InfoRow>
-              <InfoRow label="크리에이터">{exhibition.creator.nickname}</InfoRow>
+            <ExhibitionInfoSection title="전시 작품">
+              <ExhibitionDetailArtInfo
+                thumbnail={exhibition.artwork.thumbnailUrl}
+                title={exhibition.artwork.title}
+                type={exhibition.artwork.type}
+              />
+              <ExhibitionDetailUserInfo
+                image={exhibition.creator.profileImageUrl}
+                nickname={exhibition.creator.nickname}
+                action={consentData?.creatorConsentSubmitted}
+              />
             </ExhibitionInfoSection>
-
-            {exhibition.cancelReason && (
+            {/* UI 디자인 수정되면서 없어짐. 추후 추가될 수도 있을거 같아 주석 처리 */}
+            {/* {exhibition.cancelReason && (
               <ExhibitionInfoSection title="취소 정보">
-                <InfoRow label="취소 사유">{exhibition.cancelReason}</InfoRow>
+                <UserInfoRow label="취소 사유">{exhibition.cancelReason}</UserInfoRow>
               </ExhibitionInfoSection>
-            )}
+            )} */}
           </>
         ) : (
           <section className="flex min-h-[calc(100dvh-120px)] items-center justify-center px-5 text-center">

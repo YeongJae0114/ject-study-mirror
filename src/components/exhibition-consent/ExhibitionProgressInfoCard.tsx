@@ -2,6 +2,9 @@ import Image from "next/image";
 
 import type { ConsentExhibitionInfo } from "@/types/exhibitionConsent";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
+import { ExhibitionDetailSpaceInfo } from "../exhibition-status/ExhibitionDetailSpaceInfo";
+import { ExhibitionDetailUserInfo } from "../exhibition-status/ExhibitionDetailUserInfo";
+import { ExhibitionDetailArtInfo } from "../exhibition-status/ExhibitionDetailArtInfo";
 
 interface ExhibitionProgressInfoCardProps {
   exhibition: ConsentExhibitionInfo;
@@ -27,69 +30,47 @@ export default function ExhibitionProgressInfoCard({
   exhibition,
 }: ExhibitionProgressInfoCardProps) {
   return (
-    <section className="px-4 pt-5">
-      <h2 className="text-headline-1 text-text-primary font-semibold">전시 진행 정보</h2>
+    <section className="px-5 pt-6">
+      <h2 className="text-heading-2 text-text-primary font-semibold">전시 진행 정보</h2>
 
       <div className="bg-bg-primary-darker mt-4 rounded-lg px-4 py-5">
         <dl className="flex flex-col gap-5">
           <div>
-            <dt className="text-label text-text-primary font-semibold">전시명</dt>
-            <dd className="text-body-2 text-text-secondary mt-1">{exhibition.title}</dd>
+            <dt className="text-body-1 text-text-primary font-semibold">전시명</dt>
+            <dd className="text-body-1 text-text-secondary mt-0.5">{exhibition.title}</dd>
           </div>
 
           <div>
-            <dt className="text-label text-text-primary font-semibold">진행 일정</dt>
-            <dd className="text-body-2 text-text-secondary mt-1">
+            <dt className="text-body-1 text-text-primary font-semibold">진행 일정</dt>
+            <dd className="text-body-1 text-text-secondary mt-0.5">
               {formatDateRange(exhibition.startDate, exhibition.endDate)}
             </dd>
           </div>
 
-          <div>
-            <dt className="text-label text-text-primary font-semibold">공간 파트너</dt>
-            <dd className="mt-3 flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                <InfoAvatar
-                  src={exhibition.spaceOwnerProfileImageUrl}
-                  alt={`${exhibition.spaceOwnerNickname} 프로필`}
-                />
-                <span className="text-body-2 text-text-primary">
-                  {exhibition.spaceOwnerNickname}
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <InfoAvatar
-                  src={exhibition.spaceThumbnailUrl}
-                  alt={`${exhibition.spaceName} 이미지`}
-                />
-                <div>
-                  <p className="text-body-2 text-text-primary">{exhibition.spaceName}</p>
-                  <p className="text-caption text-text-secondary">{exhibition.spaceAddress}</p>
-                </div>
-              </div>
-            </dd>
+          <div className="flex flex-col gap-4">
+            <dt className="text-body-1 text-text-primary font-semibold">공간 파트너</dt>
+            <ExhibitionDetailSpaceInfo
+              thumbnail={exhibition.spaceThumbnailUrl}
+              name={exhibition.spaceName}
+              address={exhibition.spaceAddress}
+            />
+            <ExhibitionDetailUserInfo
+              image={exhibition.spaceOwnerProfileImageUrl}
+              nickname={exhibition.spaceOwnerNickname}
+            />
           </div>
 
-          <div>
-            <dt className="text-label text-text-primary font-semibold">크리에이터</dt>
-            <dd className="mt-3 flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                <InfoAvatar
-                  src={exhibition.creatorProfileImageUrl}
-                  alt={`${exhibition.creatorNickname} 프로필`}
-                />
-                <span className="text-body-2 text-text-primary">{exhibition.creatorNickname}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <InfoAvatar
-                  src={exhibition.artworkThumbnailUrl}
-                  alt={`${exhibition.artworkTitle} 이미지`}
-                />
-                <div>
-                  <p className="text-body-2 text-text-primary">{exhibition.artworkTitle}</p>
-                  <p className="text-caption text-text-secondary">{exhibition.artworkType}</p>
-                </div>
-              </div>
-            </dd>
+          <div className="flex flex-col gap-4">
+            <dt className="text-body-1 text-text-primary font-semibold">크리에이터</dt>
+            <ExhibitionDetailArtInfo
+              thumbnail={exhibition.artworkThumbnailUrl}
+              title={exhibition.artworkTitle}
+              type={exhibition.artworkType}
+            />
+            <ExhibitionDetailUserInfo
+              image={exhibition.creatorProfileImageUrl}
+              nickname={exhibition.creatorNickname}
+            />
           </div>
         </dl>
       </div>

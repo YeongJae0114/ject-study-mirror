@@ -24,14 +24,14 @@ export function exhibitionDetailKey(exhibitionId: number) {
   return ["exhibition", "detail", exhibitionId] as const;
 }
 
-export function useExhibitionConsent(exhibitionId: number, readonly = false) {
+export function useExhibitionConsent(exhibitionId?: number, readonly = false) {
   const { accessToken } = useSession();
 
   return useQuery<ExhibitionConsent>({
-    queryKey: exhibitionConsentKey(exhibitionId, readonly),
+    queryKey: exhibitionConsentKey(exhibitionId ?? -1, readonly),
     queryFn: () =>
-      readonly ? getReadonlyExhibitionConsent(exhibitionId) : getExhibitionConsent(exhibitionId),
-    enabled: Boolean(accessToken) && Number.isFinite(exhibitionId),
+      readonly ? getReadonlyExhibitionConsent(exhibitionId!) : getExhibitionConsent(exhibitionId!),
+    enabled: Boolean(accessToken) && exhibitionId !== undefined,
   });
 }
 

@@ -3,6 +3,7 @@ import { CalendarDays, ChevronRight, FileText, Images, MapPin } from "lucide-rea
 import ExhibitionStatusBadge from "@/components/exhibition-status/ExhibitionStatusBadge";
 import type { ExhibitionListItem } from "@/types/exhibition";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
+import HeadCountBadge from "@/components/exhibition-status/HeadCountBadge";
 
 interface ExhibitionStatusCardProps {
   exhibition: ExhibitionListItem;
@@ -26,9 +27,29 @@ export default function ExhibitionStatusCard({ exhibition, onClick }: Exhibition
     <button
       type="button"
       onClick={onClick}
-      className="border-border-primary bg-bg-primary active:bg-bg-primary-darker flex w-full gap-4 rounded-lg border p-4 text-left transition-colors"
+      className="bg-bg-primary active:bg-bg-primary-darker flex w-full gap-4 rounded-lg p-4 text-left transition-colors"
     >
-      <div className="bg-bg-primary-darker text-text-disabled flex size-22 shrink-0 items-center justify-center overflow-hidden rounded-lg">
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* 전시 상태 */}
+        <div className="mb-1.5 flex items-start gap-1.5">
+          <ExhibitionStatusBadge status={exhibition.status} />
+          {exhibition.status === "CONSENT_WRITING" && <HeadCountBadge exhibition={exhibition} />}
+        </div>
+
+        <div className="flex flex-col gap-0.5">
+          {/* 전시 제목 */}
+          <h2 className="text-headline-1 text-text-primary truncate font-semibold">
+            {exhibition.title}
+          </h2>
+          <div className="text-label text-text-secondary truncate font-medium">
+            {/* 전시 장소 */}
+            <div>{exhibition.spaceName}</div>
+            {/* 전시 날짜 */}
+            <div>{formatPeriod(exhibition.startDate, exhibition.endDate)}</div>
+          </div>
+        </div>
+      </div>
+      <div className="bg-bg-primary-darker text-text-disabled flex size-25 shrink-0 items-center justify-center overflow-hidden rounded-lg">
         {thumbnailUrl ? (
           <div
             aria-hidden="true"
@@ -37,35 +58,6 @@ export default function ExhibitionStatusCard({ exhibition, onClick }: Exhibition
           />
         ) : (
           <Images size={26} />
-        )}
-      </div>
-
-      <div className="flex min-w-0 flex-1 flex-col">
-        <div className="mb-2 flex items-start justify-between gap-2">
-          <ExhibitionStatusBadge status={exhibition.status} />
-          <ChevronRight size={18} className="text-text-disabled mt-0.5 shrink-0" />
-        </div>
-
-        <h2 className="text-body-1 text-text-primary truncate font-semibold">{exhibition.title}</h2>
-
-        <div className="text-label text-text-secondary mt-2 flex flex-col gap-1.5">
-          <p className="flex min-w-0 items-center gap-1.5">
-            <CalendarDays size={14} className="shrink-0" />
-            <span className="truncate">
-              {formatPeriod(exhibition.startDate, exhibition.endDate)}
-            </span>
-          </p>
-          <p className="flex min-w-0 items-center gap-1.5">
-            <MapPin size={14} className="shrink-0" />
-            <span className="truncate">{exhibition.spaceName}</span>
-          </p>
-        </div>
-
-        {(exhibition.canWriteConsent || exhibition.canViewConsent) && (
-          <div className="text-caption text-text-primary-brand mt-3 flex items-center gap-1 font-medium">
-            <FileText size={14} />
-            {exhibition.canWriteConsent ? "동의서 작성 필요" : "동의서 확인 가능"}
-          </div>
         )}
       </div>
     </button>

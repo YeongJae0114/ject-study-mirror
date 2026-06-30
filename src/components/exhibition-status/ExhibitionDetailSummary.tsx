@@ -1,7 +1,7 @@
 import { CalendarDays, Images, MapPin } from "lucide-react";
 
 import ExhibitionStatusBadge from "@/components/exhibition-status/ExhibitionStatusBadge";
-import type { ExhibitionDetail } from "@/types/exhibition";
+import type { ExhibitionDetail, ExhibitionStatus } from "@/types/exhibition";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 
 interface ExhibitionDetailSummaryProps {
@@ -13,39 +13,43 @@ function formatDate(value: string) {
   if (!year || !month || !day) return value;
   return `${year}.${month}.${day}`;
 }
+const STATUS_INFO: Record<ExhibitionStatus, { label: string; color: string }> = {
+  CONSENT_WRITING: {
+    label: "동의서 작성 중",
+    color: "text-text-secondary",
+  },
+  SCHEDULED: {
+    label: "전시 예정",
+    color: "text-text-tertiary",
+  },
+  ONGOING: {
+    label: "전시 중",
+    color: "text-text-primary-brand",
+  },
+  COMPLETED: {
+    label: "전시 완료",
+    color: "text-text-secondary",
+  },
+  CANCELED: {
+    label: "전시 취소",
+    color: "text-text-secondary",
+  },
+};
 
 export default function ExhibitionDetailSummary({ exhibition }: ExhibitionDetailSummaryProps) {
-  const artworkThumbnailUrl = normalizeImageUrl(exhibition.artwork.thumbnailUrl);
-
   return (
-    <section className="border-border-primary border-b px-5 py-5">
-      <div className="bg-bg-primary-darker text-text-disabled flex aspect-4/3 w-full items-center justify-center overflow-hidden rounded-lg">
-        {artworkThumbnailUrl ? (
-          <div
-            aria-hidden="true"
-            className="h-full w-full bg-cover bg-center"
-            style={{ backgroundImage: `url("${artworkThumbnailUrl}")` }}
-          />
-        ) : (
-          <Images size={34} />
-        )}
-      </div>
-
-      <div className="mt-5">
-        <ExhibitionStatusBadge status={exhibition.status} />
-        <h1 className="text-heading-1 text-text-primary mt-2 font-semibold">{exhibition.title}</h1>
-
-        <div className="text-body-2 text-text-secondary mt-4 flex flex-col gap-2">
-          <p className="flex items-center gap-2">
-            <CalendarDays size={16} className="shrink-0" />
-            <span>
+    <section className="px-5">
+      <div className="mt-6">
+        <div className="flex flex-col gap-1">
+          <p className={`text-headline-1 font-semibold ${STATUS_INFO[exhibition.status].color}`}>
+            {STATUS_INFO[exhibition.status].label}
+          </p>
+          <h1 className="text-title-3 text-text-primary font-semibold">{exhibition.title}</h1>
+          <div className="text-headline-1 font-regular text-text-secondary flex flex-col gap-2">
+            <div>
               {formatDate(exhibition.startDate)} - {formatDate(exhibition.endDate)}
-            </span>
-          </p>
-          <p className="flex min-w-0 items-center gap-2">
-            <MapPin size={16} className="shrink-0" />
-            <span className="truncate">{exhibition.space.name}</span>
-          </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

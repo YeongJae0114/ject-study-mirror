@@ -23,7 +23,7 @@ export function getExhibitionStatusLabel(status: ExhibitionStatus) {
 export default function ExhibitionStatusBadge({ status }: { status: ExhibitionStatus }) {
   return (
     <span
-      className={`text-caption inline-flex h-5 w-fit items-center rounded px-1.5 font-medium ${STATUS_STYLE[status]}`}
+      className={`text-caption inline-flex h-6 w-fit items-center rounded px-1.5 font-medium ${STATUS_STYLE[status]}`}
     >
       {STATUS_LABEL[status]}
     </span>

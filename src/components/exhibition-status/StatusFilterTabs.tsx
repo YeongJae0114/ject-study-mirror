@@ -19,7 +19,7 @@ interface StatusFilterTabsProps {
 
 export default function StatusFilterTabs({ activeFilter }: StatusFilterTabsProps) {
   return (
-    <div className="border-border-primary bg-bg-primary sticky top-0 z-10 border-b px-5 pb-3">
+    <div className="border-border-primary bg-bg-primary-darker sticky top-0 z-10 border-b px-5 pb-3">
       <div className="flex items-center gap-2">
         {TABS.map(tab => {
           const active = tab.param === activeFilter;
