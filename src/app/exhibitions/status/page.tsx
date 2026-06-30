@@ -66,7 +66,7 @@ function ExhibitionStatusFallback() {
 export default function ExhibitionStatusPage() {
   return (
     <div className="bg-bg-primary-darker min-h-dvh">
-      <header className="bg-bg-primary mobile:w-97.5 z-10 flex h-14 w-full items-center justify-between px-5">
+      <header className="bg-bg-primary-darker mobile:w-97.5 z-10 flex h-14 w-full items-center justify-between px-5">
         <h1 className="text-headline-1 text-text-primary font-semibold">전시 현황</h1>
       </header>
       <Suspense fallback={<ExhibitionStatusFallback />}>
