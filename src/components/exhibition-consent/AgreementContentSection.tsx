@@ -15,11 +15,11 @@ export default function AgreementContentSection({
   onCheckedChange,
 }: AgreementContentSectionProps) {
   return (
-    <section className="border-border-primary mt-5 border-t px-4 pt-5">
-      <h2 className="text-headline-1 text-text-primary font-semibold">동의서 내용</h2>
+    <section className="border-border-primary mt-5 border-t px-5 pt-6">
+      <h2 className="text-heading-2 text-text-primary font-semibold">동의서 내용</h2>
 
       {agreements.length > 0 ? (
-        <div className="mt-4 flex flex-col gap-5">
+        <div className="mt-4 flex flex-col gap-6">
           {agreements.map(agreement => (
             <AgreementCheckItem
               key={agreement.id}

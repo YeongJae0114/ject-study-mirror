@@ -26,13 +26,13 @@ export default function AgreementCheckItem({
           onChange={event => onCheckedChange(agreement.id, event.target.checked)}
           className="accent-object-primary h-4 w-4 disabled:cursor-not-allowed"
         />
-        <span className="text-body-2 text-text-primary font-medium">
+        <span className="text-body-1 text-text-primary font-medium">
           {agreement.title}
-          {agreement.required && <span className="text-text-primary-brand ml-1">(필수)</span>}
+          {agreement.required && <span className="text-object-primary ml-0.5">(필수)</span>}
         </span>
       </label>
 
-      <div className="bg-bg-primary-darker text-caption text-text-secondary max-h-[112px] overflow-y-auto rounded-lg px-4 py-3 whitespace-pre-line">
+      <div className="bg-object-gray text-label text-text-secondary max-h-33 overflow-y-auto rounded-lg px-4 py-3 whitespace-pre-line">
         {agreement.content}
       </div>
     </article>

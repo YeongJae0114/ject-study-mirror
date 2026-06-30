@@ -48,10 +48,10 @@ export default function SignatureSection({
   };
 
   return (
-    <section className="mt-7 px-4 pb-28">
+    <section className="mt-7 px-5 pb-28">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-headline-1 text-text-primary font-semibold">
-          서명하기 <span className="text-text-primary-brand">(필수)</span>
+        <h2 className="text-heading-2 text-text-primary font-semibold">
+          서명하기 <span className="text-object-primary text-body-1 font-medium">(필수)</span>
         </h2>
 
         {!isReadOnly && signatureDataUrl && (
@@ -84,7 +84,7 @@ export default function SignatureSection({
         <SignaturePad value={signatureDataUrl} onChange={onSignatureChange} />
       )}
 
-      <div className="text-label text-text-primary mt-3 text-right">
+      <div className="text-body-1 text-text-primary mt-6 text-right font-medium">
         {displayDate || "YYYY.MM.DD"}
       </div>
     </section>
