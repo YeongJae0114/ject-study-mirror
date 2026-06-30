@@ -15,22 +15,30 @@ import { useRouter } from "next/navigation";
 
 interface ChatRoomInfoProps {
   /** 방이 아직 생성되지 않은 대기 화면(/chat/new)에서는 null → 전시 제안 버튼 숨김. */
-  roomId: number | null;
+  roomId?: number | null;
   context: ChatContext;
+  targetType?: "SPACE" | "ARTWORK";
+  targetId?: number;
 }
 
-export default function ChatRoomInfo({ roomId, context }: ChatRoomInfoProps) {
+export default function ChatRoomInfo({ roomId, context, targetType, targetId }: ChatRoomInfoProps) {
   const router = useRouter();
   const [proposeOpen, setProposeOpen] = useState(false);
   const thumbnailUrl = normalizeImageUrl(context.thumbnailUrl);
   const createProposal = useCreateProposal();
+
   // 방이 생성되기 전에는 전시 제안이 불가하다(제안은 방 컨텍스트에 종속).
   const optionsQuery = useQuery({
-    queryKey: ["proposal", "options", roomId],
-    queryFn: () => getProposalOptions(roomId as number),
-    enabled: proposeOpen,
+    queryKey: ["proposal", "options", roomId, targetType, targetId],
+    queryFn: () =>
+      getProposalOptions({
+        chatRoomId: roomId ?? undefined,
+        targetType: roomId === null ? targetType : undefined,
+        targetId: roomId === null ? targetId : undefined,
+      }),
+    enabled:
+      proposeOpen && (roomId !== null || (targetType !== undefined && targetId !== undefined)),
   });
-
   const proposalOptions = optionsQuery.data;
   const targetOptions =
     proposalOptions?.selection.items.map(item => {
@@ -68,8 +76,6 @@ export default function ChatRoomInfo({ roomId, context }: ChatRoomInfoProps) {
   const handleSubmit = async (draft: ProposeExhibitionDraft) => {
     if (!proposalOptions) return;
 
-    if (roomId === null) return;
-
     const body =
       proposalOptions.contextType === "ARTWORK"
         ? {
@@ -91,9 +97,7 @@ export default function ChatRoomInfo({ roomId, context }: ChatRoomInfoProps) {
 
     const result = await createProposal.mutateAsync(body);
 
-    if (roomId === null) {
-      router.replace(`/chat/${result.chatRoomId}`);
-    }
+    router.replace(`/chat/${result.chatRoomId}`);
   };
 
   return (

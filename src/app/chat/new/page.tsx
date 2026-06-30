@@ -122,7 +122,12 @@ function NewChatContent() {
     <div className="bg-bg-primary flex h-screen flex-col">
       <ChatHeader title={counterpartyNickname} />
 
-      <ChatRoomInfo roomId={null} context={pendingRoom.context} />
+      <ChatRoomInfo
+        roomId={null}
+        context={pendingRoom.context}
+        targetType={targetType}
+        targetId={targetId}
+      />
 
       {sendError && (
         <div
