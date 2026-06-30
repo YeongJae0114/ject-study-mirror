@@ -4,7 +4,6 @@ import { Suspense } from "react";
 
 import { useSearchParams } from "next/navigation";
 
-import Header from "@/components/common/Header";
 import ExhibitionStatusList from "@/components/exhibition-status/ExhibitionStatusList";
 import StatusFilterTabs from "@/components/exhibition-status/StatusFilterTabs";
 import { useExhibitions } from "@/hooks/useExhibitions";

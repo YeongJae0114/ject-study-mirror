@@ -52,7 +52,6 @@ export default function ExhibitionDetailPage({ params }: ExhibitionDetailPagePro
 
   const { data: consentData } = useExhibitionConsent(exhibition?.id);
 
-  console.log(consentData);
   const cancelMutation = useCancelExhibition(id);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");

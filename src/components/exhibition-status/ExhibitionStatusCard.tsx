@@ -3,6 +3,7 @@ import { CalendarDays, ChevronRight, FileText, Images, MapPin } from "lucide-rea
 import ExhibitionStatusBadge from "@/components/exhibition-status/ExhibitionStatusBadge";
 import type { ExhibitionListItem } from "@/types/exhibition";
 import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
+import HeadCountBadge from "@/components/exhibition-status/HeadCountBadge";
 
 interface ExhibitionStatusCardProps {
   exhibition: ExhibitionListItem;
@@ -41,9 +42,9 @@ export default function ExhibitionStatusCard({ exhibition, onClick }: Exhibition
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <div className="mb-2 flex items-start justify-between gap-2">
+        <div className="mb-1.5 flex items-start gap-1.5">
           <ExhibitionStatusBadge status={exhibition.status} />
-          <ChevronRight size={18} className="text-text-disabled mt-0.5 shrink-0" />
+          {exhibition.status === "CONSENT_WRITING" && <HeadCountBadge exhibition={exhibition} />}
         </div>
 
         <h2 className="text-body-1 text-text-primary truncate font-semibold">{exhibition.title}</h2>
