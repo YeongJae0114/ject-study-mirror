@@ -1,4 +1,6 @@
-import { ExhibitionConsent } from "@/types/exhibitionConsent";
+interface ConsentStatusBadgeProps {
+  completed?: boolean;
+}
 
 const CONSENT_STATUS_LABEL = {
   COMPLETE: "동의서 작성 완료",
@@ -10,16 +12,14 @@ const CONSENT_STATUS_STYLE = {
   INCOMPLETE: "bg-object-secondary-light text-text-primary",
 };
 
-export default function ConsentStatusBadge({ consent }: { consent: ExhibitionConsent }) {
-  const isCompleted = consent.creatorConsentSubmitted && consent.spaceOwnerConsentSubmitted;
-
+export default function ConsentStatusBadge({ completed }: ConsentStatusBadgeProps) {
   return (
     <span
       className={`text-caption inline-flex h-5 w-fit items-center rounded px-1.5 font-medium ${
-        isCompleted ? CONSENT_STATUS_STYLE.COMPLETE : CONSENT_STATUS_STYLE.INCOMPLETE
+        completed ? CONSENT_STATUS_STYLE.COMPLETE : CONSENT_STATUS_STYLE.INCOMPLETE
       }`}
     >
-      {isCompleted ? CONSENT_STATUS_LABEL.COMPLETE : CONSENT_STATUS_LABEL.INCOMPLETE}
+      {completed ? CONSENT_STATUS_LABEL.COMPLETE : CONSENT_STATUS_LABEL.INCOMPLETE}
     </span>
   );
 }
