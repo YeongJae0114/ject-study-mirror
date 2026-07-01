@@ -19,6 +19,7 @@ import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
 import { useMyRole } from "@/hooks/useMyRole";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import AboutService from "@/components/contents/AboutService";
 
 const tabs = [
   { label: "추천", value: "recommend" },
@@ -133,6 +134,10 @@ export default function Home() {
           onLoadMore={() => void spaceFeedQuery.fetchNextPage()}
         />
       )}
+
+      {/* 콘텐츠 부분 */}
+      <AboutService />
+
       {/* 작품/공간 등록 버튼 */}
       {isLoggedIn && (
         <button
