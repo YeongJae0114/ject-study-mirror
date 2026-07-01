@@ -141,7 +141,9 @@ export default function Home() {
           onClick={handleRegisterClick}
         >
           <Plus size={20} />
-          <span className="text-body-1 font-medium">작품 등록</span>
+          <span className="text-body-1 font-medium">
+            {role === "CREATOR" ? "작품 등록" : "공간 등록"}
+          </span>
         </button>
       )}
     </div>
